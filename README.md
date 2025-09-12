@@ -1,5 +1,6 @@
 # 100 days of DevOps Journey - Day-wise Practice
 #########################################################
+Day 13 onward all code in the files are verified, before day 1 to 12 are not verified.
 
 1  echo "# 100 days of DevOps Journey - Day-wise Practice" > README.md
     2  echo "*.log" > .gitignore
