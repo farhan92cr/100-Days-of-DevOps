@@ -1,12 +1,12 @@
 Step 1: Connect to App Server 2 (stapp02)
-bash
+
 ssh steve@stapp02
 # Password: Am3ric@
 Step 2: Install Nginx
-bash
+
 sudo yum install nginx -y
 Step 3: Configure Nginx to Use Port 8093
-bash
+
 # Edit nginx configuration
 sudo vi /etc/nginx/nginx.conf
 

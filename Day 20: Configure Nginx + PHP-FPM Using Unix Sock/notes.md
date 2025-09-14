@@ -65,3 +65,5 @@ Nginx knows to send PHP requests to that socket
 PHP-FPM receives requests, processes PHP, sends back through socket
 
 The socket file gets automatically created when PHP-FPM starts! You just need to tell both services the same address. 🎯
+
+
