@@ -1,0 +1,98 @@
+The Nautilus DevOps team aims to containerize various applications following a recent meeting with the application development team. They intend to conduct testing with the following steps:
+
+
+Install docker-ce and docker compose packages on App Server 3.
+
+
+Initiate the docker service.service
+
+
+Step 1: Install Docker CE
+First, connect to App Server 3 and install Docker CE:
+
+# Update package index
+sudo yum update -y
+
+# Install required dependencies
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+
+# Add Docker repository
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# Install Docker CE
+sudo yum install -y docker-ce docker-ce-cli containerd.io
+
+
+
+Step 2: Install Docker Compose
+# Download Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# Make it executable
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Verify installation
+docker-compose --version
+
+
+
+Step 3: Start and Enable Docker Service
+
+
+# Start Docker service
+sudo systemctl start docker
+
+# Enable Docker to start on boot
+sudo systemctl enable docker
+
+# Verify Docker service status
+sudo systemctl status docker
+
+
+
+Step 4: Verify Installation
+
+# Check Docker version
+docker --version
+
+# Test Docker with a simple container
+sudo docker run hello-world
+
+
+
+Step 5: Configure User Permissions (Optional but Recommended)
+
+# Add your user to the docker group to run docker without sudo
+sudo usermod -aG docker $(whoami)
+
+# Apply group changes (you may need to logout/login)
+newgrp docker
+
+# Verify you can run docker without sudo
+docker ps
+Complete Verification
+Run these commands to confirm everything is working:
+
+# Check Docker service
+sudo systemctl is-active docker
+
+# Check Docker version
+docker --version
+
+# Check Docker Compose version
+docker-compose --version
+
+# List running containers (should be empty initially)
+docker ps
+Expected Output
+If everything is successful, you should see:
+
+Docker service running and enabled
+
+Docker version information
+
+Docker Compose version information
+
+Ability to run containers without errors
+
+The Nautilus DevOps team now has Docker CE and Docker Compose installed and running on App Server 3, ready for containerization testing with various applications.
