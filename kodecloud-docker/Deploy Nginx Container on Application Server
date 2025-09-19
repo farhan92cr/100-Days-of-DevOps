@@ -1,0 +1,69 @@
+Task 2: Deploy Nginx Container on Application Server
+
+
+The Nautilus DevOps team is conducting application deployment tests on selected application servers. They require a nginx container deployment on Application Server 2. Complete the task with the following instructions:
+
+
+On Application Server 2 create a container named nginx_2 using the nginx image with the alpine tag. Ensure container is in a running state.
+
+
+SOlution:
+
+Step 1: Connect to Application Server 2
+First, SSH into Application Server 2.
+
+Step 2: Pull the Nginx Alpine Image
+bash
+# Pull the nginx image with alpine tag
+sudo docker pull nginx:alpine
+Step 3: Create and Run the Nginx Container
+bash
+# Create and run the nginx container named nginx_2 with alpine tag
+sudo docker run -d --name nginx_2 nginx:alpine
+Step 4: Verify the Container Status
+bash
+# Check if the container is running
+sudo docker ps
+
+# Check all containers (including stopped ones) to confirm creation
+sudo docker ps -a
+
+# Check container logs to ensure it started properly
+sudo docker logs nginx_2
+Step 5: Verify Nginx is Serving Content (Optional Test)
+bash
+# Get the container's IP address
+sudo docker inspect nginx_2 | grep IPAddress
+
+# Test if nginx is responding (replace with actual IP if needed)
+curl http://<container-ip>
+Alternative One-Command Solution
+You can also use this single command that will pull the image if not available and run the container:
+
+bash
+sudo docker run -d --name nginx_2 nginx:alpine
+Troubleshooting Commands
+If you encounter any issues:
+
+bash
+# If container already exists with that name
+sudo docker rm nginx_2
+
+# If container fails to start, check logs
+sudo docker logs nginx_2
+
+# Restart the container if it's stopped
+sudo docker start nginx_2
+Expected Output
+After running these commands, you should see:
+
+The nginx:alpine image downloaded
+
+A container named nginx_2 created and running
+
+The container status showing as "Up" in docker ps
+
+Nginx serving content (verified through logs or curl test)
+
+The Nginx container named nginx_2 using the alpine tag is now successfully deployed and running on Application Server 2.
+
