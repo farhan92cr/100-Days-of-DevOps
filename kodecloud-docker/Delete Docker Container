@@ -4,3 +4,78 @@ A container named kke-container was created by one of the Nautilus project devel
 
 Delete the kke-container on App Server 1 in Stratos DC.
 
+
+Solution:
+Step 1: Connect to App Server 1
+First, SSH into App Server 1.
+
+Step 2: Check Container Status
+Before deletion, verify the container exists and check its status:
+
+
+# Check if the container exists and its current state
+sudo docker ps -a | grep kke-container
+
+
+Step 3: Stop the Container (If Running)
+If the container is currently running, stop it first:
+
+# Stop the container if it's running
+sudo docker stop kke-container
+
+
+Step 4: Delete the Container
+# Delete the kke-container
+sudo docker rm kke-container
+
+
+Step 5: Verify Deletion
+# Verify the container has been removed
+sudo docker ps -a | grep kke-container
+
+# Check all containers to confirm it's gone
+sudo docker ps -a
+Complete Command Sequence
+Here's the complete set of commands to execute:
+
+bash
+# Connect to App Server 1 first, then:
+
+# Check container status
+sudo docker ps -a | grep kke-container
+
+# Stop the container if running
+sudo docker stop kke-container
+
+# Delete the container
+sudo docker rm kke-container
+
+# Verify deletion
+sudo docker ps -a | grep kke-container && echo "Container still exists" || echo "Container successfully deleted"
+Troubleshooting
+If you encounter any issues:
+
+bash
+# If container doesn't exist, you'll see an error - that's fine
+# Force remove if needed (use with caution)
+sudo docker rm -f kke-container
+
+# Check if container exists before attempting removal
+if sudo docker ps -a | grep -q kke-container; then
+    sudo docker rm kke-container
+    echo "Container deleted successfully"
+else
+    echo "Container does not exist"
+fi
+Expected Outcome
+After executing these commands:
+
+The kke-container will be stopped (if it was running)
+
+The container will be completely removed from the system
+
+docker ps -a should no longer show the kke-container
+
+You'll receive confirmation that the container has been deleted
+
+The testing container kke-container has now been successfully deleted from App Server 1 in Stratos DC.
