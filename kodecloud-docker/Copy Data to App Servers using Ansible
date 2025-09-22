@@ -1,0 +1,131 @@
+Step 1: Create the Inventory File
+First, create the inventory file on the jump host:
+
+
+# Create the directory if it doesn't exist
+mkdir -p /home/thor/ansible
+
+# Create the inventory file
+# Create the inventory with correct credentials for each server
+cat > /home/thor/ansible/inventory << 'EOF'
+[app_servers]
+stapp01 ansible_host=stapp01 ansible_user=tony ansible_ssh_pass=Ir0nM@n ansible_become_pass=Ir0nM@n
+stapp02 ansible_host=stapp02 ansible_user=steve ansible_ssh_pass=Am3ric@ ansible_become_pass=Am3ric@
+stapp03 ansible_host=stapp03 ansible_user=banner ansible_ssh_pass=BigGr33n ansible_become_pass=BigGr33n
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+EOF
+
+
+
+Step 2: Create the Playbook
+Now create the playbook to copy the file:
+
+# Create the playbook file
+cat > /home/thor/ansible/playbook.yml << EOF
+---
+- name: Copy index.html to application servers
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Create destination directory if it doesn't exist
+      file:
+        path: /opt/itadmin
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Copy index.html file to application servers
+      copy:
+        src: /usr/src/itadmin/index.html
+        dest: /opt/itadmin/index.html
+        mode: '0644'
+        owner: root
+        group: root
+EOF
+
+
+
+
+Step 3: Verify the Files
+Check that both files were created correctly:
+
+
+# Check inventory file
+cat /home/thor/ansible/inventory
+
+# Check playbook file
+cat /home/thor/ansible/playbook.yml
+
+
+
+Step 4: Test the Playbook
+Test the playbook execution:
+
+# Change to the ansible directory
+cd /home/thor/ansible
+
+# Test connectivity to all hosts
+ansible -i inventory app_servers -m ping
+
+# Run the playbook
+ansible-playbook -i inventory playbook.yml
+
+
+
+Step 5: Verify the Copy Operation
+After running the playbook, you can verify the file was copied correctly:
+
+# Check if file exists on all application servers
+ansible -i inventory app_servers -a "ls -la /opt/itadmin/"
+
+# Check file content on all servers
+ansible -i inventory app_servers -a "cat /opt/itadmin/index.html"
+Complete File Contents
+Inventory File (/home/thor/ansible/inventory)
+text
+[app_servers]
+stapp01 ansible_host=stapp01
+stapp02 ansible_host=stapp02
+stapp03 ansible_host=stapp03
+
+[all:vars]
+ansible_user=tony
+ansible_ssh_private_key_file=/home/thor/.ssh/id_rsa
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+Playbook File (/home/thor/ansible/playbook.yml)
+yaml
+---
+- name: Copy index.html to application servers
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Create destination directory if it doesn't exist
+      file:
+        path: /opt/itadmin
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Copy index.html file to application servers
+      copy:
+        src: /usr/src/itadmin/index.html
+        dest: /opt/itadmin/index.html
+        mode: '0644'
+        owner: root
+        group: root
+Expected Outcome
+When you run ansible-playbook -i inventory playbook.yml, the playbook should:
+
+Connect to all application servers (stapp01, stapp02, stapp03)
+
+Create the /opt/itadmin directory with proper permissions
+
+Copy the index.html file from the jump host to /opt/itadmin/index.html on all servers
+
+Set the correct permissions and ownership on the copied file
+
+The playbook will function properly without any extra arguments as required.
