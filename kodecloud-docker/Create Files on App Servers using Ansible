@@ -16,3 +16,180 @@ d. Ensure the user/group owner of the /home/nfsdata.txt file is tony on app serv
 Note: Validation will execute the playbook using the command ansible-playbook -i inventory playbook.yml, so ensure the playbook functions correctly without any additional arguments.
 
 
+SOLUTION:
+Step 1: Create the Inventory File
+# Create the directory if it doesn't exist
+mkdir -p ~/playbook
+
+# Create the inventory file with correct credentials for each server
+cat > ~/playbook/inventory << 'EOF'
+[app_servers]
+stapp01 ansible_host=stapp01 ansible_user=tony ansible_ssh_pass=Ir0nM@n ansible_become_pass=Ir0nM@n
+stapp02 ansible_host=stapp02 ansible_user=steve ansible_ssh_pass=Am3ric@ ansible_become_pass=Am3ric@
+stapp03 ansible_host=stapp03 ansible_user=banner ansible_ssh_pass=BigGr33n ansible_become_pass=BigGr33n
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+EOF
+Step 2: Create the Playbook
+# Create the playbook file
+cat > ~/playbook/playbook.yml << 'EOF'
+---
+- name: Create nfsdata.txt file with specific permissions and ownership
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Create blank file /home/nfsdata.txt
+      file:
+        path: /home/nfsdata.txt
+        state: touch
+        mode: '0744'
+      
+    - name: Set ownership based on server
+      set_fact:
+        file_owner: "{{ 
+          'tony' if inventory_hostname == 'stapp01' 
+          else 'steve' if inventory_hostname == 'stapp02' 
+          else 'banner' 
+        }}"
+      
+    - name: Apply correct ownership to file
+      file:
+        path: /home/nfsdata.txt
+        owner: "{{ file_owner }}"
+        group: "{{ file_owner }}"
+        mode: '0744'
+EOF
+
+
+
+Step 3: Verify the Files
+Check that both files were created correctly:
+
+
+# Check inventory file
+cat ~/playbook/inventory
+
+# Check playbook file
+cat ~/playbook/playbook.yml
+
+
+Step 4: Test the Playbook
+# Change to the playbook directory
+cd ~/playbook
+
+# Test connectivity to all hosts
+ansible -i inventory app_servers -m ping
+
+# Run the playbook
+ansible-playbook -i inventory playbook.yml
+
+
+Step 5: Verify the File Creation
+# Check if file was created on all servers with correct permissions and ownership
+ansible -i inventory app_servers -a "ls -la /home/nfsdata.txt"
+Alternative Playbook Version (More Explicit)
+If you prefer a more explicit approach, here's an alternative playbook:
+
+# Alternative playbook version
+cat > ~/playbook/playbook.yml << 'EOF'
+---
+- name: Create nfsdata.txt file on app servers
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Create blank file with 0744 permissions
+      file:
+        path: /home/nfsdata.txt
+        state: touch
+        mode: '0744'
+
+- name: Set ownership for stapp01
+  hosts: stapp01
+  become: yes
+  tasks:
+    - name: Set ownership to tony
+      file:
+        path: /home/nfsdata.txt
+        owner: tony
+        group: tony
+        mode: '0744'
+
+- name: Set ownership for stapp02
+  hosts: stapp02
+  become: yes
+  tasks:
+    - name: Set ownership to steve
+      file:
+        path: /home/nfsdata.txt
+        owner: steve
+        group: steve
+        mode: '0744'
+
+- name: Set ownership for stapp03
+  hosts: stapp03
+  become: yes
+  tasks:
+    - name: Set ownership to banner
+      file:
+        path: /home/nfsdata.txt
+        owner: banner
+        group: banner
+        mode: '0744'
+EOF
+
+
+Complete File Contents
+Inventory File (~/playbook/inventory)
+ini
+[app_servers]
+stapp01 ansible_host=stapp01 ansible_user=tony ansible_ssh_pass=Ir0nM@n ansible_become_pass=Ir0nM@n
+stapp02 ansible_host=stapp02 ansible_user=steve ansible_ssh_pass=Am3ric@ ansible_become_pass=Am3ric@
+stapp03 ansible_host=stapp03 ansible_user=banner ansible_ssh_pass=BigGr33n ansible_become_pass=BigGr33n
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+Playbook File (~/playbook/playbook.yml) - Recommended Version
+yaml
+---
+- name: Create nfsdata.txt file with specific permissions and ownership
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Create blank file /home/nfsdata.txt
+      file:
+        path: /home/nfsdata.txt
+        state: touch
+        mode: '0744'
+      
+    - name: Set ownership based on server
+      set_fact:
+        file_owner: "{{ 
+          'tony' if inventory_hostname == 'stapp01' 
+          else 'steve' if inventory_hostname == 'stapp02' 
+          else 'banner' 
+        }}"
+      
+    - name: Apply correct ownership to file
+      file:
+        path: /home/nfsdata.txt
+        owner: "{{ file_owner }}"
+        group: "{{ file_owner }}"
+        mode: '0744'
+Expected Outcome
+When you run ansible-playbook -i inventory playbook.yml, the playbook will:
+
+Create /home/nfsdata.txt as a blank file on all app servers
+
+Set permissions to 0744 (rwxr--r--) on all servers
+
+Set ownership specifically:
+
+stapp01: user tony and group tony
+
+stapp02: user steve and group steve
+
+stapp03: user banner and group banner
+
+The playbook will function correctly without any additional arguments as required.
+
