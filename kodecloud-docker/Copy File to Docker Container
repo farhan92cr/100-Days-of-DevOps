@@ -7,3 +7,106 @@ Copy an encrypted file /tmp/nautilus.txt.gpg from the docker host to the ubuntu_
 
 SOLUTION:
 
+Step 1: Connect to App Server 2
+First, SSH into App Server 2:
+
+bash
+ssh steve@stapp02
+# Password: Am3ric@
+Step 2: Check the Running Container
+bash
+# Verify the container is running
+sudo docker ps | grep ubuntu_latest
+
+# Check container details
+sudo docker inspect ubuntu_latest
+Step 3: Copy the File Using docker cp Command
+The docker cp command is the safest way to copy files without modification:
+
+bash
+# Copy the encrypted file from host to container
+sudo docker cp /tmp/nautilus.txt.gpg ubuntu_latest:/usr/src/
+Step 4: Verify the File Copy
+bash
+# Verify the file was copied correctly
+sudo docker exec ubuntu_latest ls -la /usr/src/nautilus.txt.gpg
+
+# Check file integrity by comparing checksums
+echo "Host file checksum:"
+sudo md5sum /tmp/nautilus.txt.gpg
+
+echo "Container file checksum:"
+sudo docker exec ubuntu_latest md5sum /usr/src/nautilus.txt.gpg
+Step 5: Alternative Methods
+Method 2: Using docker exec with redirection
+bash
+# Alternative method using docker exec
+sudo docker exec -i ubuntu_latest sh -c 'cat > /usr/src/nautilus.txt.gpg' < /tmp/nautilus.txt.gpg
+Method 3: Using tar for preservation
+bash
+# Using tar to preserve all attributes
+cd /tmp
+sudo tar cf - nautilus.txt.gpg | sudo docker exec -i ubuntu_latest tar xf - -C /usr/src/
+Step 6: Complete Command Sequence
+Here's the complete set of commands to execute on App Server 2:
+
+bash
+# Connect to App Server 2 first, then:
+
+# 1. Verify container is running
+sudo docker ps | grep ubuntu_latest
+
+# 2. Copy the file using docker cp (recommended method)
+sudo docker cp /tmp/nautilus.txt.gpg ubuntu_latest:/usr/src/
+
+# 3. Verify the copy operation
+sudo docker exec ubuntu_latest ls -l /usr/src/nautilus.txt.gpg
+
+# 4. Verify file integrity by comparing checksums
+host_checksum=$(sudo md5sum /tmp/nautilus.txt.gpg | awk '{print $1}')
+container_checksum=$(sudo docker exec ubuntu_latest md5sum /usr/src/nautilus.txt.gpg | awk '{print $1}')
+
+echo "Host checksum: $host_checksum"
+echo "Container checksum: $container_checksum"
+
+if [ "$host_checksum" = "$container_checksum" ]; then
+    echo "SUCCESS: File copied without modification"
+else
+    echo "ERROR: File was modified during copy"
+fi
+Key Points for File Integrity
+docker cp: This is the recommended method as it's designed specifically for copying files between host and containers without modification
+
+Checksum verification: Always verify using MD5 or SHA checksums to ensure file integrity
+
+Permissions: The file will maintain its permissions during the copy operation
+
+Expected Output
+After executing the commands, you should see:
+
+text
+# Container verification
+CONTAINER_ID   IMAGE     COMMAND   CREATED       STATUS       PORTS     NAMES
+abc123...      ubuntu    ...       ...           ...          ...       ubuntu_latest
+
+# File verification in container
+-rw-r--r-- 1 root root 1024 Sep 22 06:30 /usr/src/nautilus.txt.gpg
+
+# Checksum verification
+Host checksum: a1b2c3d4e5f6...
+Container checksum: a1b2c3d4e5f6...
+SUCCESS: File copied without modification
+Troubleshooting
+If you encounter any issues:
+
+bash
+# Check if source file exists
+sudo ls -la /tmp/nautilus.txt.gpg
+
+# Check if destination directory exists in container
+sudo docker exec ubuntu_latest ls -la /usr/src/
+
+# If directory doesn't exist, create it first
+sudo docker exec ubuntu_latest mkdir -p /usr/src/
+The docker cp command is the safest and most reliable method for copying files between the host and containers while preserving the file content and ensuring it's not modified during the operation.
+
