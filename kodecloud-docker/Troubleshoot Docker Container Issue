@@ -1,0 +1,150 @@
+An issue has arisen with a static website running in a container named nautilus on App Server 1. To resolve the issue, investigate the following details:
+
+
+
+Check if the container's volume /usr/local/apache2/htdocs is correctly mapped with the host's volume /var/www/html.
+
+Verify that the website is accessible on host port 8080 on App Server 1. Confirm that the command curl http://localhost:8080/ works on App Server 1.
+
+
+
+Solution:
+Step 1: Connect to App Server 1
+ssh tony@stapp01
+# Password: Ir0nM@n
+
+
+Step 2: Check the Container Details and Volume Mapping
+# Check if the container is running
+sudo docker ps | grep nautilus
+
+
+# Start the container if not running
+sudo docker start nautilus
+
+# Inspect the container to check volume mappings
+sudo docker inspect nautilus | grep -A 10 -B 5 "Mounts"
+
+# Alternative: Get detailed volume mapping information
+sudo docker inspect nautilus --format='{{ .Mounts }}' | python -m json.tool
+
+# More specific volume inspection
+sudo docker inspect nautilus | grep -A 15 -B 5 "htdocs"
+
+
+Step 3: Check Current Volume Mapping
+# Check the exact volume mapping
+sudo docker inspect nautilus --format='{{range .Mounts}}{{.Source}}:{{.Destination}}{{println}}{{end}}'
+
+# Or use this command for clearer output
+sudo docker inspect nautilus | jq '.[].Mounts[] | "\(.Source) -> \(.Destination)"' 2>/dev/null || sudo docker inspect nautilus | grep -E '(Source|Destination|Type)' | grep -A 2 -B 2 "Source"
+
+
+Step 4: Verify Port Mapping
+# Check port mapping
+sudo docker ps --format "table {{.Names}}\t{{.Ports}}" | grep nautilus
+
+# Inspect port configuration
+sudo docker inspect nautilus | grep -i port
+
+# Get detailed port mapping
+sudo docker inspect nautilus --format='{{range $p, $conf := .NetworkSettings.Ports}}{{$p}} -> {{(index $conf 0).HostPort}}{{println}}{{end}}'
+
+
+Step 5: Test Website Accessibility
+# Test if the website is accessible on port 8080
+curl http://localhost:8080/
+
+# Test with verbose output to see more details
+curl -v http://localhost:8080/
+
+# Test with different timeout
+curl --connect-timeout 10 http://localhost:8080/
+
+
+Step 6: Check Container Logs for Errors
+# Check container logs for any errors
+sudo docker logs nautilus
+
+# Check recent logs
+sudo docker logs nautilus --tail 50
+
+
+Step 7: Verify Host Directory and Files
+# Check if the host directory exists and has content
+sudo ls -la /var/www/html/
+
+# Check if there are website files in the host directory
+sudo find /var/www/html/ -type f -name "*.html" -o -name "*.php" | head -10
+
+
+Step 8: Verify Container Directory
+# Check what's inside the container's htdocs directory
+sudo docker exec nautilus ls -la /usr/local/apache2/htdocs/
+
+# Check for website files in the container
+sudo docker exec nautilus find /usr/local/apache2/htdocs/ -type f | head -10
+
+
+Step 9: Complete Investigation Script
+Here's a complete script to investigate all aspects:
+
+#!/bin/bash
+echo "=== NAUTILUS CONTAINER INVESTIGATION ==="
+
+echo -e "\n1. Checking container status..."
+sudo docker ps | grep nautilus
+
+echo -e "\n2. Checking volume mapping..."
+sudo docker inspect nautilus | grep -A 10 -B 5 "Mounts"
+
+echo -e "\n3. Checking port mapping..."
+sudo docker inspect nautilus | grep -i port
+
+echo -e "\n4. Checking host directory /var/www/html..."
+sudo ls -la /var/www/html/
+
+echo -e "\n5. Checking container directory /usr/local/apache2/htdocs..."
+sudo docker exec nautilus ls -la /usr/local/apache2/htdocs/ 2>/dev/null || echo "Cannot access container directory"
+
+echo -e "\n6. Testing website accessibility..."
+curl -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8080/
+
+echo -e "\n7. Checking container logs (last 10 lines)..."
+sudo docker logs nautilus --tail 10 2>/dev/null
+
+echo -e "\n=== INVESTIGATION COMPLETE ==="
+Step 10: Expected Correct Configuration
+The correct configuration should show:
+
+bash
+# Volume mapping should show:
+/var/www/html -> /usr/local/apache2/htdocs
+
+# Port mapping should show:
+80/tcp -> 0.0.0.0:8080
+
+# curl should return:
+# HTTP 200 status with website content
+Step 11: If Issues Are Found
+If the volume mapping is incorrect, you might need to recreate the container:
+
+bash
+# Stop the current container
+sudo docker stop nautilus
+
+# Remove the container
+sudo docker rm nautilus
+
+# Recreate with correct volume mapping (example command)
+sudo docker run -d --name nautilus -p 8080:80 -v /var/www/html:/usr/local/apache2/htdocs httpd:latest
+Expected Results
+After investigation, you should be able to determine:
+
+Volume Mapping: Whether /var/www/html is correctly mapped to /usr/local/apache2/htdocs
+
+Port Accessibility: Whether curl http://localhost:8080/ works
+
+Any Issues: What specific problems exist with the configuration
+
+Run the investigation commands step by step to identify where the issue lies and then take appropriate corrective action.
