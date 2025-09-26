@@ -66,3 +66,6 @@ A---B---C  master        A---B---C  master
      \                          \
       D---E  feature             D'---E'  feature (rebased)
 The feature branch has been successfully rebased with master without any merge commits! 🚀
+
+
+
