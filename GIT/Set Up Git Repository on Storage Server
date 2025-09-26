@@ -10,3 +10,75 @@ Create a bare repository named /opt/news.git (ensure exact name usage).
 
 SOLUTION:
 
+What is a Bare Repository?
+A bare repository is a Git repository that doesn't have a working directory. It's designed to serve as a central repository that multiple developers can push to and pull from.
+
+Key Differences:
+Regular Repository (Non-bare):
+
+Contains the .git folder AND a working directory with actual files
+
+You can make changes, commit, and work directly in it
+
+Structure: /project/.git/ + /project/files/
+
+Bare Repository:
+
+Contains ONLY the .git contents (no working directory)
+
+Used as a central hub/shared repository
+
+Developers cannot work directly in it
+
+Structure: /repo.git/ (contains all Git internals directly)
+
+Visual Comparison:
+text
+Regular Repository:
+/opt/news/
+├── .git/           # Git database
+│   ├── objects/
+│   ├── refs/
+│   └── ...
+├── file1.txt       # Working files
+├── file2.py
+└── README.md
+
+Bare Repository:
+/opt/news.git/
+├── objects/        # Git database (no working files)
+├── refs/
+├── config
+├── HEAD
+└── ...
+Why Use Bare Repositories?
+Central Hub Function: Acts like GitHub/GitLab for your team
+
+Prevents Conflicts: No working directory means no file conflicts when pushing
+
+Standard Practice: This is how shared repositories are typically set up
+
+Push Safety: Git prevents pushing to non-bare repositories to avoid overwriting work
+
+
+# 1. Connect to Storage Server from jump server
+ssh natasha@ststor01
+# Password: Bl@kW
+
+# 2. Install Git (may need to switch to root)
+sudo yum install git -y
+
+# 3. Create the bare repository
+sudo git init --bare /opt/news.git
+
+# 4. Verify the repository structure
+sudo ls -la /opt/news.git/
+
+Important Notes:
+The repository path must be exactly /opt/news.git
+
+This is a bare repository (no working directory), suitable for use as a central repository that developers can push to and pull from
+
+The repository is now ready for the development team to use as their remote origin
+
+The Git repository has been successfully set up on the Storage Server as requested by the Nautilus development team.
