@@ -39,3 +39,4 @@ Save the file
 Most code editors (VS Code, IntelliJ, etc.) have built-in conflict resolvers that highlight these sections and provide buttons to "Accept Current/Incoming/Both" changes!
 
 So yes - this format is universal in Git! Once you learn it, you can resolve conflicts anywhere! 🎯
+
