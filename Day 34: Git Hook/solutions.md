@@ -1,4 +1,10 @@
-cat > post-update << 'EOF'
+
+Here’s a few things to make sure that you’re doing the right thing (just cos your request doesn’t contain a lot of detail, let’s ensure you have the following down):
+
+Make sure that your hook is setup on your bare repo (i.e. /opt/official.git or whatever the question throws at you)
+Here’s a snippet of the git hook that worked for me:
+#My question was on /opt/media.git folder so-- /opt/media.git/hooks/post-update
+
 #!/usr/bin/sh
 
 # Arguments to post-update
@@ -7,82 +13,14 @@ GIT_DIR=$(pwd)
 
         echo "Creating tag release-$DATE"
         git --git-dir="$GIT_DIR" tag "release-$DATE" master
-EOF
 
+and rememember to make the file executable chmod +x /opt/media.git/hooks/post-update
 
-Step 1: Connect to Storage Server
-bash
-ssh natasha@ststor01
-Step 2: ONLY Create Hook in Bare Repository
-bash
-cd /opt/news.git/hooks
-cat > post-update << 'EOF'
-#!/bin/bash
-DATE=$(date +%Y-%m-%d)
-git tag "release-$DATE" master
-EOF
-chmod +x post-update
-Step 3: ONLY Test Hook (as required)
-bash
-cd /opt/news.git
-hooks/post-update
-Step 4: ONLY Merge and Push from Working Copy
-bash
-cd /usr/src/kodekloudrepos/news
+In this post 11, I outline what had me stuck for a few days. I was tagging the release but also forcing the tag unto subsequent commits (cos I was worried that the system would attempt to commit and get a failure). I now believe that I was marked wrong cos I did a git tag -f…
+
+change dir into your working directory (in my case it was: cd /usr/src/kodekloudrepos/media
+You should be on the “feature branch”, so switch to “master”
+
 git checkout master
 git merge feature
-git push origin master
-Step 5: ONLY Basic Verification
-bash
-git fetch --tags
-git tag -l "release-*"
-
-
-Step 1: Connect to Storage Server
-bash
-ssh natasha@ststor01
-Step 2: Create Hook in BARE Repository (EXACT community solution)
-bash
-cd /opt/apps.git/hooks
-cat > post-update << 'EOF'
-#!/usr/bin/sh
-
-# Arguments to post-update
-DATE=$(date +%F)        # YYYY-MM-DD
-GIT_DIR=$(pwd)
-
-        echo "Creating tag release-$DATE"
-        git --git-dir="$GIT_DIR" tag "release-$DATE" master
-EOF
-chmod +x post-update
-Step 3: Test the Hook (as required)
-bash
-cd /opt/apps.git
-hooks/post-update
-Step 4: Merge and Push from Working Copy (EXACT community workflow)
-bash
-cd /usr/src/kodekloudrepos/apps
-git checkout master
-git merge feature
-git push origin master
-Step 5: Verify
-bash
-git fetch --tags
-git tag -l "release-*"
-🎯 Key Points from Community Solution:
-Hook in bare repo ONLY (/opt/apps.git/hooks)
-
-Use /usr/bin/sh not /bin/bash
-
-Simple tag command - git tag "release-$DATE" master
-
-NO force tagging (-f) - this was their mistake
-
-Basic workflow - merge → push (hook auto-creates tag)
-
-✅ This is the EXACT solution that worked for the community member!
-Follow this precisely and it should work! 🚀
-
-
-
-
+git push
