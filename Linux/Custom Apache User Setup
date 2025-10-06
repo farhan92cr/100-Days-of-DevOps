@@ -1,0 +1,68 @@
+In response to heightened security concerns, the xFusionCorp 
+Industries security team has opted for custom Apache users for 
+their web applications. Each user is tailored specifically for 
+an application, enhancing security measures. Your task is to 
+create a custom Apache user according to the outlined specifications:
+
+
+
+a. Create a user named kareem on App server 1 within the 
+Stratos Datacenter.
+
+
+b. Assign a unique UID 1506 and designate the home 
+directory as /var/www/kareem.
+
+SOLUTION:
+
+Step 1: Connect to stapp01 server
+ssh tony@stapp01
+Password: Ir0nM@n
+
+Step 2: Create the user with specified parameters
+sudo useradd -u 1506 -d /var/www/kareem -m kareem
+Let me explain the flags:
+
+-u 1506: Sets the UID to 1506 as required
+
+-d /var/www/kareem: Sets the home directory to /var/www/kareem
+
+-m: Creates the home directory if it doesn't exist
+
+kareem: The username
+
+Step 3: Verify the user was created correctly
+id kareem
+This should show output similar to:
+
+uid=1506(kareem) gid=1506(kareem) groups=1506(kareem)
+
+
+Step 4: Verify the home directory
+ls -ld /var/www/kareem
+This should confirm the directory exists and is owned by the kareem user.
+
+Step 5: Set a password for the user (optional but recommended)
+sudo passwd kareem
+You can set a secure password when prompted.
+
+Complete Command Sequence:
+bash
+# Connect to the server
+ssh tony@stapp01
+
+# Create the user with specified parameters
+sudo useradd -u 1506 -d /var/www/kareem -m kareem
+
+# Verify the creation
+id kareem
+ls -ld /var/www/kareem
+
+# Set password (optional)
+sudo passwd kareem
+This setup creates a dedicated Apache user kareem with UID 1506 and 
+home directory /var/www/kareem, which aligns with the security 
+requirements of having custom Apache users for web applications. 
+The user can now be used to run Apache processes or deploy web 
+applications with enhanced security isolation.
+
