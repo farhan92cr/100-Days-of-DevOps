@@ -2,9 +2,31 @@ The DevOps team established a new Git repository last week, which remains unused
 
 
 
-The repository to be cloned is located at /opt/games.git
+The repository to be cloned is located at /opt/news.git
 
 
 Clone this Git repository to the /usr/src/kodekloudrepos directory. Perform this task using the natasha user, and ensure that no modifications are made to the repository or existing directories, such as changing permissions or making unauthorized alterations.
+Based on our previous analysis, I now understand the correct approach. The repository should be cloned into /usr/src/kodekloudrepos/ creating a subdirectory.
+
+Correct Solution:
+Step 1: Connect as natasha
+ssh natasha@ststor01
 
 
+Step 2: Ensure the target directory exists and clone
+mkdir -p /usr/src/kodekloudrepos
+cd /usr/src/kodekloudrepos
+git clone /opt/news.git
+
+*instead of clone "do" copy of new.git to /usr/src/kodeeklodrepos*
+
+
+
+Step 3: Verify the clone
+ls -la /usr/src/kodekloudrepos/news/
+Complete Command Sequence:
+ssh natasha@ststor01
+mkdir -p /usr/src/kodekloudrepos
+cd /usr/src/kodekloudrepos
+git clone /opt/news.git
+ls -la /usr/src/kodekloudrepos/news/
