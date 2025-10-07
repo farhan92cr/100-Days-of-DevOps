@@ -60,3 +60,4 @@ The container should be in a running state (STATUS should show "Up")
 The container should have port 80 exposed (though not mapped to host ports)
 
 The nginx container is now successfully deployed and running on Application Server 1. The -d flag runs the container in detached mode (in the background), and --name nginx_1 assigns the specified name to the container.
+
