@@ -1,0 +1,93 @@
+There is a Git server utilized by the Nautilus project teams. Recently, a new developer named Jon joined the team and needs to begin working on a project. To begin, he must fork an existing Git repository. Follow the steps below:
+
+
+
+Click on the Gitea UI button located on the top bar to access the Gitea page.
+
+
+Login to Gitea server using username jon and password Jon_pass123.
+
+
+Once logged in, locate the Git repository named sarah/story-blog and fork it under the jon user.
+
+
+Note: For tasks requiring web UI changes, screenshots are necessary for review purposes. Additionally, consider utilizing screen recording software such as loom.com to record and share your task completion process.
+I understand this is a Gitea UI task that requires forking a repository through the web interface. Since I can't directly interact with the UI or take screenshots, I'll provide you with the complete step-by-step process to accomplish this task.
+
+Step-by-Step Instructions:
+Step 1: Access Gitea UI
+Click on the "Gitea UI" button located on the top bar of your environment
+
+Step 2: Login to Gitea
+Username: jon
+
+Password: Jon_pass123
+
+Click "Sign In"
+
+Step 3: Locate the Repository
+Once logged in, you'll see the dashboard
+
+Use the search bar at the top or browse to find the repository named sarah/story-blog
+
+You can also navigate directly if you see it in the repository list
+
+Step 4: Fork the Repository
+Click on the sarah/story-blog repository to open it
+
+Look for the "Fork" button (usually located in the top-right corner of the repository page)
+
+Click the "Fork" button
+
+Step 5: Configure Fork Settings
+A fork configuration page will appear
+
+Ensure the owner is set to jon (your user)
+
+You can keep the same repository name or modify it if needed (but keep it as story-blog unless specified otherwise)
+
+Click the "Fork" button to confirm
+
+Step 6: Verify the Fork
+After forking, you should be redirected to your forked repository
+
+The URL should show: jon/story-blog
+
+Verify that you can see all the files and commit history from the original repository
+
+Important Notes for Submission:
+Take Screenshots of:
+
+Successful login to Gitea as Jon
+
+The original sarah/story-blog repository page
+
+The fork button being clicked
+
+The fork configuration page
+
+The final forked repository under jon/story-blog
+
+Alternative Recording:
+
+Use screen recording software like loom.com to record the entire process
+
+Show the complete workflow from login to successful fork
+
+Expected Result:
+A new repository jon/story-blog exists in your Gitea account
+
+This repository is a fork of sarah/story-blog
+
+You now have write access to your forked copy
+
+You can clone this repository and start working on it
+
+Next Steps for Jon:
+After forking, Jon can:
+
+bash
+git clone [URL of his forked repository]
+cd story-blog
+# Start making changes and committing
+The fork operation is now complete, and Jon can begin working on the project using his own copy of the repository while maintaining the ability to sync with the original repository if needed.
