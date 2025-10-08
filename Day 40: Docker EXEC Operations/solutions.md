@@ -123,3 +123,5 @@ The kkloud container should remain in running state
 No specific IP or hostname binding - Apache should listen on all interfaces
 
 The configuration ensures Apache listens on all available interfaces within the container on port 8085, making it accessible from any IP address that can reach the container.
+
+
