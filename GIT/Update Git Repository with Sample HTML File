@@ -1,0 +1,106 @@
+Question:
+The Nautilus development team has initiated a new project development, establishing various Git repositories to manage each project's source code. Recently, a repository named /opt/news.git was created. The team has provided a sample index.html file located on the jump host under the /tmp directory. This repository has been cloned to /usr/src/kodekloudrepos on the storage server in the Stratos DC.
+
+
+
+Copy the sample index.html file from the jump host to the storage server placing it within the cloned repository at /usr/src/kodekloudrepos/news.
+
+Add and commit the file to the repository.
+
+Push the changes to the master branch.
+
+
+SOLUTION:
+
+Step 1: Copy the file from Jump Host to Storage Server
+First, from the Jump Host, copy the file to the Storage Server:
+
+bash
+# From Jump Host, copy the file to Storage Server
+scp /tmp/index.html natasha@ststor01:/tmp/
+Step 2: Connect to Storage Server and Move the File
+bash
+# Connect to Storage Server
+ssh natasha@ststor01
+
+# Move the file to the repository directory
+mv /tmp/index.html /usr/src/kodekloudrepos/news/
+Step 3: Navigate to Repository and Configure Git (if needed)
+bash
+# Navigate to the repository
+cd /usr/src/kodekloudrepos/news
+
+# Configure user information (if not already set)
+git config --global user.email "jon@example.com"
+git config --global user.name "Jon"
+Step 4: Add and Commit the File
+bash
+# Add the file to staging
+git add index.html
+
+# Commit the file with a descriptive message
+git commit -m "Add initial index.html file"
+Step 5: Push to Master Branch
+bash
+# Push the changes to the master branch
+git push origin master
+Complete Command Sequence:
+bash
+# 1. From Jump Host - Copy file to Storage Server
+scp /tmp/index.html natasha@ststor01:/tmp/
+
+# 2. Connect to Storage Server
+ssh natasha@ststor01
+
+# 3. Move file to repository
+mv /tmp/index.html /usr/src/kodekloudrepos/news/
+
+# 4. Navigate to repository and commit changes
+cd /usr/src/kodekloudrepos/news
+git add index.html
+git commit -m "Add initial index.html file"
+
+# 5. Push to master branch
+git push origin master
+Verification Steps:
+After completing the process, verify everything worked:
+
+bash
+# Check git status (should be clean)
+git status
+
+# Check git log to see the commit
+git log --oneline
+
+# Verify the file exists in the repository
+ls -la /usr/src/kodekloudrepos/news/index.html
+Expected Output:
+After git status: "Your branch is ahead of 'origin/master' by 1 commit" or "nothing to commit, working tree clean"
+
+After git log --oneline: You should see your commit with the message "Add initial index.html file"
+
+After git push: Should show successful push message
+
+Troubleshooting:
+If you encounter issues:
+
+If git config is not set:
+
+bash
+git config --global user.email "jon@example.com"
+git config --global user.name "Jon"
+If remote origin is not set:
+
+bash
+git remote -v
+# If not set, add it:
+git remote add origin /opt/news.git
+If push is rejected:
+
+bash
+git pull origin master --allow-unrelated-histories
+git push origin master
+This process will successfully add the index.html file to the repository and push it to the master branch.
+
+
+
