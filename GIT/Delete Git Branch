@@ -1,0 +1,52 @@
+Question:
+The Nautilus developers are engaged in active development on one of the project repositories located at /usr/src/kodekloudrepos/media. During testing, several test branches were created, and now they require cleanup. Here are the requirements provided to the DevOps team:
+
+
+
+On the Storage server in Stratos DC, delete a branch named xfusioncorp_media from the /usr/src/kodekloudrepos/media Git repository.
+
+SOLUTION:
+
+Complete Safe Approach:
+bash
+ssh natasha@ststor01
+cd /usr/src/kodekloudrepos/media
+
+# Switch to master/main branch first to ensure we're not on the branch to be deleted
+git checkout master
+
+# Delete the branch
+git branch -d xfusioncorp_media
+
+# If above fails with "not fully merged" warning, use force delete
+git branch -D xfusioncorp_media
+
+# Verify
+git branch -a
+Expected Output:
+Before deletion:
+
+text
+* master
+  xfusioncorp_media
+  other-branches...
+After deletion:
+
+text
+* master
+  other-branches...
+The xfusioncorp_media branch should no longer appear in the branch list.
+
+Important Notes:
+Make sure you're not currently checked out to the branch you want to delete
+
+Use -d for safe delete (checks if merged)
+
+Use -D for force delete (bypasses merge checks)
+
+If the branch exists on remote, you may need to delete it from both local and remote
+
+This will successfully clean up the test branch as required by the Nautilus development team.
+
+
+
