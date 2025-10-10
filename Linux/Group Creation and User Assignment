@@ -1,0 +1,137 @@
+
+
+
+
+SOLUTION:
+
+Method 1: Individual Server Configuration
+For stapp01:
+bash
+ssh tony@stapp01
+
+# Create the group
+sudo groupadd nautilus_admin_users
+
+# Check if user rajesh exists, if not create it
+id rajesh || sudo useradd rajesh
+
+# Add rajesh to the group
+sudo usermod -aG nautilus_admin_users rajesh
+
+# Verify
+id rajesh
+groups rajesh
+For stapp02:
+bash
+ssh steve@stapp02
+
+# Create the group
+sudo groupadd nautilus_admin_users
+
+# Check if user rajesh exists, if not create it
+id rajesh || sudo useradd rajesh
+
+# Add rajesh to the group
+sudo usermod -aG nautilus_admin_users rajesh
+
+# Verify
+id rajesh
+groups rajesh
+For stapp03:
+bash
+ssh banner@stapp03
+
+# Create the group
+sudo groupadd nautilus_admin_users
+
+# Check if user rajesh exists, if not create it
+id rajesh || sudo useradd rajesh
+
+# Add rajesh to the group
+sudo usermod -aG nautilus_admin_users rajesh
+
+# Verify
+id rajesh
+groups rajesh
+Method 2: Using a Script (More Efficient)
+Create a script to run on all servers:
+
+bash
+#!/bin/bash
+
+# Create group
+sudo groupadd nautilus_admin_users
+
+# Create user if doesn't exist and add to group
+if id "rajesh" &>/dev/null; then
+    echo "User rajesh exists, adding to group"
+    sudo usermod -aG nautilus_admin_users rajesh
+else
+    echo "Creating user rajesh and adding to group"
+    sudo useradd -G nautilus_admin_users rajesh
+fi
+
+# Verification
+echo "Verification:"
+id rajesh
+groups rajesh
+Method 3: One-liner for each server
+stapp01:
+bash
+ssh tony@stapp01 'sudo groupadd nautilus_admin_users; id rajesh || sudo useradd rajesh; sudo usermod -aG nautilus_admin_users rajesh; id rajesh'
+stapp02:
+bash
+ssh steve@stapp02 'sudo groupadd nautilus_admin_users; id rajesh || sudo useradd rajesh; sudo usermod -aG nautilus_admin_users rajesh; id rajesh'
+stapp03:
+bash
+ssh banner@stapp03 'sudo groupadd nautilus_admin_users; id rajesh || sudo useradd rajesh; sudo usermod -aG nautilus_admin_users rajesh; id rajesh'
+Verification Commands:
+After executing on each server, verify with these commands:
+
+bash
+# Check if group exists
+getent group nautilus_admin_users
+
+# Check user details and group membership
+id rajesh
+groups rajesh
+
+# Verify user is in the group
+getent group nautilus_admin_users | grep rajesh
+Expected Output:
+The verification should show:
+
+Group nautilus_admin_users exists with GID
+
+User rajesh exists and is member of nautilus_admin_users group
+
+The groups line for rajesh should include nautilus_admin_users
+
+Complete Solution Sequence:
+Start with stapp01:
+
+bash
+ssh tony@stapp01
+sudo groupadd nautilus_admin_users
+id rajesh || sudo useradd rajesh
+sudo usermod -aG nautilus_admin_users rajesh
+id rajesh
+Move to stapp02:
+
+bash
+ssh steve@stapp02  
+sudo groupadd nautilus_admin_users
+id rajesh || sudo useradd rajesh
+sudo usermod -aG nautilus_admin_users rajesh
+id rajesh
+Finish with stapp03:
+
+bash
+ssh banner@stapp03
+sudo groupadd nautilus_admin_users
+id rajesh || sudo useradd rajesh
+sudo usermod -aG nautilus_admin_users rajesh
+id rajesh
+This approach ensures that the nautilus_admin_users group is 
+created and user rajesh is added to it across all three 
+App servers in the Stratos Datacenter.
