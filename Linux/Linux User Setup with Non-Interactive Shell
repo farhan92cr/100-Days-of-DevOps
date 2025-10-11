@@ -8,4 +8,97 @@ Create a user named siva with a non-interactive shell on App Server 1.
 
 
 SOlUTION:
+Understanding Non-Interactive Shell
+A non-interactive shell is typically used for system accounts that don't need login capabilities. Common non-interactive shells include:
+
+/bin/false
+
+/sbin/nologin
+
+/usr/sbin/nologin
+
+Step-by-Step Solution:
+Step 1: Connect to stapp01 server
+bash
+ssh tony@stapp01
+Password: Ir0nM@n
+
+Step 2: Create the user with non-interactive shell
+You have a few options for creating the user:
+
+Option A: Using /bin/false (completely non-interactive)
+bash
+sudo useradd -s /bin/false siva
+Option B: Using /sbin/nologin (shows custom message when login attempted)
+bash
+sudo useradd -s /sbin/nologin siva
+Option C: Using /usr/sbin/nologin (similar to above)
+bash
+sudo useradd -s /usr/sbin/nologin siva
+Step 3: Verify the user creation
+bash
+# Check user details
+id siva
+
+# Verify the shell assignment
+grep siva /etc/passwd
+Step 4: Test the non-interactive shell (optional verification)
+bash
+# Try switching to the user (this should fail)
+sudo su - siva
+
+# Or test the shell directly
+sudo -u siva /bin/false
+echo $?
+Complete Command Sequence:
+bash
+# Connect to the server
+ssh tony@stapp01
+
+# Create user with non-interactive shell (choose one method)
+sudo useradd -s /bin/false siva
+
+# Verify the creation
+id siva
+grep siva /etc/passwd
+Expected Output:
+The verification commands should show:
+
+For id siva:
+
+text
+uid=1002(siva) gid=1002(siva) groups=1002(siva)
+For grep siva /etc/passwd:
+
+text
+siva:x:1002:1002::/home/siva:/bin/false
+(Note: The UID/GID numbers may vary)
+
+Additional Considerations:
+If you want to set a password (optional):
+bash
+sudo passwd siva
+If you need to modify an existing user:
+bash
+sudo usermod -s /bin/false siva
+To check available shells:
+bash
+cat /etc/shells
+Why Use Non-Interactive Shells?
+Security: Prevents unauthorized login access
+
+System Accounts: Ideal for service/application accounts
+
+Backup Agents: Common requirement for backup software service accounts
+
+Resource Management: Reduces system resource usage
+
+Recommended Approach:
+For backup agent tools, /sbin/nologin or /bin/false are both appropriate choices. /sbin/nologin is often preferred as it provides a polite message when login is attempted, while /bin/false simply exits without any message.
+
+The user siva is now created with a non-interactive shell, making it suitable for the backup agent tool's requirements on App Server 1.
+
+
+
+
 
