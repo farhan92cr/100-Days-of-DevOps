@@ -9,3 +9,34 @@ Note: You can find the infrastructure details by clicking on the Details of all 
 
 
 SOLUTION:
+Step-by-Step Solution:
+Step 1: Connect to stapp01 server
+bash
+ssh tony@stapp01
+Password: Ir0nM@n
+
+Step 2: Create the user without home directory
+bash
+sudo useradd -M john
+The -M flag tells useradd NOT to create a home directory for the user.
+
+Step 3: Verify the user creation
+bash
+# Check user details
+id john
+
+# Verify no home directory was created
+sudo ls -la /home/ | grep john
+
+# Check the user entry in /etc/passwd
+grep john /etc/passwd
+Step 4: Additional verification (check home directory status)
+bash
+# Check what the passwd file shows as home directory
+getent passwd john | cut -d: -f6
+
+# Try to navigate to the home directory (should fail)
+sudo -u john cd ~
+echo $?
+
+
