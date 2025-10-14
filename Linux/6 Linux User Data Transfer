@@ -5,3 +5,78 @@ Due to an accidental data mix-up, user data was unintentionally mingled on Nauti
 
 Locate all files (excluding directories) owned by user mark within the /home/usersdata directory on App Server 3. Copy these files while preserving the directory structure to the /blog directory.
 
+
+
+
+SOLUTION:
+Step 1: Connect to App Server 3
+First, SSH into App Server 3 in the Stratos Datacenter.
+
+Step 2: Find all files (not directories) owned by user mark
+Use the find command to locate all regular files owned by user mark:
+
+bash
+find /home/usersdata -type f -user mark
+This command:
+
+-type f - Only searches for files (excluding directories)
+
+-user mark - Filters for files owned by user mark
+
+Step 3: Copy files while preserving directory structure
+Use find with exec to copy files while maintaining the directory structure:
+
+bash
+sudo find /home/usersdata -type f -user mark -exec cp --parents {} /blog \;
+Alternative method using rsync (more efficient for multiple files):
+
+First, create a file list and then use rsync:
+
+bash
+# Create a list of files to copy
+sudo find /home/usersdata -type f -user mark > /tmp/mark_files.txt
+
+# Use rsync to copy with directory structure preservation
+sudo rsync -av --files-from=/tmp/mark_files.txt / /blog/
+Or using tar for better structure preservation:
+
+bash
+sudo find /home/usersdata -type f -user mark -print0 | sudo tar -cf - --null -T - | (cd /blog && sudo tar -xf -)
+Step 4: Verify the copied files
+Check that the files were copied correctly to the /blog directory:
+
+bash
+# Verify the directory structure in /blog
+sudo find /blog -type f -user mark | head -10
+
+# Compare count of original vs copied files
+echo "Original files count:"
+sudo find /home/usersdata -type f -user mark | wc -l
+
+echo "Copied files count:"
+sudo find /blog -type f -user mark | wc -l
+Step 5: Check directory structure preservation
+Verify that the directory structure is maintained:
+
+bash
+# Example to check a few paths
+sudo ls -la /blog/home/usersdata/
+Complete One-Liner Solution
+The most straightforward command that accomplishes the task is:
+
+bash
+sudo find /home/usersdata -type f -user mark -exec cp --parents {} /blog \;
+This command:
+
+✅ Finds only files (not directories) owned by user mark
+
+✅ Uses cp --parents to preserve the full directory structure
+
+✅ Copies all matching files to /blog directory
+
+✅ Maintains original file ownership and permissions
+
+The files owned by user mark have now been successfully copied from /home/usersdata to /blog with the directory structure preserved.
+
+
+
