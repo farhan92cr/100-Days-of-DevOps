@@ -7,3 +7,115 @@ Your task is to disable direct SSH root login on all app servers within the Stra
 
 Solution:
 
+Step 1: Identify the App Servers
+First, determine which servers are the app servers in your Stratos Datacenter environment. Typically, these would be App Server 1, App Server 2, and App Server 3.
+
+Step 2: Connect to Each App Server
+SSH into each app server one by one.
+
+Step 3: Edit SSH Configuration
+On each app server, edit the SSH daemon configuration file:
+
+bash
+sudo vi /etc/ssh/sshd_config
+Step 4: Modify the Root Login Setting
+Locate the PermitRootLogin directive in the file. You may find it in one of these states:
+
+If it exists, change it to:
+
+bash
+PermitRootLogin no
+If it doesn't exist, add this line:
+
+bash
+PermitRootLogin no
+Also check for and modify/add these related settings:
+
+bash
+# Ensure these settings are configured securely
+PasswordAuthentication no    # Recommended: use key-based auth only
+PubkeyAuthentication yes     # Enable public key authentication
+Step 5: Save and Exit the File
+In vi: Press ESC, type :wq, then press Enter
+
+Step 6: Test SSH Configuration
+Before restarting the service, test the configuration for syntax errors:
+
+bash
+sudo sshd -t
+If no errors are shown, the configuration is valid.
+
+Step 7: Restart SSH Service
+Apply the changes by restarting the SSH service:
+
+bash
+sudo systemctl restart sshd
+For systems using different service names:
+
+bash
+# For CentOS/RHEL 7+ or Ubuntu 16.04+
+sudo systemctl restart sshd
+
+# For older systems
+sudo service sshd restart
+# or
+sudo service ssh restart
+Step 8: Verify the Configuration
+Verify that the change has been applied:
+
+bash
+sudo grep PermitRootLogin /etc/ssh/sshd_config
+This should return: PermitRootLogin no
+
+Step 9: Test SSH Access (Important!)
+Before closing your current SSH session, open a new terminal and test SSH access:
+
+bash
+# Test that you can still SSH as a regular user
+ssh your_username@app-server-ip
+
+# Test that root SSH is denied (this should fail)
+ssh root@app-server-ip
+Step 10: Repeat for All App Servers
+Repeat steps 2-9 for each app server in the Stratos Datacenter.
+
+Complete Example for One Server
+Here's the complete process for one app server:
+
+bash
+# Connect to the app server
+ssh tony@stapp01
+
+# Edit SSH config
+sudo vi /etc/ssh/sshd_config
+
+# Find and change PermitRootLogin to 'no'
+# Save and exit
+
+# Test config
+sudo sshd -t
+
+# Restart service
+sudo systemctl restart sshd
+
+# Verify setting
+sudo grep PermitRootLogin /etc/ssh/sshd_config
+Security Considerations
+Ensure you have at least one regular user with sudo privileges before disabling root SSH
+
+Use key-based authentication for regular users
+
+Keep your current SSH session open until you've verified you can still connect as a regular user
+
+Verification Command
+After implementing on all servers, you can verify with:
+
+bash
+# Check status on multiple servers
+for server in stapp01 stapp02 stapp03; do
+    echo "=== $server ==="
+    ssh $server "sudo grep PermitRootLogin /etc/ssh/sshd_config"
+done
+This security measure will now prevent direct root SSH login on all app servers, requiring users to first authenticate as regular users and then use sudo for administrative tasks.
+
+
