@@ -1,0 +1,126 @@
+lab 8 linux:
+Within the Stratos DC, the Nautilus storage server hosts a directory named /data, serving as a repository for various developers non-confidential data. Developer ravi has requested a copy of their data stored in /data/ravi. The System Admin team has provided the following steps to fulfill this request:
+
+
+
+a. Create a compressed archive named ravi.tar.gz of the /data/ravi directory.
+
+b. Transfer the archive to the /home directory on the Storage Server.
+
+
+SOLUTION:
+Step 1: Connect to the Storage Server
+First, SSH into the Storage Server in the Stratos Datacenter.
+
+Step 2: Verify the Source Directory
+Check that the /data/ravi directory exists:
+
+bash
+ls -la /data/ravi/
+Step 3: Create the Compressed Archive
+Create a tar.gz archive of the /data/ravi directory:
+
+bash
+sudo tar -czf /tmp/ravi.tar.gz -C /data ravi
+Command breakdown:
+
+tar - Archive utility
+
+-c - Create new archive
+
+-z - Compress with gzip
+
+-f /tmp/ravi.tar.gz - Output filename
+
+-C /data - Change to /data directory before processing
+
+ravi - Directory to archive
+
+Alternative method:
+
+bash
+sudo tar -czf /tmp/ravi.tar.gz /data/ravi
+Step 4: Verify the Archive
+Check that the archive was created successfully and contains the expected files:
+
+bash
+# Check archive size
+ls -lh /tmp/ravi.tar.gz
+
+# List contents without extracting
+tar -tzf /tmp/ravi.tar.gz | head -10
+Step 5: Transfer the Archive to /home
+Move the archive to the /home directory:
+
+bash
+sudo mv /tmp/ravi.tar.gz /home/
+Step 6: Set Appropriate Permissions
+Ensure the archive has proper permissions so it can be accessed:
+
+bash
+sudo chmod 644 /home/ravi.tar.gz
+Step 7: Final Verification
+Verify the archive is in the correct location and accessible:
+
+bash
+# Check location and permissions
+ls -lh /home/ravi.tar.gz
+
+# Verify archive integrity
+tar -tzf /home/ravi.tar.gz > /dev/null && echo "Archive is valid" || echo "Archive is corrupt"
+Complete One-Line Solution
+You can also accomplish this with a single command:
+
+bash
+sudo tar -czf /home/ravi.tar.gz -C /data ravi
+Step-by-Step Execution with Verification
+Here's the complete process with verification at each step:
+
+bash
+# 1. Connect to storage server
+ssh natasha@ststor01
+
+# 2. Check source directory
+sudo ls -la /data/ravi/
+
+# 3. Create archive
+sudo tar -czf /tmp/ravi.tar.gz -C /data ravi
+
+# 4. Verify archive creation
+sudo ls -lh /tmp/ravi.tar.gz
+
+# 5. Move to /home
+sudo mv /tmp/ravi.tar.gz /home/
+
+# 6. Set permissions
+sudo chmod 644 /home/ravi.tar.gz
+
+# 7. Final verification
+sudo ls -lh /home/ravi.tar.gz
+sudo tar -tzf /home/ravi.tar.gz | wc -l
+Expected Output
+After successful completion, you should see:
+
+A file named ravi.tar.gz in the /home directory
+
+The file should have reasonable permissions (644)
+
+The archive should contain all files from /data/ravi
+
+The archive should be readable and valid
+
+Troubleshooting
+If you encounter issues:
+
+Permission denied: Use sudo for all operations
+
+Directory not found: Verify /data/ravi exists
+
+Disk space issues: Check available space with df -h
+
+Archive corruption: Recreate the archive
+
+The compressed archive ravi.tar.gz has now been successfully created from /data/ravi and placed in the /home directory on the Storage Server, ready for developer ravi to access.
+
+
+
