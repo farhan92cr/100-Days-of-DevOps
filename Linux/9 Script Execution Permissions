@@ -1,0 +1,90 @@
+
+LAB 9:
+In a bid to automate backup processes, the xFusionCorp Industries sysadmin team has developed a new bash script named xfusioncorp.sh. While the script has been distributed to all necessary servers, it lacks executable permissions on App Server 3 within the Stratos Datacenter.
+
+
+
+Your task is to grant executable permissions to the /tmp/xfusioncorp.sh script on App Server 3. Additionally, ensure that all users have the capability to execute it.
+
+
+
+SOLUTION:
+Step 1: Connect to App Server 3
+SSH into App Server 3 in the Stratos Datacenter:
+
+bash
+ssh username@stapp03
+Step 2: Check Current Permissions
+First, verify the script exists and check its current permissions:
+
+bash
+ls -l /tmp/xfusioncorp.sh
+The output might look something like:
+
+text
+-rw-r--r-- 1 root root 0 date /tmp/xfusioncorp.sh
+This shows the script currently has read-write for owner, and read-only for group and others (no execute permissions).
+
+Step 3: Grant Executable Permissions to All Users
+Use the chmod command to add execute permissions for all users (owner, group, and others):
+
+bash
+sudo chmod a+x /tmp/xfusioncorp.sh
+Alternative methods that achieve the same result:
+
+bash
+# Method 2: Using numeric notation (recommended)
+sudo chmod 755 /tmp/xfusioncorp.sh
+
+# Method 3: Simple execute permission for all
+sudo chmod +x /tmp/xfusioncorp.sh
+Step 4: Verify the New Permissions
+Check that the permissions have been applied correctly:
+
+bash
+ls -l /tmp/xfusioncorp.sh
+Expected Output After Permission Change
+You should now see:
+
+text
+-rwxr-xr-x 1 root root 0 date /tmp/xfusioncorp.sh
+Permission breakdown:
+
+rwx - Owner can read, write, and execute
+
+r-x - Group can read and execute
+
+r-x - Others can read and execute
+
+Step 5: Test Script Execution (Optional)
+Verify that the script can be executed:
+
+bash
+# Test running the script
+/tmp/xfusioncorp.sh
+Complete One-Line Solution
+The entire task can be completed with this single command:
+
+bash
+sudo chmod 755 /tmp/xfusioncorp.sh
+Verification
+To thoroughly verify the setup:
+
+bash
+# Check detailed permissions
+ls -l /tmp/xfusioncorp.sh
+
+# Verify with different methods
+stat /tmp/xfusioncorp.sh | grep -i access
+getfacl /tmp/xfusioncorp.sh 2>/dev/null || ls -l /tmp/xfusioncorp.sh
+Important Notes
+Use sudo since the script is likely owned by root
+
+chmod 755 is the standard permission for executable scripts
+
+The script must have a proper shebang line (like #!/bin/bash) at the top to execute correctly
+
+All users can now execute this script regardless of their privilege level
+
+The /tmp/xfusioncorp.sh script now has executable permissions and can be run by any user on App Server 3, enabling the automated backup processes for xFusionCorp Industries.
+
