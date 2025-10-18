@@ -1,0 +1,107 @@
+After conducting a security audit within the Stratos DC, the Nautilus security team discovered misconfigured permissions on critical files. To address this, corrective actions are being taken by the production support team. Specifically, the file named /etc/hostname on Nautilus App 1 server requires adjustments to its Access Control Lists (ACLs) as follows:
+
+
+
+1. The file's user owner and group owner should be set to root.
+
+2. Others should possess read only permissions on the file.
+
+3. User siva must not have any permissions on the file.
+
+4. User eric should be granted read only permission on the file.
+
+
+SOLUTION:
+Step 1: Connect to App Server 1
+ssh username@stapp01
+
+
+Step 2: Apply the Correct ACL Settings
+Run these commands to properly restrict access for user siva:
+
+# Set ownership to root:root
+sudo chown root:root /etc/hostname
+
+# Set base permissions
+sudo chmod 644 /etc/hostname
+
+# Remove any existing ACL entries for siva
+sudo setfacl -x u:siva /etc/hostname 2>/dev/null
+
+# Explicitly deny all permissions for user siva
+sudo setfacl -m u:siva:--- /etc/hostname
+
+# Grant read-only permission for user eric
+sudo setfacl -m u:eric:r-- /etc/hostname
+
+
+Step 3: Verify the Changes
+# Check the ACL settings
+getfacl /etc/hostname
+
+# Test user siva access (should be denied)
+sudo -u siva cat /etc/hostname
+
+# Test user eric access (should work)
+sudo -u eric cat /etc/hostname
+Expected ACL Output
+The getfacl /etc/hostname should now show:
+
+text
+# file: etc/hostname
+# owner: root
+# group: root
+user::rw-
+user:eric:r--
+user:siva:---
+group::r--
+mask::r--
+other::r--
+Complete Verification
+Run this comprehensive verification:
+
+bash
+echo "=== FINAL VERIFICATION ==="
+echo "1. Ownership: $(stat -c %U:%G /etc/hostname)"
+echo "2. Permissions: $(stat -c %A /etc/hostname)"
+echo "3. ACL entries:"
+getfacl /etc/hostname | grep -E "^(user:|group:|other:)"
+
+echo "4. User siva access test:"
+sudo -u siva cat /etc/hostname 2>&1 | head -1
+echo "5. User eric access test:"
+sudo -u eric cat /etc/hostname 2>&1 | head -1
+The key change is using sudo setfacl -m u:siva:--- /etc/hostname to explicitly deny all permissions for user siva instead of just removing the ACL entry. This ensures that even if siva is part of a group that has access, they will be explicitly denied.
+
+Try this solution and run the verification again. User siva should now get a "Permission denied" error when trying to access the file.
+
+
+✅ All Requirements Verified:
+✅ File ownership set to root:root - Owner: root:root
+
+✅ Others have read-only permissions - Permissions: -rw-r--r-- (others have r--)
+
+✅ User siva has no permissions - user:siva:--- and access test shows "Permission denied"
+
+✅ User eric has read-only permission - user:eric:r-- and access test shows he can read the file content
+
+Final Status:
+User siva: ❌ No access (explicitly denied - "Permission denied")
+
+User eric: ✅ Read-only access (can read file content: "stapp01.stratos.xfusioncorp.com")
+
+Ownership: ✅ root:root
+
+Base permissions: ✅ 644 (rw-r--r--)
+
+The ACL settings are correctly configured as shown in the output:
+
+text
+user::rw-
+user:siva:---  # No permissions for siva
+user:eric:r--  # Read-only for eric
+group::r--
+other::r--
+The lab task has been completed successfully! You can now submit the lab. The /etc/hostname file on App Server 1 now has the proper ownership, permissions, and ACL settings as required by the security audit.
+
+
