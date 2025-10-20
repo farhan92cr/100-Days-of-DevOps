@@ -1,0 +1,110 @@
+
+11 String Replacement:
+Within the Stratos DC, the backup server holds template XML files crucial for the Nautilus application. Before utilization, these files require valid data insertion. As part of routine maintenance, system admins at xFusionCorp Industries employ string and file manipulation commands.
+
+
+
+Your task is to substitute all occurrences of the string Text with Cloud within the XML file located at /root/nautilus.xml on the backup server.
+
+
+SOLUTION:
+Step 1: Connect to the Backup Server
+SSH into the backup server in the Stratos Datacenter:
+
+bash
+ssh username@stbkp01
+Step 2: Verify the File
+First, check the file exists and view its current content:
+
+bash
+sudo ls -l /root/nautilus.xml
+sudo cat /root/nautilus.xml
+Step 3: Replace "Text" with "Cloud"
+Use the sed command to perform the string replacement:
+
+bash
+sudo sed -i 's/Text/Cloud/g' /root/nautilus.xml
+Command breakdown:
+
+sudo - Run with root privileges (file is in /root)
+
+sed - Stream editor for text manipulation
+
+-i - Edit file in-place (modify the original file)
+
+s/Text/Cloud/ - Substitute "Text" with "Cloud"
+
+g - Global replacement (all occurrences in each line)
+
+/root/nautilus.xml - Target file
+
+Step 4: Verify the Changes
+Check that the replacements were made correctly:
+
+bash
+# View the modified file
+sudo cat /root/nautilus.xml
+
+# Or check for occurrences of "Text" (should find none)
+sudo grep "Text" /root/nautilus.xml
+
+# Check for "Cloud" (should find replacements)
+sudo grep "Cloud" /root/nautilus.xml
+Alternative Methods
+If you prefer other approaches:
+
+Using perl:
+
+bash
+sudo perl -pi -e 's/Text/Cloud/g' /root/nautilus.xml
+Using awk:
+
+bash
+sudo awk '{gsub(/Text/, "Cloud"); print}' /root/nautilus.xml > /tmp/temp.xml && sudo mv /tmp/temp.xml /root/nautilus.xml
+Complete Solution
+Here's the complete set of commands:
+
+bash
+# Connect to backup server
+ssh your_user@stbkp01
+
+# Verify original file
+sudo cat /root/nautilus.xml | head -10
+
+# Perform the replacement
+sudo sed -i 's/Text/Cloud/g' /root/nautilus.xml
+
+# Verify changes
+sudo cat /root/nautilus.xml | head -10
+echo "=== Checking for 'Text' (should be empty) ==="
+sudo grep "Text" /root/nautilus.xml
+echo "=== Checking for 'Cloud' (should show results) ==="
+sudo grep "Cloud" /root/nautilus.xml | head -5
+Example Before and After
+Before:
+
+xml
+<config>
+  <server>Text Server</server>
+  <database>Text Database</database>
+  <application>Text App</application>
+</config>
+After:
+
+xml
+<config>
+  <server>Cloud Server</server>
+  <database>Cloud Database</database>
+  <application>Cloud App</application>
+</config>
+Important Notes
+The -i flag directly modifies the file - use carefully!
+
+The g flag ensures ALL occurrences on each line are replaced
+
+We use sudo because the file is in the /root directory
+
+Always verify the changes after replacement
+
+The replacement is now complete! All occurrences of "Text" have been changed to "Cloud" in the /root/nautilus.xml file on the backup server.
+
