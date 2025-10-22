@@ -1,0 +1,134 @@
+lab 13:
+In alignment with security compliance standards, the Nautilus project team has opted to impose restrictions on crontab access. Specifically, only designated users will be permitted to create or update cron jobs.
+
+
+
+Configure crontab access on App Server 3 as follows: Allow crontab access to yousuf user while denying access to the jerome user.
+
+SOLUTION:
+Step 1: Connect to App Server 3
+SSH into App Server 3 in the Stratos Datacenter:
+
+bash
+ssh username@stapp03
+Step 2: Check Current Crontab Access Configuration
+First, check if there are any existing crontab access controls:
+
+bash
+sudo ls -la /etc/cron.allow /etc/cron.deny 2>/dev/null
+Step 3: Create or Update Allow/Deny Files
+We'll use the cron allow/deny mechanism to control access:
+
+Option A: Using cron.allow (Recommended)
+bash
+# Create or update cron.allow file
+sudo echo "yousuf" > /etc/cron.allow
+
+# Ensure jerome is not in the allow file
+sudo grep -v "jerome" /etc/cron.allow | sudo tee /etc/cron.allow > /dev/null
+
+# Remove cron.deny file if it exists (allow takes precedence)
+sudo rm -f /etc/cron.deny
+Option B: Using Both Allow and Deny Files
+bash
+# Allow yousuf
+sudo echo "yousuf" > /etc/cron.allow
+
+# Deny jerome
+sudo echo "jerome" > /etc/cron.deny
+Step 4: Set Proper Permissions
+Set the correct permissions for the control files:
+
+bash
+sudo chmod 600 /etc/cron.allow
+sudo chown root:root /etc/cron.allow
+Step 5: Verify the Configuration
+Check that the configuration is correct:
+
+bash
+echo "=== cron.allow contents ==="
+sudo cat /etc/cron.allow
+
+echo "=== Verification ==="
+sudo ls -l /etc/cron.allow /etc/cron.deny 2>/dev/null
+Complete Solution Script
+Here's the complete set of commands:
+
+bash
+# Connect to App Server 3
+ssh your_user@stapp03
+
+# Create cron.allow with yousuf
+sudo bash -c 'echo "yousuf" > /etc/cron.allow'
+
+# Remove cron.deny to use allow list only
+sudo rm -f /etc/cron.deny
+
+# Set proper permissions
+sudo chmod 600 /etc/cron.allow
+sudo chown root:root /etc/cron.allow
+
+# Verify configuration
+echo "=== Final Configuration ==="
+sudo cat /etc/cron.allow
+sudo ls -l /etc/cron.allow
+Testing the Configuration
+To test if the configuration works:
+
+bash
+# Test yousuf user (should work)
+sudo -u yousuf crontab -l
+# or
+sudo -u yousuf crontab -e
+
+# Test jerome user (should be denied)
+sudo -u jerome crontab -l
+How Cron Access Control Works
+If /etc/cron.allow exists: ONLY users listed in this file can use crontab
+
+If /etc/cron.allow doesn't exist but /etc/cron.deny exists: All users EXCEPT those in deny file can use crontab
+
+If neither file exists: Depends on system configuration (usually only root or all users)
+
+Alternative Method Using Only cron.deny
+If you prefer to use only the deny approach:
+
+bash
+# Remove any existing allow file
+sudo rm -f /etc/cron.allow
+
+# Add jerome to deny list
+sudo echo "jerome" > /etc/cron.deny
+
+# Set permissions
+sudo chmod 600 /etc/cron.deny
+sudo chown root:root /etc/cron.deny
+Verification Commands
+Run these commands to thoroughly verify the setup:
+
+bash
+echo "=== Comprehensive Verification ==="
+echo "1. cron.allow contents: $(sudo cat /etc/cron.allow 2>/dev/null || echo 'File not found')"
+echo "2. cron.deny contents: $(sudo cat /etc/cron.deny 2>/dev/null || echo 'File not found')"
+echo "3. Testing yousuf access:"
+sudo -u yousuf crontab -l 2>&1 | head -1
+echo "4. Testing jerome access:"
+sudo -u jerome crontab -l 2>&1 | head -1
+Expected Results
+User yousuf: Should be able to access crontab (may show "no crontab" message)
+
+User jerome: Should see "You (jerome) are not allowed to use this program" or similar error
+
+Important Notes
+The cron allow/deny files only contain usernames (one per line)
+
+cron.allow takes precedence over cron.deny
+
+Using only cron.allow is more secure as it's a whitelist approach
+
+Always verify both users to ensure the configuration works as expected
+
+The crontab access has now been configured on App Server 3: yousuf can create/update cron jobs, while jerome is denied access.
+
+
+
