@@ -6,3 +6,139 @@ Adjust the default runlevel on all App servers in Stratos Datacenter to enable G
 
 
 SOLUTION:
+Step 1: Identify the App Servers
+First, identify all App servers in the Stratos Datacenter (typically App Server 1, 2, and 3).
+
+Step 2: Check Current Runlevel on Each Server
+Connect to each app server and check the current runlevel and default target:
+
+For App Server 1:
+bash
+ssh username@stapp01
+systemctl get-default
+runlevel
+For App Server 2:
+bash
+ssh username@stapp02
+systemctl get-default
+runlevel
+For App Server 3:
+bash
+ssh username@stapp03
+systemctl get-default
+runlevel
+Step 3: Set GUI Runlevel (graphical.target)
+On each app server, set the default target to graphical:
+
+For App Server 1:
+bash
+ssh username@stapp01
+sudo systemctl set-default graphical.target
+For App Server 2:
+bash
+ssh username@stapp02
+sudo systemctl set-default graphical.target
+For App Server 3:
+bash
+ssh username@stapp03
+sudo systemctl set-default graphical.target
+Step 4: Verify the Changes
+Verify that the default runlevel has been changed to graphical on each server:
+
+For App Server 1:
+bash
+ssh username@stapp01
+systemctl get-default
+For App Server 2:
+bash
+ssh username@stapp02
+systemctl get-default
+For App Server 3:
+bash
+ssh username@stapp03
+systemctl get-default
+Complete Solution Script
+Here's a complete script to run on all three app servers:
+
+bash
+#!/bin/bash
+
+# Array of app servers
+servers=("stapp01" "stapp02" "stapp03")
+
+for server in "${servers[@]}"; do
+    echo "=== Configuring $server ==="
+    
+    # Set default to graphical target
+    ssh username@$server "sudo systemctl set-default graphical.target"
+    
+    # Verify the change
+    ssh username@$server "echo 'Current default on $server:'; systemctl get-default"
+    
+    echo "=== $server completed ==="
+    echo
+done
+Alternative Method (Using symlink)
+If systemctl isn't available, you can use the symlink method:
+
+bash
+# Remove existing symlink and create new one
+sudo rm -f /etc/systemd/system/default.target
+sudo ln -sf /usr/lib/systemd/system/graphical.target /etc/systemd/system/default.target
+Runlevel Equivalents
+graphical.target = Runlevel 5 (GUI with network)
+
+multi-user.target = Runlevel 3 (Text mode with network)
+
+rescue.target = Runlevel 1 (Single user/maintenance)
+
+Verification Commands
+To thoroughly verify without rebooting:
+
+bash
+# Check current default target
+systemctl get-default
+
+# Check what the graphical target requires
+systemctl show graphical.target -p Requires,Wants
+
+# Check if display manager is available (for GUI)
+systemctl status gdm || systemctl status lightdm || systemctl status sddm
+
+# List available targets
+systemctl list-unit-files --type=target | grep target
+One-Line Command for All Servers
+You can also use this one-liner to configure all servers at once:
+
+bash
+for server in stapp01 stapp02 stapp03; do
+    echo "Setting graphical target on $server"
+    ssh username@$server "sudo systemctl set-default graphical.target && systemctl get-default"
+done
+Expected Output
+After running the commands, you should see:
+
+text
+graphical.target
+on each server when you run systemctl get-default.
+
+Important Notes
+No reboot required: The systemctl set-default command changes the default for the NEXT boot without affecting the current session
+
+Current session unaffected: The servers will continue running in their current runlevel until the next reboot
+
+GUI services: The graphical target typically starts services like display managers (GDM, LightDM, SDDM)
+
+Verification: Use systemctl get-default to confirm the change without rebooting
+
+Final Verification
+Run this comprehensive verification:
+
+bash
+for server in stapp01 stapp02 stapp03; do
+    echo "=== $server ==="
+    ssh username@$server "systemctl get-default && echo 'GUI boot enabled successfully'"
+    echo
+done
+The default runlevel has now been set to GUI (graphical.target) on all App servers in the Stratos Datacenter. The changes will take effect on the next boot, but no reboot has been performed as required.
+
