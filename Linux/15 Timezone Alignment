@@ -1,2 +1,159 @@
 15 Timezone Alignment:
 
+
+
+SOLUTION:
+
+Step 1: Identify the App Servers
+The Nautilus Application Servers are typically App Server 1, 2, and 3 in Stratos Datacenter.
+
+Step 2: Check Current Timezone on Each Server
+First, let's check the current timezone configuration on each server:
+
+For App Server 1:
+bash
+ssh username@stapp01
+timedatectl
+ls -la /etc/localtime
+cat /etc/timezone
+For App Server 2:
+bash
+ssh username@stapp02
+timedatectl
+For App Server 3:
+bash
+ssh username@stapp03
+timedatectl
+Step 3: Set Timezone to Asia/Manila on Each Server
+Use timedatectl to set the timezone on each server:
+
+For App Server 1:
+bash
+ssh username@stapp01
+sudo timedatectl set-timezone Asia/Manila
+For App Server 2:
+bash
+ssh username@stapp02
+sudo timedatectl set-timezone Asia/Manila
+For App Server 3:
+bash
+ssh username@stapp03
+sudo timedatectl set-timezone Asia/Manila
+Step 4: Verify the Changes
+Verify that the timezone has been successfully set to Asia/Manila on each server:
+
+For App Server 1:
+bash
+ssh username@stapp01
+timedatectl | grep "Time zone"
+For App Server 2:
+bash
+ssh username@stapp02
+timedatectl | grep "Time zone"
+For App Server 3:
+bash
+ssh username@stapp03
+timedatectl | grep "Time zone"
+Complete Solution Script
+Here's a complete script to configure all three app servers:
+
+bash
+#!/bin/bash
+
+# Array of app servers
+servers=("stapp01" "stapp02" "stapp03")
+
+for server in "${servers[@]}"; do
+    echo "=== Configuring timezone on $server ==="
+    
+    # Set timezone to Asia/Manila
+    ssh username@$server "sudo timedatectl set-timezone Asia/Manila"
+    
+    # Verify the change
+    ssh username@$server "echo 'Timezone on $server:'; timedatectl | grep 'Time zone'"
+    
+    echo "=== $server completed ==="
+    echo
+done
+Alternative Methods
+If timedatectl is not available, use these alternative methods:
+
+Method 2: Using symlink
+bash
+# Remove existing localtime symlink
+sudo rm -f /etc/localtime
+
+# Create new symlink to Asia/Manila timezone
+sudo ln -sf /usr/share/zoneinfo/Asia/Manila /etc/localtime
+
+# Update timezone file (on Debian/Ubuntu systems)
+echo "Asia/Manila" | sudo tee /etc/timezone
+Method 3: Using tzdata
+bash
+# On some systems, you can use tzdata
+sudo dpkg-reconfigure tzdata
+# Then select Asia -> Manila
+One-Line Command for All Servers
+You can use this one-liner to configure all servers at once:
+
+bash
+for server in stapp01 stapp02 stapp03; do
+    echo "Setting Asia/Manila timezone on $server"
+    ssh username@$server "sudo timedatectl set-timezone Asia/Manila && timedatectl | grep 'Time zone'"
+done
+Verification Commands
+To thoroughly verify the timezone configuration:
+
+bash
+# Check current timezone and time
+timedatectl
+
+# Check the timezone file
+ls -la /etc/localtime
+
+# Check timezone content (on Debian/Ubuntu)
+cat /etc/timezone
+
+# Display current time with timezone
+date
+Expected Output
+After successful configuration, you should see:
+
+text
+Time zone: Asia/Manila (PST, +0800)
+When you run timedatectl | grep "Time zone" on each server.
+
+Additional Time Synchronization (Optional)
+To ensure time is also synchronized, you can check and configure NTP:
+
+bash
+# Check NTP status
+timedatectl | grep "NTP enabled"
+
+# Enable NTP if not enabled
+sudo timedatectl set-ntp true
+
+# Check time synchronization
+timedatectl show-timesync -a
+Complete Verification Script
+Run this comprehensive verification on all servers:
+
+bash
+for server in stapp01 stapp02 stapp03; do
+    echo "=== $server Timezone Verification ==="
+    ssh username@$server "timedatectl | grep -E 'Time zone|Local time' && date && echo '---'"
+    echo
+done
+Important Notes
+No reboot required: Timezone changes take effect immediately
+
+Existing processes: Some running processes may need to be restarted to pick up the new timezone
+
+Sudo privileges: Required to change system timezone
+
+Time synchronization: Consider enabling NTP to keep time accurate across all servers
+
+The timezone has now been synchronized to Asia/Manila across all Nautilus Application Servers in the Stratos Datacenter. All servers should now display the correct local datacenter timezone.
+
+
+
