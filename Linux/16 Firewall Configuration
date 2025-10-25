@@ -1,0 +1,139 @@
+The Nautilus system admins team has rolled out a web UI application for their backup utility on the Nautilus backup server within the Stratos Datacenter. This application operates on port 8085, and firewalld is active on the server. To meet operational needs, the following requirements have been identified:
+
+
+
+Allow all incoming connections on port 8085/tcp. Ensure the zone is set to public.
+
+SOLUTION:
+Step 1: Connect to the Backup Server
+SSH into the backup server (stbkp01):
+
+bash
+ssh clint@stbkp01
+Password: H@wk3y3
+
+Step 2: Check Current Firewall Status
+First, check the current firewall status and active zones:
+
+bash
+sudo firewall-cmd --state
+sudo firewall-cmd --get-active-zones
+sudo firewall-cmd --list-all --zone=public
+Step 3: Add Port 8085/tcp to Public Zone
+Allow incoming TCP connections on port 8085 in the public zone:
+
+bash
+sudo firewall-cmd --permanent --zone=public --add-port=8085/tcp
+Step 4: Reload Firewall Configuration
+Reload the firewall to apply the changes:
+
+bash
+sudo firewall-cmd --reload
+Step 5: Verify the Configuration
+Verify that port 8085 is now allowed in the public zone:
+
+bash
+sudo firewall-cmd --list-ports --zone=public
+sudo firewall-cmd --list-all --zone=public
+Complete Solution
+Here's the complete set of commands to run on the backup server:
+
+bash
+# Connect to backup server
+ssh clint@stbkp01
+
+# Check current firewall status
+echo "=== Current Firewall Status ==="
+sudo firewall-cmd --state
+sudo firewall-cmd --get-active-zones
+
+# Check current public zone configuration
+echo "=== Current Public Zone Configuration ==="
+sudo firewall-cmd --list-all --zone=public
+
+# Add port 8085/tcp to public zone permanently
+echo "=== Adding Port 8085/tcp to Public Zone ==="
+sudo firewall-cmd --permanent --zone=public --add-port=8085/tcp
+
+# Reload firewall to apply changes
+echo "=== Reloading Firewall ==="
+sudo firewall-cmd --reload
+
+# Verify the configuration
+echo "=== Final Verification ==="
+sudo firewall-cmd --list-ports --zone=public
+sudo firewall-cmd --list-all --zone=public
+
+# Check if the service is running on port 8085
+sudo ss -tlnp | grep 8085
+Expected Output After Configuration
+After running the commands, you should see:
+
+From sudo firewall-cmd --list-ports --zone=public:
+
+text
+8085/tcp
+From sudo firewall-cmd --list-all --zone=public:
+
+text
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: eth0
+  sources: 
+  services: ssh dhcpv6-client
+  ports: 8085/tcp
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules:
+Alternative Method (Using Rich Rules)
+If you need more specific control, you can use rich rules:
+
+bash
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" port port="8085" protocol="tcp" accept'
+sudo firewall-cmd --reload
+Verification Commands
+Run these additional verification commands:
+
+bash
+# Check if port is open in firewall
+sudo firewall-cmd --zone=public --query-port=8085/tcp
+
+# Check all open ports
+sudo firewall-cmd --list-all
+
+# Test from another server (from jump server or app server)
+telnet stbkp01 8085
+# or
+nc -zv stbkp01 8085
+One-Line Solution
+You can also accomplish this with a single command line:
+
+bash
+sudo firewall-cmd --permanent --zone=public --add-port=8085/tcp && sudo firewall-cmd --reload && sudo firewall-cmd --list-ports --zone=public
+Important Notes
+--permanent: Makes the rule persistent across reboots
+
+--zone=public: Specifies the public zone as required
+
+--reload: Applies the permanent rules without restarting the firewall service
+
+Port 8085/tcp: Specifically allows TCP traffic on port 8085
+
+No service restart needed: The reload command applies changes immediately
+
+Troubleshooting
+If you encounter issues:
+
+Firewall not running: sudo systemctl start firewalld
+
+Zone not public: sudo firewall-cmd --set-default-zone=public
+
+Rule not applied: Check if --permanent flag was used and firewall was reloaded
+
+The firewall on the Nautilus backup server (stbkp01) has now been configured to allow all incoming TCP connections on port 8085 in the public zone. The web UI application for the backup utility should now be accessible on port 8085.
+
+
