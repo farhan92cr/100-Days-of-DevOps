@@ -13,3 +13,141 @@ b. Set the hard limit to 2025
 
 SOLUTION:
 
+Step 1: Connect to the Storage Server
+SSH into the storage server (ststor01):
+
+bash
+ssh natasha@ststor01
+Password: Bl@kW
+
+Step 2: Check Current Limits
+First, check the current process limits for the nfsuser:
+
+bash
+sudo -u nfsuser ulimit -u
+sudo -u nfsuser ulimit -Hu
+sudo -u nfsuser ulimit -Su
+Step 3: Edit Limits Configuration
+Edit the limits configuration file to set the new process limits:
+
+bash
+sudo vi /etc/security/limits.conf
+Step 4: Add the Limit Configuration
+Add the following lines at the end of the file:
+
+text
+nfsuser soft nproc 1027
+nfsuser hard nproc 2025
+Step 5: Save and Exit
+In vi: Press ESC, type :wq, then press Enter
+
+Step 6: Verify the Configuration
+Check that the limits have been set correctly in the configuration file:
+
+bash
+sudo grep nfsuser /etc/security/limits.conf
+Complete Solution
+Here's the complete set of commands:
+
+bash
+# Connect to storage server
+ssh natasha@ststor01
+
+# Check current limits
+echo "=== Current Process Limits for nfsuser ==="
+sudo -u nfsuser ulimit -u
+sudo -u nfsuser ulimit -Hu
+sudo -u nfsuser ulimit -Su
+
+# Edit limits configuration
+sudo vi /etc/security/limits.conf
+
+# Add these lines to the file:
+# nfsuser soft nproc 1027
+# nfsuser hard nproc 2025
+
+# Verify the configuration
+echo "=== Verification of Limits Configuration ==="
+sudo grep nfsuser /etc/security/limits.conf
+
+# The changes will take effect on next login for nfsuser
+Alternative Method Using Echo
+You can also append the limits using echo commands:
+
+bash
+# Append the limits to the configuration file
+echo "nfsuser soft nproc 1027" | sudo tee -a /etc/security/limits.conf
+echo "nfsuser hard nproc 2025" | sudo tee -a /etc/security/limits.conf
+
+# Verify
+sudo tail -5 /etc/security/limits.conf
+Verification and Testing
+To test the new limits, you can:
+
+bash
+# Method 1: Login as nfsuser and check limits
+sudo su - nfsuser
+ulimit -Su  # Should show 1027 (soft limit)
+ulimit -Hu  # Should show 2025 (hard limit)
+exit
+
+# Method 2: Check without login
+sudo -u nfsuser bash -c 'echo "Soft limit: $(ulimit -Su); Hard limit: $(ulimit -Hu)"'
+One-Line Solution
+You can accomplish this with a single command:
+
+bash
+echo -e "nfsuser soft nproc 1027\nnfsuser hard nproc 2025" | sudo tee -a /etc/security/limits.conf
+Understanding the Limits
+Soft limit (1027): The current active limit that can be changed by the user up to the hard limit
+
+Hard limit (2025): The maximum limit that cannot be exceeded without root privileges
+
+nproc: Limits the number of processes a user can run
+
+Additional Configuration (Optional)
+For immediate effect on existing sessions, you might also want to configure systemd if the processes are managed by systemd services:
+
+bash
+# Edit systemd configuration if needed
+sudo systemctl edit --global --force --full nfsuser-processes
+Complete Verification Script
+Run this comprehensive verification:
+
+bash
+echo "=== Comprehensive Verification ==="
+echo "1. Limits configuration:"
+sudo grep nfsuser /etc/security/limits.conf
+
+echo "2. Current limits for nfsuser:"
+sudo -u nfsuser bash -c 'echo "Soft nproc: $(ulimit -Su)"'
+sudo -u nfsuser bash -c 'echo "Hard nproc: $(ulimit -Hu)"'
+
+echo "3. Testing with a new nfsuser session:"
+sudo -u nfsuser ulimit -Sa | grep "max user processes"
+sudo -u nfsuser ulimit -Ha | grep "max user processes"
+Important Notes
+Takes effect on next login: The user needs to log out and log back in for the changes to take effect
+
+Existing processes: Current running processes by nfsuser are not affected immediately
+
+System-wide vs user-specific: We're setting user-specific limits
+
+Root privileges required: Need sudo to edit system configuration files
+
+Expected Output
+After configuration, the verification should show:
+
+text
+nfsuser soft nproc 1027
+nfsuser hard nproc 2025
+And when checking limits as nfsuser:
+
+text
+Soft nproc: 1027
+Hard nproc: 2025
+The process limits for nfsuser have now been set to soft limit 1027 and hard limit 2025, which should help mitigate the performance degradation issues on the Storage server.
+
+
+
+
