@@ -23,24 +23,24 @@ SOLUTION::
 Step 1: Connect to App Server 1
 SSH into App Server 1:
 
-bash
+
 ssh tony@stapp01
 Password: Ir0nM@n
 
 Step 2: Check Current SELinux Status
 First, check if SELinux is already installed and its current status:
 
-bash
+
 sestatus
 getenforce
 Step 3: Install SELinux Packages
 Install the required SELinux packages:
 
-bash
+
 sudo yum install -y selinux-policy selinux-policy-targeted libselinux-utils policycoreutils
 For Ubuntu/Debian systems (if applicable):
 
-bash
+
 sudo apt-get update
 sudo apt-get install -y selinux-basics selinux-utils policycoreutils
 Step 4: Permanently Disable SELinux
@@ -111,7 +111,6 @@ sudo yum install -y selinux-policy selinux-policy-targeted libselinux-utils poli
 Verification Commands
 Run these verification commands to ensure everything is configured correctly:
 
-bash
 echo "=== Comprehensive Verification ==="
 
 # Check if packages are installed
