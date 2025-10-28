@@ -20,3 +20,155 @@ Disregard the current status of SELinux via the command line; the final status a
 SOLUTION::
 
 
+Step 1: Connect to App Server 1
+SSH into App Server 1:
+
+bash
+ssh tony@stapp01
+Password: Ir0nM@n
+
+Step 2: Check Current SELinux Status
+First, check if SELinux is already installed and its current status:
+
+bash
+sestatus
+getenforce
+Step 3: Install SELinux Packages
+Install the required SELinux packages:
+
+bash
+sudo yum install -y selinux-policy selinux-policy-targeted libselinux-utils policycoreutils
+For Ubuntu/Debian systems (if applicable):
+
+bash
+sudo apt-get update
+sudo apt-get install -y selinux-basics selinux-utils policycoreutils
+Step 4: Permanently Disable SELinux
+Edit the SELinux configuration file to disable it permanently:
+
+bash
+sudo vi /etc/selinux/config
+Change the line:
+
+bash
+SELINUX=disabled
+The file should look like:
+
+bash
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#     enforcing - SELinux security policy is enforced.
+#     permissive - SELinux prints warnings instead of enforcing.
+#     disabled - No SELinux policy is loaded.
+SELINUX=disabled
+# SELINUXTYPE= can take one of these three values:
+#     targeted - Targeted processes are protected,
+#     minimum - Modification of targeted policy. Only selected processes are protected. 
+#     mls - Multi Level Security protection.
+SELINUXTYPE=targeted
+Step 5: Verify the Configuration
+Check that the configuration has been set correctly:
+
+bash
+sudo grep SELINUX= /etc/selinux/config
+Complete Solution
+Here's the complete set of commands:
+
+bash
+# Connect to App Server 1
+ssh tony@stapp01
+
+# Check current SELinux status
+echo "=== Current SELinux Status ==="
+sestatus 2>/dev/null || echo "SELinux not installed or not running"
+
+# Install SELinux packages
+echo "=== Installing SELinux Packages ==="
+sudo yum install -y selinux-policy selinux-policy-targeted libselinux-utils policycoreutils
+
+# Permanently disable SELinux
+echo "=== Permanently Disabling SELinux ==="
+sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+
+# Verify the configuration
+echo "=== Verification ==="
+sudo grep ^SELINUX= /etc/selinux/config
+
+# Show current state vs configured state
+echo "=== Current State vs Configured State ==="
+echo "Current: $(getenforce 2>/dev/null || echo 'Not available')"
+echo "Configured for next boot: $(sudo grep ^SELINUX= /etc/selinux/config | cut -d= -f2)"
+Alternative Method Using sed
+You can also use sed to make the change directly:
+
+bash
+sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+One-Line Solution
+Complete the task with a single command line:
+
+bash
+sudo yum install -y selinux-policy selinux-policy-targeted libselinux-utils policycoreutils && sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config && echo "SELINUX=$(sudo grep ^SELINUX= /etc/selinux/config | cut -d= -f2)"
+Verification Commands
+Run these verification commands to ensure everything is configured correctly:
+
+bash
+echo "=== Comprehensive Verification ==="
+
+# Check if packages are installed
+echo "1. Installed packages:"
+rpm -qa | grep selinux
+
+# Check SELinux configuration
+echo "2. SELinux configuration:"
+sudo cat /etc/selinux/config | grep -v ^# | grep -v ^$
+
+# Show difference between current and next boot state
+echo "3. Status comparison:"
+echo "   Current state: $(getenforce 2>/dev/null || echo 'Not enforced')"
+echo "   Next boot state: $(sudo grep ^SELINUX= /etc/selinux/config | cut -d= -f2)"
+
+# Check if configuration file is properly set
+echo "4. Configuration file check:"
+if sudo grep -q "^SELINUX=disabled" /etc/selinux/config; then
+    echo "   ✓ SELinux will be disabled after reboot"
+else
+    echo "   ✗ SELinux configuration not set correctly"
+fi
+Important Notes
+No reboot required: The changes will take effect after the scheduled maintenance reboot
+
+Current status ignored: The current SELinux state doesn't matter as per requirements
+
+Permanent change: Editing /etc/selinux/config ensures the change persists after reboot
+
+Packages installed: Even though we're disabling SELinux, the packages are required for future use
+
+Expected Output
+After running the commands, you should see:
+
+From verification:
+
+text
+SELINUX=disabled
+From comprehensive verification:
+
+text
+✓ SELinux will be disabled after reboot
+SELinux States Explained
+Enforcing: SELinux is active and enforcing policies
+
+Permissive: SELinux logs violations but doesn't enforce policies
+
+Disabled: SELinux is completely turned off
+
+Additional Information
+If you need to temporarily set SELinux to permissive without reboot (for testing):
+
+bash
+# Temporary change (until reboot)
+sudo setenforce 0
+# But this is NOT required for this task
+The SELinux packages have been installed and SELinux has been permanently configured to be disabled. The changes will take effect after the scheduled maintenance reboot tonight, meeting all the requirements.
+
+
+
