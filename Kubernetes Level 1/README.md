@@ -517,3 +517,6 @@ replicas	Number of Pizzas	How many copies to keep running
 So while a Pod is like ordering one pizza for yourself, a Deployment is like setting up an automatic pizza subscription for your entire office! 🍕🚀
 
 
+
+
+
