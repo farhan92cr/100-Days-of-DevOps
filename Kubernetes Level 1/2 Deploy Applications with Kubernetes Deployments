@@ -96,7 +96,16 @@ NAME    READY   UP-TO-DATE   AVAILABLE   AGE
 httpd   1/1     1            1           30s
 This confirms your httpd deployment is running successfully with 1 Pod replica!
 
-Would you like me to explain any specific part in more detail?
+
+
+
+
+------------------------------------------------------
+-------------------------------------------
+---------------------------
+----------
+-
+
 
 Deployment - Real World Analogy 🍕🏢
 Think of a Deployment like ordering for an ENTIRE OFFICE instead of just one person:
