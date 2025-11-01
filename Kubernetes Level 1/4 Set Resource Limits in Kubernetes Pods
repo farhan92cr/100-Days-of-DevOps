@@ -11,3 +11,7 @@ Limits: Memory: 20Mi, CPU: 100m
 Note: The kubectl utility on jump_host is configured to operate with the Kubernetes cluster.
 
 
+
+SOlution:
+
+
