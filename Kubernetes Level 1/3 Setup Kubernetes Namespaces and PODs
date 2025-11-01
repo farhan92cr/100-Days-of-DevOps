@@ -13,3 +13,126 @@ like before please explain the question what it want what we will get after doin
 
 SOLUTION:
 
+Explanation of the Question
+This lab introduces Namespaces - a way to organize and isolate resources in Kubernetes.
+
+New Term Explained:
+Namespace:
+
+What: A virtual cluster inside your physical Kubernetes cluster
+
+Why use it: To separate environments (dev, staging, production) or teams (team-A, team-B)
+
+Real-world analogy: Like having different floors in an office building:
+
+Ground floor = Development team
+
+First floor = Testing team
+
+Second floor = Production team
+
+Benefits: Prevents naming conflicts, provides security boundaries, organizes resources
+
+What We're Doing:
+Create a namespace called dev (like creating a "development department")
+
+Deploy a pod inside that namespace (like putting a developer's desk in the dev department)
+
+What We'll Get:
+Isolated environment for development work
+
+Organized resources that won't interfere with other namespaces
+
+Ability to apply different policies to dev vs other environments
+
+Solution
+Method 1: Command Line (Quick)
+bash
+# Connect to jump_host
+ssh thor@jump_host
+
+# Create the namespace
+kubectl create namespace dev
+
+# Create the pod in the dev namespace
+kubectl run dev-nginx-pod --image=nginx:latest -n dev
+Method 2: YAML Files (Recommended)
+bash
+# Create namespace YAML
+cat > dev-namespace.yaml << EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+EOF
+
+# Create pod YAML for dev namespace
+cat > dev-nginx-pod.yaml << EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dev-nginx-pod
+  namespace: dev
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:latest
+EOF
+
+# Apply both
+kubectl apply -f dev-namespace.yaml
+kubectl apply -f dev-nginx-pod.yaml
+Verification Commands
+bash
+# Check namespaces
+kubectl get namespaces
+
+# Check pods in dev namespace specifically
+kubectl get pods -n dev
+
+# Check pods in ALL namespaces
+kubectl get pods --all-namespaces
+
+# Get detailed info about the pod in dev namespace
+kubectl describe pod dev-nginx-pod -n dev
+Real-World Analogy 🏢
+Think of Kubernetes Namespaces like different departments in a company:
+
+Default Namespace = "Main Office" 🏢
+bash
+kubectl get pods
+# Shows pods in default namespace (like seeing everyone in main office)
+Dev Namespace = "Development Department" 👨‍💻
+bash
+kubectl create namespace dev
+# Like creating a dedicated "Development Wing" in the building
+
+kubectl run dev-nginx-pod --image=nginx:latest -n dev
+# Like setting up a developer's workstation IN the Development Wing
+Why This Matters:
+Isolation: Dev team can't accidentally break production
+
+Organization: Easy to find dev-related resources
+
+Security: Different access controls for different namespaces
+
+Resource Management: Set different limits for dev vs production
+
+Expected Output:
+After running, you should see:
+
+text
+# When you check namespaces:
+NAME              STATUS   AGE
+default           Active   5d
+dev               Active   30s
+
+# When you check pods in dev namespace:
+NAME            READY   STATUS    RESTARTS   AGE
+dev-nginx-pod   1/1     Running   0          20s
+This shows you successfully created an isolated development environment with your nginx pod running inside it! 🎯
+
+
+
+
+
