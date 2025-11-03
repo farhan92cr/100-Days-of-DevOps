@@ -9,3 +9,35 @@ Note: The kubectl utility on jump_host is set up to operate with the Kubernetes 
 
 SOLUTION:
 
+Short Explanation
+This lab requires performing a rolling update to change the container image in an existing deployment from the current version to nginx:1.17.
+
+Solution
+# Perform rolling update to change the image
+kubectl set image deployment/nginx-deployment nginx=nginx:1.17
+
+# Check the rollout status
+kubectl rollout status deployment/nginx-deployment
+
+# Verify all pods are running with new image
+kubectl get pods -l app=nginx-deployment
+
+# Check the current image version
+kubectl describe deployment nginx-deployment | grep Image
+Alternative Method (using edit):
+bash
+kubectl edit deployment nginx-deployment
+# Then change the image to nginx:1.17 manually
+The rolling update will gradually replace old pods with new ones using the updated image, ensuring zero downtime.
+
+OR:
+
+# First, check the actual container name in the deployment
+kubectl describe deployment nginx-deployment
+
+# Look for the container name in the output, then use that name:
+kubectl set image deployment/nginx-deployment [container-name]=nginx:1.17
+
+# Or edit the deployment to see the container name
+kubectl edit deployment nginx-deployment
+
