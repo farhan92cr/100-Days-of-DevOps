@@ -65,8 +65,35 @@ sudo systemctl enable jenkins
 # Check status
 sudo systemctl status jenkins
 
+
+Step : Access Jenkins and Create Admin User
+Access Jenkins UI:
+
+Open a web browser and go to: http://172.16.238.19:8080
+
+Get initial admin password:
+
+bash
+# On Jenkins server, get the initial admin password
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+Follow the setup wizard:
+
+Use the initial admin password to unlock Jenkins
+
+Select "Install suggested plugins"
+
+When prompted to create first admin user, enter:
+
+Username: theadmin
+
+Password: Adm!n321
+
+Full name: Mark
+
+Email: mark@jenkins.stratos.xfusioncorp.com
+
 ==============================================
-Important step::Cration via script, as there no option add email in GLI,
+Important step::Cration via script, as there no option add email in GLI in the above step
 so need add via CLI
 =======================================
 # Stop Jenkins
