@@ -27,3 +27,233 @@ Note:
 SOLUTION:
 
 
+Step 1: Login to Jenkins
+Access Jenkins UI: http://172.16.238.19:8080
+
+Login with:
+
+Username: theadmin
+
+Password: Adm!n321
+
+Step 2: Install Required Plugins (If Needed)
+We may need the SSH plugin to execute commands on the storage server:
+
+Check for SSH Plugin:
+
+Go to "Manage Jenkins" → "Manage Plugins"
+
+Go to "Installed" tab and search for "SSH"
+
+If not installed, go to "Available" tab and install:
+
+"Publish Over SSH" plugin
+
+"SSH" plugin
+
+Install and Restart:
+
+Check the plugins and click "Install without restart"
+
+If prompted, select "Restart Jenkins when no jobs are running"
+
+Wait for Jenkins to restart completely
+
+Step 3: Configure SSH Connection to Storage Server
+Navigate to SSH Configuration:
+
+Go to "Manage Jenkins" → "Configure System"
+
+Scroll down to "Publish over SSH" section
+
+Add SSH Server Configuration:
+
+Click "Add" under SSH Servers
+
+Configure as follows:
+
+Name: ststor01
+
+Hostname: 172.16.238.15 (ststor01 IP)
+
+Username: natasha
+
+Password: Bl@kW
+
+Remote Directory: /tmp (or leave as /home/natasha)
+
+Click "Test Configuration" to verify connection
+
+Click "Save"
+
+Step 4: Create the Jenkins Job
+Create New Job:
+
+Click "New Item" on the left sidebar
+
+Item name: install-packages
+
+Select "Freestyle project"
+
+Click "OK"
+
+Step 5: Configure Job Parameters
+Add String Parameter:
+
+Check "This project is parameterized"
+
+Click "Add Parameter" → "String Parameter"
+
+Configure:
+
+Name: PACKAGE
+
+Description: Enter the package name to install on ststor01
+
+Default Value: (leave empty)
+
+Trim: Checked
+
+Step 6: Configure Build Steps
+Option A: Using SSH Plugin (Recommended)
+Add Build Step:
+
+Scroll to "Build" section
+
+Click "Add build step" → "Send files or execute commands over SSH"
+
+Configure SSH Execution:
+
+SSH Server: Select ststor01 (the one we configured)
+
+Exec command:
+
+bash
+# Check if sudo is available
+if command -v sudo &> /dev/null; then
+    sudo yum install -y $PACKAGE
+else
+    yum install -y $PACKAGE
+fi
+
+# Verify installation
+if command -v $PACKAGE &> /dev/null || rpm -q $PACKAGE &> /dev/null; then
+    echo "Package $PACKAGE installed successfully"
+    exit 0
+else
+    echo "Package $PACKAGE installation failed or verification failed"
+    exit 1
+fi
+Option B: Using Shell Script (Alternative)
+If SSH plugin doesn't work, use this approach:
+
+Add Build Step:
+
+Click "Add build step" → "Execute shell"
+
+Configure Shell Command:
+
+bash
+# SSH directly to ststor01 and install package
+sshpass -p 'Bl@kW' ssh -o StrictHostKeyChecking=no natasha@172.16.238.15 "
+if command -v sudo &> /dev/null; then
+    sudo yum install -y $PACKAGE
+else
+    yum install -y $PACKAGE
+fi
+
+# Verify installation
+if command -v $PACKAGE &> /dev/null || rpm -q $PACKAGE &> /dev/null; then
+    echo 'Package $PACKAGE installed successfully'
+    exit 0
+else
+    echo 'Package $PACKAGE installation failed'
+    exit 1
+fi
+"
+Note: For Option B, you may need to install sshpass on Jenkins server:
+
+bash
+sudo yum install -y sshpass
+Step 7: Configure Post-build Actions (Optional)
+Add Post-build Action:
+
+Scroll to "Post-build Actions"
+
+Click "Add post-build action" → "Publish build description"
+
+Text to publish: Package ${PACKAGE} installation completed
+
+Step 8: Save and Test the Job
+Save Configuration:
+
+Click "Save" at the bottom
+
+Test the Job:
+
+Click "Build with Parameters"
+
+Enter a test package name (e.g., tree, wget, vim)
+
+Click "Build"
+
+Monitor Build:
+
+Click on the build number in "Build History"
+
+Click "Console Output" to see real-time logs
+
+Step 9: Verify Reliability
+Test Multiple Packages:
+
+Run the job with different packages: htop, nano, curl
+
+Verify all executions complete successfully
+
+Check Exit Codes:
+
+Ensure builds show blue (success) not red (failure)
+
+Troubleshooting
+If SSH connection fails:
+bash
+# Test SSH connection manually from Jenkins server
+ssh -o StrictHostKeyChecking=no natasha@172.16.238.15 'echo "SSH test successful"'
+If package installation fails:
+Check if package exists in repositories: yum list available | grep package_name
+
+Try with different package names
+
+If permissions issues:
+bash
+# On ststor01, check if natasha can use sudo
+sudo -l -U natasha
+Important Security Notes:
+Credentials are stored in Jenkins - consider using Jenkins Credentials Store
+
+SSH keys would be more secure than passwords
+
+Restrict package installation to approved lists in production
+
+Expected Outcome:
+A parameterized Jenkins job named install-packages
+
+Users can specify any package name via PACKAGE parameter
+
+The package gets installed on ststor01 (172.16.238.15)
+
+Job provides clear success/failure feedback
+
+Reliable across multiple executions
+
+Take screenshots of:
+
+Job configuration page with parameters
+
+Build with parameters dialog
+
+Successful console output
+
+Multiple successful builds in build history
+
+
