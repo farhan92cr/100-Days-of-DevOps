@@ -1,12 +1,26 @@
-Lab Analysis & Previous Failures Summary
-Previous Issues:
-Files not actually transferring despite Jenkins showing success
+Lab Purpose & Explanation
+What This Lab Does:
+This creates a scheduled Jenkins job that automatically collects Apache logs from App Server 2 every 2 minutes and stores them on the Storage Server for centralized log management.
 
-SSH authentication problems between servers
+Benefits:
+Automated Log Collection: No manual copying needed
 
-Complex multi-step approaches failing silently
+Centralized Storage: All logs in one location for analysis
 
-Schedule not properly configured
+Regular Updates: Fresh logs every 2 minutes
+
+Troubleshooting Ready: Logs available when Apache issues occur
+
+Server Details:
+App Server 2: stapp02 (steve/Am3ric@)
+
+Storage Server: ststor01 (natasha/Bl@kW)
+
+Destination: /usr/src/devops/
+
+Schedule: Every 8 minutes
+
+
 
 New Requirements:
 Job name: copy-logs
