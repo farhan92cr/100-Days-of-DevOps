@@ -128,7 +128,7 @@ SSH Server: Select ststor01 (the one we configured)
 
 Exec command:
 
-bash
+
 # Check if sudo is available
 if command -v sudo &> /dev/null; then
     sudo yum install -y $PACKAGE
@@ -144,6 +144,36 @@ else
     echo "Package $PACKAGE installation failed or verification failed"
     exit 1
 fi
+
+
+STEP 3: Configure Passwordless Sudo on Storage Server
+From Jump Host Terminal:
+
+bash
+# Connect to storage server
+ssh natasha@ststor01
+# Password: Bl@kW
+
+# Now switch to root to configure sudo
+sudo su -
+# When prompted for password, use: Bl@kW
+On ststor01 as root:
+
+bash
+# Configure passwordless sudo for natasha
+echo "natasha ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Verify the configuration
+cat /etc/sudoers | grep natasha
+
+# Exit root
+exit
+
+
+
+
+
+
 Option B: Using Shell Script (Alternative)
 If SSH plugin doesn't work, use this approach:
 
