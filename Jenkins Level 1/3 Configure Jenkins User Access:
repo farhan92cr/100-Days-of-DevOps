@@ -30,4 +30,190 @@ please guide me step by step.
 
 ....
 
+SOULTION:
+
+Step 1: Login to Jenkins
+Access Jenkins UI: http://172.16.238.19:8080
+
+Login with:
+
+Username: theadmin
+
+Password: Adm!n321
+
+Step 2: Create User "rose"
+Navigate to User Management:
+
+Click "Manage Jenkins" on the left sidebar
+
+Click "Manage Users"
+
+Create New User:
+
+Click "Create User" on the left sidebar
+
+Fill in the form:
+
+Username: rose
+
+Password: GyQkFRVNr3
+
+Confirm password: GyQkFRVNr3
+
+Full name: Rose
+
+E-mail address: (optional, you can leave blank)
+
+Click "Create User"
+
+Step 3: Configure Authorization Strategy
+Navigate to Security Settings:
+
+Go to "Manage Jenkins" → "Configure Global Security"
+
+Enable Project-based Matrix Authorization:
+
+Under "Authorization" section
+
+Select "Project-based Matrix Authorization Strategy"
+
+This will reveal a permissions matrix
+
+Step 4: Configure Permissions
+A. Remove Anonymous User Permissions:
+In the permissions matrix, find "Anonymous" user
+
+Uncheck ALL permissions for Anonymous users
+
+Ensure no boxes are checked for Anonymous
+
+B. Ensure Admin User Has Full Access:
+Find "theadmin" user in the matrix (you may need to add it)
+
+If theadmin isn't listed:
+
+Type theadmin in the "User/group to add" field
+
+Click "Add"
+
+Check ALL permissions for theadmin user
+
+Ensure "Administer" permission is checked
+
+C. Add Rose User with Read Permissions:
+Type rose in the "User/group to add" field
+
+Click "Add"
+
+For rose user, check ONLY these permissions:
+
+Overall: Read
+
+Job: Read
+
+Step 5: Configure Job-specific Permissions for Rose
+Navigate to Existing Job:
+
+Go back to Jenkins dashboard
+
+Click on the existing job (if you have one created)
+
+If no job exists, create a test job first
+
+Configure Job Permissions:
+
+Click "Configure" on the left sidebar
+
+Scroll down to "Enable project-based security" (this should appear after enabling the authorization strategy)
+
+Check this option to enable job-specific security
+
+Set Rose's Job Permissions:
+
+In the job's permission matrix:
+
+Add rose user if not present
+
+For rose user, check ONLY:
+
+Job: Read
+
+Do NOT check any other permissions like:
+
+Build
+
+Workspace
+
+SCM
+
+Agent, etc.
+
+Save the Job Configuration
+
+Step 6: Save and Apply Changes
+Save Global Security:
+
+Go back to "Manage Jenkins" → "Configure Global Security"
+
+Scroll to the bottom
+
+Click "Save"
+
+Restart Jenkins if Required:
+
+If prompted to restart, click "Yes"
+
+Wait for Jenkins to restart completely
+
+The login page will reappear when ready
+
+Step 7: Verify Configuration
+Test Rose's Access:
+
+Log out of Jenkins
+
+Log in as rose with password GyQkFRVNr3
+
+Verify that:
+
+Rose can see the dashboard
+
+Rose can see the existing job
+
+Rose cannot modify job configuration
+
+Rose cannot build the job
+
+Rose cannot access system configuration
+
+Test Admin Access:
+
+Log back in as theadmin
+
+Verify admin still has full access
+
+Troubleshooting
+If you encounter issues:
+
+bash
+# Restart Jenkins manually if needed
+sudo systemctl restart jenkins
+
+# Check Jenkins logs
+sudo tail -f /var/log/jenkins/jenkins.log
+Important Notes:
+Take screenshots of each configuration step for documentation
+
+Wait for Jenkins to restart completely after configuration changes
+
+Verify both users have appropriate access levels
+
+The key permissions for Rose are:
+
+Global: Overall/Read
+
+Job-specific: Job/Read
+
+This configuration will give Rose view-only access to Jenkins and the existing job, while maintaining full administrative access for the admin user.
+
 
