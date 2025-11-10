@@ -13,5 +13,33 @@ please guide step  by step, include short explanation as well, also purpose of t
 SOLUTION:
 
 
+Explanation of the Question
+This lab teaches you how to rollback a deployment - an essential skill when new releases have bugs.
+
+New Terms Explained:
+Rollback:
+
+What: Reverting to a previous working version of your application
+
+Why use it: When new deployments have bugs or issues, you can quickly go back to the stable version
+
+Real-world analogy: Like using "Undo" button when you make a mistake in a document
+
+Revision History:
+
+What: Kubernetes keeps track of all changes made to deployments
+
+Why important: You can see what changed and when, and revert to any previous version
+
+What We'll Learn:
+How to check deployment history
+
+How to revert to previous versions
+
+Disaster recovery skills for production environments
+
+
+
+
 
 
