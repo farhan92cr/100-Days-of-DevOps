@@ -40,6 +40,81 @@ Disaster recovery skills for production environments
 
 
 
+Step-by-Step Solution (Careful Approach)
+Step 1: First, verify the deployment exists and its current status
+bash
+kubectl get deployment nginx-deployment
+kubectl get pods -l app=nginx-deployment
+Step 2: Check the rollout history carefully
+bash
+kubectl rollout history deployment/nginx-deployment
+Step 3: If history shows multiple revisions, check what changed in each
+bash
+# Check the latest revision (replace X with the highest number from history)
+kubectl rollout history deployment/nginx-deployment --revision=X
+
+# Check the previous revision (replace Y with the second highest number)
+kubectl rollout history deployment/nginx-deployment --revision=Y
+Step 4: Perform the rollback with explicit verification
+bash
+# Rollback to previous revision
+kubectl rollout undo deployment/nginx-deployment
+
+# Immediately check the status
+kubectl rollout status deployment/nginx-deployment --timeout=60s
+Step 5: Verify the rollback was successful
+bash
+# Check if pods are updating
+kubectl get pods -l app=nginx-deployment -w
+
+# Check deployment status
+kubectl get deployment nginx-deployment
+
+# Verify the history shows the rollback
+kubectl rollout history deployment/nginx-deployment
+Step 6: Alternative method if above fails
+If the standard rollback doesn't work, try this approach:
+
+bash
+# Method 2: Explicitly specify to rollback to previous revision
+kubectl rollout undo deployment/nginx-deployment --to-revision=<previous-revision-number>
+
+# Method 3: If still failing, check deployment details
+kubectl describe deployment nginx-deployment
+Complete Safe Command Sequence:
+bash
+# 1. Verify current state
+echo "=== Current Deployment Status ==="
+kubectl get deployment nginx-deployment
+
+# 2. Check history
+echo "=== Deployment History ==="
+kubectl rollout history deployment/nginx-deployment
+
+# 3. Perform rollback
+echo "=== Starting Rollback ==="
+kubectl rollout undo deployment/nginx-deployment
+
+# 4. Wait for completion
+echo "=== Monitoring Rollback ==="
+kubectl rollout status deployment/nginx-deployment --timeout=120s
+
+# 5. Final verification
+echo "=== Final Verification ==="
+kubectl get deployment nginx-deployment
+kubectl get pods -l app=nginx-deployment
+kubectl rollout history deployment/nginx-deployment
+Key Points:
+
+Use --timeout to wait sufficiently for the rollback to complete
+
+Use -w flag to watch pod changes in real-time
+
+If it fails, check the error message carefully and use the alternative methods
+
+
+
+
 
 
 
