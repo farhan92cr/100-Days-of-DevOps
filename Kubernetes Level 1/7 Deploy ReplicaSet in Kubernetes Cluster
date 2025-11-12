@@ -18,3 +18,125 @@ Note: The kubectl utility on jump_host is set up to interact with the Kubernetes
 SOlution:
 
 
+Explanation of the Lab
+This lab is about creating a ReplicaSet - a Kubernetes controller that ensures a specified number of pod replicas are running at all times.
+
+New Terms Explained:
+ReplicaSet:
+
+What: A Kubernetes resource that maintains a stable set of replica pods
+
+Why use it: Ensures high availability and load distribution
+
+Real-world analogy: Like having a factory that always keeps exactly 4 cars in the parking lot - if one gets sold, it immediately makes a new one
+
+Key Features:
+
+Self-healing: Automatically replaces failed pods
+
+Scaling: Easy to increase/decrease replica count
+
+Pod management: Maintains desired state automatically
+
+Step-by-Step Solution
+Step 1: Create the YAML file
+bash
+cat > httpd-replicaset.yaml << EOF
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: httpd-replicaset
+  labels:
+    app: httpd_app
+    type: front-end
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: httpd_app
+      type: front-end
+  template:
+    metadata:
+      labels:
+        app: httpd_app
+        type: front-end
+    spec:
+      containers:
+      - name: httpd-container
+        image: httpd:latest
+        ports:
+        - containerPort: 80
+EOF
+Step 2: Clean up any existing ReplicaSet
+bash
+kubectl delete rs httpd-replicaset --force --grace-period=0 --ignore-not-found=true
+Step 3: Apply the ReplicaSet
+bash
+kubectl apply -f httpd-replicaset.yaml
+Step 4: Wait for pods to be ready
+bash
+sleep 30
+Step 5: Verification
+bash
+# Check ReplicaSet status
+kubectl get replicaset httpd-replicaset
+
+# Check pods
+kubectl get pods --show-labels
+
+# Verify labels specifically
+kubectl get pods -l "app=httpd_app,type=front-end"
+
+# Detailed verification
+kubectl describe replicaset httpd-replicaset
+Real-World Analogy 🏭
+Think of this ReplicaSet like a Pizza Restaurant Kitchen:
+
+yaml
+apiVersion: apps/v1
+kind: ReplicaSet           # "Pizza Kitchen Manager" 👨‍🍳
+metadata:
+  name: httpd-replicaset   # "Tony's Pizza Kitchen"
+  labels:
+    app: httpd_app         # "Italian Restaurant" 
+    type: front-end        # "Fast Food Category"
+spec:
+  replicas: 4              # "Always keep 4 pizzas ready in the warmer" 🍕🍕🍕🍕
+  selector:
+    matchLabels:
+      app: httpd_app       # "Only manage pizzas with 'Margherita' label"
+      type: front-end      # "And 'Hot & Ready' label"
+  template:                # "Pizza Recipe"
+    metadata:
+      labels:
+        app: httpd_app     # "Put 'Margherita' label on each pizza"
+        type: front-end    # "Put 'Hot & Ready' label on each pizza"
+    spec:
+      containers:
+      - name: httpd-container    # "Pizza Oven"
+        image: httpd:latest      # "Use latest pizza recipe"
+        ports:
+        - containerPort: 80      # "Serve on counter #80"
+What Makes This Solution Different:
+Added labels to ReplicaSet metadata - labels the ReplicaSet itself
+
+Added containerPort - specifies the port the container uses
+
+Force delete - ensures clean recreation
+
+Grace period 0 - immediate deletion
+
+Expected Output:
+text
+NAME               DESIRED   CURRENT   READY   AGE
+httpd-replicaset   4         4         4       30s
+
+NAME                     READY   STATUS    RESTARTS   AGE   LABELS
+httpd-replicaset-xxxx1   1/1     Running   0          30s   app=httpd_app,type=front-end
+httpd-replicaset-xxxx2   1/1     Running   0          30s   app=httpd_app,type=front-end
+httpd-replicaset-xxxx3   1/1     Running   0          30s   app=httpd_app,type=front-end
+httpd-replicaset-xxxx4   1/1     Running   0          30s   app=httpd_app,type=front-end
+This should resolve the lab validation issues! 🎯
+
+
+
