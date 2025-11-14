@@ -15,4 +15,25 @@ Note: The kubectl utility on jump_host is configured to operate with the Kuberne
 SOLUTION:
 
 
+Explanation of the Lab
+This lab combines multiple Kubernetes concepts: Pods, ConfigMaps, Environment Variables, and Volumes to create a logging application.
+
+New Terms Explained:
+ConfigMap:
+
+What: A Kubernetes resource that stores configuration data as key-value pairs
+
+Why use it: To separate configuration from application code
+
+Real-world analogy: Like a settings file that can be changed without rebuilding the app
+
+Volume:
+
+What: Storage that persists beyond the container's lifecycle
+
+Why use it: To store data that needs to survive container restarts
+
+Real-world analogy: Like an external hard drive attached to your computer
+
+
 
