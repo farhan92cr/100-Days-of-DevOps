@@ -12,4 +12,7 @@ Create a volume log-volume and mount it at /opt/itadmin/time within the containe
 Note: The kubectl utility on jump_host is configured to operate with the Kubernetes cluster.
 
 
+SOLUTION:
+
+
 
