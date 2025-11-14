@@ -12,4 +12,7 @@ Execute the command sleep 5
 Note: The kubectl utility on jump_host is set up to operate with the Kubernetes cluster.
 
 
+SOLUTION:
+
+
 
