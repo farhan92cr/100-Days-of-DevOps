@@ -35,5 +35,132 @@ Why use it: To store data that needs to survive container restarts
 
 Real-world analogy: Like an external hard drive attached to your computer
 
+Step-by-Step Solution
+Step 1: Create the namespace
+bash
+kubectl create namespace xfusion
+Step 2: Create the ConfigMap
+bash
+kubectl create configmap time-config --from-literal=TIME_FREQ=12 -n xfusion
+Step 3: Create the Pod YAML file
+bash
+cat > time-check-pod.yaml << EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: time-check
+  namespace: xfusion
+spec:
+  containers:
+  - name: time-check
+    image: busybox:latest
+    command: 
+      - /bin/sh
+      - -c
+      - |
+        while true; do 
+          date >> /opt/itadmin/time/time-check.log;
+          sleep \$TIME_FREQ;
+        done
+    env:
+    - name: TIME_FREQ
+      valueFrom:
+        configMapKeyRef:
+          name: time-config
+          key: TIME_FREQ
+    volumeMounts:
+    - name: log-volume
+      mountPath: /opt/itadmin/time
+  volumes:
+  - name: log-volume
+    emptyDir: {}
+EOF
+Step 4: Apply the Pod
+bash
+kubectl apply -f time-check-pod.yaml
+Step 5: Verification
+bash
+# Check the pod status
+kubectl get pods -n xfusion
+
+# Check the configmap
+kubectl get configmap -n xfusion
+
+# Check pod details
+kubectl describe pod time-check -n xfusion
+
+# Check logs (wait a minute for entries to appear)
+sleep 60
+kubectl logs time-check -n xfusion
+Real-World Analogy ⏰📁
+Think of this setup like a Scheduled Office Time Logger:
+
+yaml
+apiVersion: v1
+kind: Pod                    # "Office Time Recording Station" ⏰
+metadata:
+  name: time-check           # "Clock-In System"
+  namespace: xfusion         # "XFusion Department Floor"
+spec:
+  containers:
+  - name: time-check         # "Time Recording Clerk"
+    image: busybox:latest    # "Using standard office equipment"
+    command:                 # "Work instructions:"
+      - /bin/sh
+      - -c
+      - |
+        while true; do 
+          date >> /opt/itadmin/time/time-check.log;  # "Write current time to logbook"
+          sleep \$TIME_FREQ;                         # "Wait for next recording"
+        done
+    env:
+    - name: TIME_FREQ        # "Recording Frequency Setting"
+      valueFrom:
+        configMapKeyRef:
+          name: time-config  # "Get from Office Settings File"
+          key: TIME_FREQ     # "Look for 'Recording Interval'"
+    volumeMounts:
+    - name: log-volume       # "Attach the logbook storage"
+      mountPath: /opt/itadmin/time  # "Place on admin's desk"
+  volumes:
+  - name: log-volume         # "The physical logbook"
+    emptyDir: {}             # "Start with empty pages"
+What This Setup Does:
+Every 12 seconds (TIME_FREQ=12), the current date/time is recorded
+
+Logs are saved to /opt/itadmin/time/time-check.log
+
+Configuration is separate in ConfigMap (easy to change frequency)
+
+Data persists in volume (survives container restarts)
+
+Expected Output:
+text
+# Pod status:
+NAME         READY   STATUS    RESTARTS   AGE
+time-check   1/1     Running   0          30s
+
+# ConfigMap:
+NAME          DATA   AGE
+time-config   1      30s
+
+# Logs (after waiting):
+Mon Jan 1 12:00:00 UTC 2024
+Mon Jan 1 12:00:12 UTC 2024
+Mon Jan 1 12:00:24 UTC 2024
+Key Learning:
+ConfigMaps separate configuration from code
+
+Volumes provide persistent storage
+
+Environment variables make apps configurable
+
+Namespaces organize resources logically
+
+Your automated time logging system is now running! 🎯
+
+
+
+
 
 
