@@ -12,3 +12,6 @@ An application deployed on the Kubernetes cluster requires an update with new fe
 Note: The kubectl utility on jump_host is configured to operate with the Kubernetes cluster.
 
 
+SOLUTION:
+
+
