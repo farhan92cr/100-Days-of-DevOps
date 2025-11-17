@@ -15,3 +15,23 @@ Note: The kubectl utility on jump_host is configured to operate with the Kuberne
 SOLUTION:
 
 
+Explanation of the Lab
+This lab teaches you how to update live Kubernetes resources without deleting and recreating them. This is essential for zero-downtime updates in production.
+
+Key Concepts:
+Live Updates:
+
+What: Modifying running Kubernetes resources without service interruption
+
+Why use it: For rolling updates, configuration changes, scaling in production
+
+Real-world analogy: Like upgrading a car's engine while it's still running
+
+Service NodePort:
+
+What: A way to expose services on specific ports of cluster nodes
+
+Why important: Allows external access to services in the cluster
+
+
+
