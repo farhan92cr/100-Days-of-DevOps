@@ -16,3 +16,128 @@ Note: The kubectl utility on jump_host is configured to interact with the Kubern
 
 SOLUTION:
 
+Explanation of the Lab
+This is a troubleshooting lab where we need to identify and fix issues in a misconfigured pod. The pod has a main container and a sidecar container (a helper container that runs alongside the main application).
+
+Key Concepts:
+Sidecar Container:
+
+What: An additional container that runs alongside the main container in the same pod
+
+Why use it: For logging, monitoring, proxy services, or helper tasks
+
+Real-world analogy: Like having a co-pilot in an airplane who assists the pilot
+
+Troubleshooting Approach:
+
+Check current pod status
+
+Examine error messages
+
+Identify the root cause
+
+Fix the configuration
+
+Verify the fix
+
+
+
+Diagnostic Commands - Please Run These First:
+bash
+# 1. Check if the pod exists and its current status
+kubectl get pods
+
+# 2. If the pod exists, get detailed information about it
+kubectl describe pod webserver
+
+# 3. Check logs from all containers in the pod (if it exists)
+kubectl logs webserver --all-containers=true
+
+# 4. Check events in the namespace
+kubectl get events --sort-by=.lastTimestamp
+
+# 5. Check if there are any previous pod instances
+kubectl get pods --show-all
+Please run these commands and paste the output here. This will help us understand:
+
+If the pod exists
+
+What state it's in
+
+What specific errors are occurring
+
+Why the containers aren't starting properly
+
+Once I see the output, I'll provide the exact solution to fix the pod deployment issue.
+
+
+The problem is a typo in the nginx image tag.
+
+The Problem:
+Wrong: nginx:latests (with extra 's')
+
+Correct: nginx:latest (without extra 's')
+
+Solution:
+Step 1: Delete the current broken pod
+bash
+kubectl delete pod webserver
+Step 2: Create the corrected pod YAML
+bash
+cat > webserver-fixed.yaml << EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webserver
+  labels:
+    app: web-app
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:latest  # FIXED: removed extra 's'
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: shared-logs
+      mountPath: /var/log/nginx
+  - name: sidecar-container
+    image: ubuntu:latest
+    command: 
+    - sh
+    - -c
+    - while true; do cat /var/log/nginx/access.log /var/log/nginx/error.log; sleep 30; done
+    volumeMounts:
+    - name: shared-logs
+      mountPath: /var/log/nginx
+  volumes:
+  - name: shared-logs
+    emptyDir: {}
+EOF
+Step 3: Apply the fixed configuration
+bash
+kubectl apply -f webserver-fixed.yaml
+Step 4: Verify the fix
+bash
+# Check pod status
+kubectl get pods
+
+# Wait for pod to be ready
+kubectl wait --for=condition=ready pod/webserver --timeout=60s
+
+# Verify both containers are running
+kubectl get pod webserver -o jsonpath='{.status.containerStatuses[*].name}'
+
+# Test the nginx web server
+kubectl port-forward webserver 8080:80 &
+curl http://localhost:8080
+Expected Result:
+After applying the fix, you should see:
+
+text
+NAME        READY   STATUS    RESTARTS   AGE
+webserver   2/2     Running   0          30s
+Both containers will be running and the nginx web server will be accessible.
+
+The issue was simply a typo - nginx:latests vs nginx:latest! 🎯
+
+
