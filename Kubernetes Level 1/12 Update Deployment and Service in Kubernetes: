@@ -82,8 +82,7 @@ kubectl get deployment nginx-deployment -o jsonpath='{.spec.template.spec.contai
 kubectl get pods -l app=nginx-deployment
 
 
-
-Key Learning Points:;:
+Key Learning Points::
 Services can be updated live without affecting running pods
 
 Deployments support rolling updates - gradually replaces old pods with new ones
