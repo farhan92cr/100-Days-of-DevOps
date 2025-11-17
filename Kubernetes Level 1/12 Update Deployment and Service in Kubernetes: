@@ -77,12 +77,13 @@ kubectl get deployment nginx-deployment -o jsonpath='{.spec.replicas}'
 # Verify image version
 kubectl get deployment nginx-deployment -o jsonpath='{.spec.template.spec.containers[0].image}'
 
+
 # Verify all pods are running
 kubectl get pods -l app=nginx-deployment
 
 
 
-Key Learning Points:
+Key Learning Points:;:
 Services can be updated live without affecting running pods
 
 Deployments support rolling updates - gradually replaces old pods with new ones
@@ -91,7 +92,13 @@ Scaling is instant - Kubernetes immediately adjusts replica count
 
 Zero downtime - all changes happen without service interruption
 
+
+
 Your application is now updated with the new features! 🚀
+
+
+
+
 
 
 
