@@ -35,3 +35,63 @@ Why important: Allows external access to services in the cluster
 
 
 
+Step-by-Step Solution
+Step 1: Check current state
+bash
+# Check current deployment and service
+kubectl get deployment nginx-deployment
+kubectl get service nginx-service
+kubectl get pods -l app=nginx-deployment
+Step 2: Update the Service NodePort
+bash
+# Method 1: Using kubectl patch
+kubectl patch service nginx-service -p '{"spec":{"ports":[{"port":80,"nodePort":32165}]}}'
+
+# Method 2: Using kubectl edit (alternative)
+# kubectl edit service nginx-service
+# Then change nodePort from 30008 to 32165
+Step 3: Update the Deployment Replica Count
+bash
+# Scale the deployment to 5 replicas
+kubectl scale deployment nginx-deployment --replicas=5
+
+
+
+# Update the image (let me check the exact container name first)
+kubectl describe deployment nginx-deployment | grep -A5 Containers
+
+# Then update with the correct container name
+kubectl set image deployment/nginx-deployment nginx=nginx:latest
+
+# Alternative method if container name is different
+kubectl set image deployment/nginx-deployment *=nginx:latest
+
+Verify all changes
+bash
+# Verify service nodePort
+kubectl get service nginx-service -o jsonpath='{.spec.ports[0].nodePort}'
+
+# Verify replica count
+kubectl get deployment nginx-deployment -o jsonpath='{.spec.replicas}'
+
+# Verify image version
+kubectl get deployment nginx-deployment -o jsonpath='{.spec.template.spec.containers[0].image}'
+
+# Verify all pods are running
+kubectl get pods -l app=nginx-deployment
+
+
+
+Key Learning Points:
+Services can be updated live without affecting running pods
+
+Deployments support rolling updates - gradually replaces old pods with new ones
+
+Scaling is instant - Kubernetes immediately adjusts replica count
+
+Zero downtime - all changes happen without service interruption
+
+Your application is now updated with the new features! 🚀
+
+
+
