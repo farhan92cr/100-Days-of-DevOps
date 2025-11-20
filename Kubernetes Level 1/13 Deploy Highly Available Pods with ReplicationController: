@@ -12,3 +12,136 @@ All pods should be running state post-deployment.
 Note: The kubectl utility on jump_host is configured to operate with the Kubernetes cluster.
 
 
+Solution:
+
+
+Explanation of the Lab
+This lab introduces ReplicationController - an older Kubernetes resource that ensures a specified number of pod replicas are running. (Note: ReplicaSet is the newer recommended approach, but ReplicationController is still important to understand).
+
+New Terms Explained:
+ReplicationController:
+
+What: A Kubernetes resource that ensures a specified number of pod replicas are running
+
+Why learn it: Historical reasons and for maintaining legacy systems
+
+Key difference from ReplicaSet: ReplicationController uses equality-based selector, ReplicaSet uses set-based selector
+
+Real-world analogy: Like an old-school factory manager who ensures exactly X workers are always on the assembly line
+
+Step-by-Step Solution
+Step 1: Create the ReplicationController YAML
+bash
+cat > httpd-replicationcontroller.yaml << EOF
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: httpd-replicationcontroller
+spec:
+  replicas: 3
+  selector:
+    app: httpd_app
+    type: front-end
+  template:
+    metadata:
+      labels:
+        app: httpd_app
+        type: front-end
+    spec:
+      containers:
+      - name: httpd-container
+        image: httpd:latest
+EOF
+Step 2: Apply the ReplicationController
+bash
+kubectl apply -f httpd-replicationcontroller.yaml
+Step 3: Verification
+bash
+# Check ReplicationController status
+kubectl get replicationcontroller httpd-replicationcontroller
+
+# Check pods created by the ReplicationController
+kubectl get pods -l app=httpd_app
+
+# Get detailed information
+kubectl describe replicationcontroller httpd-replicationcontroller
+
+# Verify all pods are running
+kubectl get pods -l app=httpd_app --field-selector=status.phase=Running
+Step 4: Wait and ensure all pods are running
+bash
+# Wait for all pods to be ready
+sleep 30
+
+# Final verification
+kubectl get pods -l app=httpd_app
+Real-World Analogy 🏭
+Think of ReplicationController like a Traditional Factory Floor Manager:
+
+yaml
+apiVersion: v1
+kind: ReplicationController       # "Old-school Factory Manager" 👴🏭
+metadata:
+  name: httpd-replicationcontroller  # "HTTP Assembly Line Manager"
+spec:
+  replicas: 3                     # "Always keep exactly 3 workers on the line" 👷👷👷
+  selector:
+    app: httpd_app                # "Look for workers with 'HTTP Specialist' badge"
+    type: front-end               # "And 'Front Desk' role badge"
+  template:                       # "Worker Hiring Template"
+    metadata:
+      labels:
+        app: httpd_app            # "Give each worker 'HTTP Specialist' badge"
+        type: front-end           # "And 'Front Desk' role badge"
+    spec:
+      containers:
+      - name: httpd-container     # "Worker's Job Title"
+        image: httpd:latest       # "Worker's Skill Set - Latest HTTP knowledge"
+Key Differences from ReplicaSet:
+API Version: v1 (ReplicaSet uses apps/v1)
+
+Selector Syntax: Simpler equality-based selectors
+
+Legacy: Being replaced by ReplicaSet/Deployment
+
+Expected Output:
+text
+NAME                          DESIRED   CURRENT   READY   AGE
+httpd-replicationcontroller   3         3         3       30s
+
+NAME                                        READY   STATUS    RESTARTS   AGE
+httpd-replicationcontroller-abc12           1/1     Running   0          30s
+httpd-replicationcontroller-xyz34           1/1     Running   0          30s
+httpd-replicationcontroller-pqr56           1/1     Running   0          30s
+Complete Verification Commands:
+bash
+# 1. Apply the configuration
+kubectl apply -f httpd-replicationcontroller.yaml
+
+# 2. Check RC status
+echo "=== ReplicationController Status ==="
+kubectl get rc httpd-replicationcontroller
+
+# 3. Check pods
+echo "=== Pods Status ==="
+kubectl get pods -l app=httpd_app
+
+# 4. Verify labels
+echo "=== Labels Verification ==="
+kubectl get pods --show-labels | grep httpd-replicationcontroller
+
+# 5. Ensure all 3 pods are running
+echo "=== Running Pods Count ==="
+kubectl get pods -l app=httpd_app --field-selector=status.phase=Running --no-headers | wc -l
+Key Learning:
+ReplicationController maintains exact replica count
+
+Self-healing: Automatically replaces failed pods
+
+Legacy resource: Understand for maintaining older clusters
+
+Simple selectors: Uses basic label matching
+
+Your highly available HTTP service is now running with 3 replicas! 🎯
+
+
