@@ -15,3 +15,80 @@ before solution if you want any clerification or check somthing give me comand, 
 
 
 
+
+
+
+
+
+
+
+
+Step 1: Update the ConfigMap using patch command
+bash
+# Update the ConfigMap to change the root path from /var/www/html to /usr/share/nginx/html
+kubectl patch configmap nginx-config --type='json' -p='[{"op": "replace", "path": "/data/nginx.conf", "value": "events {\n}\nhttp {\n  server {\n    listen 8099 default_server;\n    listen [::]:8099 default_server;\n\n    # Set nginx to serve files from the shared volume!\n    root /usr/share/nginx/html;\n    index  index.html index.htm index.php;\n    server_name _;\n    location / {\n      try_files $uri $uri/ =404;\n    }\n    location ~ \\.php$ {\n      include fastcgi_params;\n      fastcgi_param REQUEST_METHOD $request_method;\n      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n      fastcgi_pass 127.0.0.1:9000;\n    }\n  }\n}"}]'
+Step 2: Verify the ConfigMap was updated
+bash
+# Check if the ConfigMap was updated correctly
+kubectl get configmap nginx-config -o yaml | grep -A5 "root"
+Step 3: Export the pod configuration
+bash
+# Export the current pod configuration to a file
+kubectl get pod nginx-phpfpm -o yaml > pod.yaml
+Step 4: Update the pod configuration file
+bash
+# Use sed to update the mount path in the pod.yaml file
+sed -i 's/mountPath: \/var\/www\/html/mountPath: \/usr\/share\/nginx\/html/g' pod.yaml
+
+# Verify the change was made
+grep -n "mountPath" pod.yaml
+Step 5: Replace the pod
+bash
+# Force replace the pod with the updated configuration
+kubectl replace --force -f pod.yaml
+
+# Wait for the new pod to be ready
+kubectl wait --for=condition=ready pod/nginx-phpfpm --timeout=60s
+Step 6: Copy the index.php file
+bash
+# Copy the file to the correct location
+kubectl cp /home/thor/index.php nginx-phpfpm:/usr/share/nginx/html/index.php -c nginx-container
+
+# Verify the file was copied
+kubectl exec nginx-phpfpm -c nginx-container -- ls -la /usr/share/nginx/html/
+Step 7: Test the website
+bash
+# Test if PHP is working
+kubectl exec nginx-phpfpm -c nginx-container -- curl -s http://localhost:8099/index.php | head -10
+Complete Solution:
+bash
+# 1. Update ConfigMap
+echo "=== Step 1: Updating ConfigMap ==="
+kubectl patch configmap nginx-config --type='json' -p='[{"op": "replace", "path": "/data/nginx.conf", "value": "events {\n}\nhttp {\n  server {\n    listen 8099 default_server;\n    listen [::]:8099 default_server;\n\n    # Set nginx to serve files from the shared volume!\n    root /usr/share/nginx/html;\n    index  index.html index.htm index.php;\n    server_name _;\n    location / {\n      try_files $uri $uri/ =404;\n    }\n    location ~ \\.php$ {\n      include fastcgi_params;\n      fastcgi_param REQUEST_METHOD $request_method;\n      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n      fastcgi_pass 127.0.0.1:9000;\n    }\n  }\n}"}]'
+
+# 2. Verify ConfigMap
+echo "=== Step 2: Verifying ConfigMap ==="
+kubectl get configmap nginx-config -o yaml | grep -A2 "root"
+
+# 3. Export and update pod
+echo "=== Step 3: Updating pod configuration ==="
+kubectl get pod nginx-phpfpm -o yaml > pod.yaml
+sed -i 's/mountPath: \/var\/www\/html/mountPath: \/usr\/share\/nginx\/html/g' pod.yaml
+grep "mountPath" pod.yaml
+
+# 4. Replace pod
+echo "=== Step 4: Replacing pod ==="
+kubectl replace --force -f pod.yaml
+kubectl wait --for=condition=ready pod/nginx-phpfpm --timeout=60s
+
+# 5. Copy file and test
+echo "=== Step 5: Copying file and testing ==="
+kubectl cp /home/thor/index.php nginx-phpfpm:/usr/share/nginx/html/index.php -c nginx-container
+kubectl exec nginx-phpfpm -c nginx-container -- ls -la /usr/share/nginx/html/
+kubectl exec nginx-phpfpm -c nginx-container -- curl -s http://localhost:8099/index.php | head -10
+This approach uses non-interactive commands to ensure the changes are made correctly. Let's run these commands!
+
+
+
+
+
