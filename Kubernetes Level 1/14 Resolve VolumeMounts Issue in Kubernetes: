@@ -14,12 +14,62 @@ Note: The kubectl utility on jump_host is configured to operate with the Kuberne
 before solution if you want any clerification or check somthing give me comand, i will paste the ouput here.
 
 
+The Issue Was: Inconsistent Mount Paths
+Root Cause:
+There were three different paths being used for the same shared volume, causing the website to fail:
 
+PHP-FPM Container: Mounted at /usr/share/nginx/html ✅
 
+Nginx Container: Mounted at /var/www/html ❌
 
+Nginx Config: Pointing to /var/www/html ❌
 
+The Problem Breakdown:
+PHP-FPM Container (correct):
 
+yaml
+mountPath: /usr/share/nginx/html
+Nginx Container (wrong):
 
+yaml
+mountPath: /var/www/html  # This should be /usr/share/nginx/html
+Nginx Configuration (wrong):
+
+nginx
+root /var/www/html;  # This should be /usr/share/nginx/html
+What Happened:
+PHP-FPM was putting files in /usr/share/nginx/html/
+
+Nginx was looking for files in /var/www/html/ (empty)
+
+Nginx configuration was telling nginx to serve from /var/www/html/ (empty)
+
+So when you accessed the website, nginx returned "File not found" even though the file existed in the shared volume
+
+The Fix:
+We made all three point to the same path (/usr/share/nginx/html):
+
+✅ Updated ConfigMap: Changed root /var/www/html; to root /usr/share/nginx/html;
+
+✅ Updated Nginx Container: Changed mountPath from /var/www/html to /usr/share/nginx/html
+
+✅ PHP-FPM Container: Already correct at /usr/share/nginx/html
+
+Why This Works:
+Now all components agree on the same location:
+
+Both containers mount the shared volume at /usr/share/nginx/html/
+
+Nginx serves files from /usr/share/nginx/html/
+
+When you copy index.php to that location, both containers can see it
+
+PHP-FPM can process the PHP files that nginx serves
+
+Key Learning:
+Consistency is crucial in Kubernetes volume mounts. All containers sharing a volume must use the same mount paths, and applications must be configured to use those same paths.
+
+This was a classic "configuration mismatch" issue rather than a technical failure! 🎯
 
 
 
