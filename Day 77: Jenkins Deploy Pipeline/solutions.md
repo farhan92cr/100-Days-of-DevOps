@@ -58,6 +58,32 @@ Build steps: pipeline script
 Add this pipeline script: jenkins-pipeline-deploy.jenkinsfile
 Build
 
+
+"
+
+pipeline {
+    agent { label 'ststor01' }
+
+    stages {
+        stage('Deploy') {
+            steps {
+                script {
+                    sh '''
+                        rm -rf /tmp/web_app
+                        git clone http://git.stratos.xfusioncorp.com/sarah/web_app.git /tmp/web_app
+                        ls -la /tmp/web_app
+                        echo 'Bl@kW' | sudo -S cp -r /tmp/web_app/* /var/www/html/
+                        rm -rf /tmp/web_app
+                    '''
+                }
+            }
+        }
+    }
+}
+
+"
+
+
 Good to Know?
 Jenkins Pipelines
 Pipeline as Code: Define build process in code
