@@ -20,3 +20,129 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION:
 
+🌐 Day 3 Lab: Creating an AWS Subnet
+📖 Lab Explanation
+Today, we're creating a Subnet - which is a range of IP addresses in your VPC where you can place groups of isolated resources. Think of it as creating a neighborhood within your city (VPC) where you can build houses (EC2 instances).
+
+🔍 Key Terms Defined
+Subnet
+What: A segment of a VPC's IP address range where you can launch AWS resources
+
+Purpose: Isolate resources and control network traffic between them
+
+Types:
+
+Public Subnet - has route to internet gateway
+
+Private Subnet - no direct internet access
+
+VPC (Virtual Private Cloud)
+What: Your own isolated virtual network in AWS
+
+Default VPC: Automatically created in each AWS region
+
+CIDR Block: Typically 172.31.0.0/16 for default VPC
+
+CIDR Block
+What: Defines the range of IP addresses for your subnet
+
+Example: 172.31.0.0/20 means 172.31.0.1 - 172.31.15.254
+
+Availability Zone
+What: Isolated locations within an AWS region
+
+Purpose: Provides high availability and fault tolerance
+
+🚀 Benefits & Why We Use Subnets
+🔒 Security Advantages
+Network Segmentation - isolate different types of resources
+
+Access Control - different security groups per subnet
+
+Traffic Control - route tables control traffic flow
+
+💡 Practical Benefits
+High Availability - spread resources across multiple AZs
+
+Cost Optimization - use smaller subnets to save IP space
+
+Performance - reduce network congestion through segmentation
+
+🎯 Use Cases
+Web Tier - public subnets for web servers
+
+Application Tier - private subnets for app servers
+
+Database Tier - highly restricted private subnets
+
+Multi-AZ Deployment - subnets in different AZs for redundancy
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://718633645857.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_569830
+Password: IxO5LELm@IiA
+Region: us-east-1 (VERIFY THIS!)
+Navigate to VPC Service
+
+Go to Services → VPC
+
+In left sidebar, find "Virtual Private Cloud" → "Subnets"
+
+Create Subnet
+
+Click "Create subnet"
+
+Subnet settings:
+
+VPC ID: Select default VPC (vpc-xxxxxxxxx)
+
+Subnet name: devops-subnet
+
+Availability Zone: Choose any AZ (e.g., us-east-1a)
+
+IPv4 CIDR block: Choose an available range from default VPC
+
+Determine Available CIDR Block
+
+Check existing subnets in default VPC
+
+Default VPC typically uses 172.31.0.0/16
+
+Common available ranges: 172.31.16.0/20, 172.31.32.0/20, etc.
+
+Select a /20 block that doesn't overlap with existing subnets
+
+Create and Verify
+
+Click "Create subnet"
+
+Verify the subnet appears in the list with name devops-subnet
+
+Note the subnet ID for future use
+
+📋 What We Created
+Name: devops-subnet
+
+VPC: Default VPC
+
+Type: Will be public (default VPC subnets have internet access)
+
+CIDR Block: /20 block within 172.31.0.0/16 range
+
+🔧 Important Configuration Notes
+Route Table: Default VPC subnets use main route table with internet gateway
+
+Auto-assign IP: Public IPv4 addresses are auto-assigned in default VPC
+
+Network ACL: Uses default network ACL (allows all traffic)
+
+🎉 Congratulations!
+You've completed Day 3! You now have a subnet ready to launch EC2 instances, RDS databases, or other AWS resources in an isolated network segment.
+
+
+
