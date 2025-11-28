@@ -1,0 +1,136 @@
+The Nautilus DevOps team is planning to migrate a portion of their infrastructure to the Azure cloud incrementally. As part of this migration, you are tasked with creating an Azure Virtual Machine (VM).
+
+The requirements are:
+
+1) Use the existing resource group.
+
+2) The VM name must be devops-vm, it should be in West US region.
+
+3) Use the Ubuntu 22.04 LTS image for the VM.
+
+4) The VM size must be Standard_B1s.
+
+5) Attach a default Network Security Group (NSG) that allows inbound SSH (port 22).
+
+6) Attach a 30 GB storage disk of type Standard HDD.
+
+7) The rest of the configurations should remain as default.
+
+After completing these steps, make sure you can SSH into the virtual machine.
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-deddfe6511d94567@azurefreekmlprod.onmicrosoft.com
+Password	3mzxen5#
+Start Time	Thu Nov 27 04:15:29 UTC 2025
+End Time	Thu Nov 27 05:15:29 UTC 2025
+
+
+SOLUTION:
+
+Simple Explanation of the Lab
+Today, you're creating your first server in the cloud, known as an Azure Virtual Machine (VM). This is a fundamental building block in cloud computing. Think of it as renting a physical computer, but it's entirely virtual and lives in Microsoft's data center.
+
+You're given a specific "shopping list" for this VM:
+
+Name: devops-vm
+
+Location: The West US Azure data center.
+
+Operating System: Ubuntu 22.04 LTS (a popular, stable Linux distribution).
+
+Size/Power: Standard_B1s (a low-cost, entry-level size perfect for testing).
+
+Security: A firewall rule that only allows SSH connections (port 22) to keep it secure.
+
+Storage: An extra 30 GB hard drive (Standard HDD) for storing your applications and data.
+
+The final goal is not just to create the VM, but to prove it's working by using the SSH key pair from Day 1 to log into it.
+
+Key Terms Defined
+Azure Virtual Machine (VM): An on-demand, scalable computer that you can rent from Microsoft Azure. You have full control over it, just like a physical server sitting under your desk.
+
+Resource Group: A logical container in Azure that holds related resources for a solution. It's like a folder for your project's assets (VMs, databases, etc.), making them easier to manage and delete together. You'll use an existing one for this lab.
+
+Region: A specific geographical location around the world where Azure has data centers. West US is a region in California. Choosing a region close to your users reduces latency.
+
+Image: A template that contains the OS (like Ubuntu, Windows) and sometimes pre-installed software. It's used to create a VM.
+
+VM Size (or SKU): Defines the processing power (CPU), memory (RAM), and maximum I/O capacity for the VM. Standard_B1s is a "burstable" size with 1 vCPU and 1 GiB of RAM, which is cheap for light workloads.
+
+Network Security Group (NSG): A virtual firewall that controls inbound and outbound network traffic to your Azure resources. You're creating one that only allows SSH traffic (port 22).
+
+Managed Disk: A virtual hard disk (VHD) stored in Azure. It's managed by Azure, meaning you don't have to worry about the underlying storage infrastructure. You're adding a 30 GB one.
+
+Benefits and Use Cases
+Why do we use Azure Virtual Machines?
+
+Flexibility and Control: You have full root/administrator access to the VM. You can install any software and make any configuration changes you need.
+
+Scalability: It's easy to resize a VM (vertically scale) to a more or less powerful model as your needs change.
+
+Disaster Recovery: You can easily take snapshots of your VM's disks for backup or to create duplicate VMs.
+
+Lift-and-Shift Migration: VMs are perfect for migrating existing on-premise applications to the cloud with minimal changes.
+
+Use Cases:
+
+Hosting Applications: Running web servers, application servers, or databases.
+
+Development and Testing: Quickly spinning up identical environments for developers to code and test in.
+
+Running Legacy Software: Hosting older applications that might not run in more modern, containerized environments.
+
+Extending Your Data Center: Using the cloud to add capacity to your on-premise infrastructure (hybrid cloud).
+
+How to Approach This Lab
+You will be using the Azure CLI (Command Line Interface) from your jump server to create this VM. The process will look something like this:
+
+Step 1: Log in to Azure
+First, you need to authenticate with the credentials provided.
+
+bash
+az login -u <username> -p <password>
+Step 2: Create the VM
+The az vm create command is your one-stop shop for creating a VM with most of the basic settings. You will use the SSH public key you created on Day 1.
+
+bash
+az vm create \
+  --resource-group <existing-resource-group-name> \
+  --name devops-vm \
+  --image Ubuntu2204 \
+  --size Standard_B1s \
+  --location "West US" \
+  --admin-username azureuser \
+  --authentication-type ssh \
+  --ssh-key-values ~/.ssh/devops-kp.pub \
+  --public-ip-sku Standard \
+  --nsg-rule SSH
+(You'll need to find out the name of the existing resource group, likely by running az group list)
+
+Step 3: Add the Data Disk
+Now, attach the extra 30 GB HDD.
+
+bash
+az vm disk attach \
+  --resource-group <existing-resource-group-name> \
+  --vm-name devops-vm \
+  --name datadisk-devops-vm \
+  --size-gb 30 \
+  --sku Standard_LRS \
+  --new
+Step 4: SSH into the VM
+Once the VM is running, get its public IP address and connect using your private key.
+
+bash
+# Get the IP address
+az vm list-ip-addresses --resource-group <existing-resource-group-name> --name devops-vm --output table
+
+# Connect to the VM
+ssh -i ~/.ssh/devops-kp azureuser@<public-ip-address>
+If you can get a command prompt on your new devops-vm, you have successfully completed Day 2!
+
+Pro Tip: The Azure Portal (the web UI) is a great way to visually confirm that your VM was created with all the correct specifications.
+
