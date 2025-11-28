@@ -1,0 +1,115 @@
+The Nautilus DevOps team is in the process of migrating some of their workloads to Azure. One of the tasks involves creating a new Virtual Machine (VM) using the Azure CLI. The team does not have access to the Azure portal but can manage Azure resources via the azure-client host (the landing host for this lab).
+
+1) Create a new Azure Virtual Machine named xfusion-vm using the Azure CLI.
+
+2) Use the Ubuntu2204 image and set the VM size to Standard_B2s.
+
+3) Make sure the admin username is set to azureuser and SSH keys are generated for secure access.
+
+4) Use Standard_LRS storage account, disk size must be 30GB and ensure the VM xfusion-vm is in the running state after creation.
+
+SOLUTION:
+
+Simple Explanation of the Lab
+Today, you're creating another Azure Virtual Machine, but with a key difference: you're doing everything through the command line (Azure CLI) instead of a web browser. This is a crucial DevOps skill because automation, scripts, and pipelines can't click buttons in a portal - they need command-line tools.
+
+The requirements are similar to Day 2 but with some variations:
+
+Name: xfusion-vm
+
+Image: Still Ubuntu 22.04 LTS
+
+Size/Power: Standard_B2s (slightly more powerful than Day 1 - 2 vCPUs and 4 GiB RAM)
+
+Authentication: SSH keys (and the CLI will generate them for you automatically if you don't specify existing ones)
+
+Storage: 30 GB disk using Standard_LRS (the default, locally-redundant storage)
+
+The key learning here is mastering the az vm create command with all its parameters to get exactly what you need.
+
+Key Terms Defined
+Azure CLI (Command-Line Interface): A cross-platform command-line tool that connects to Azure and executes administrative commands against Azure resources. It's the primary tool for automation and scripting.
+
+Standard_LRS (Locally Redundant Storage): A type of storage replication. It stores three copies of your data within a single data center in a single region. It's the lowest-cost option.
+
+Standard_B2s: A burstable VM size with 2 vCPUs and 4 GiB of RAM. It's good for low to moderate traffic web servers, small databases, and development environments.
+
+Admin Username: The name of the administrative user that will be created on the VM. In this case, it's azureuser.
+
+Benefits and Use Cases
+Why do we use the Azure CLI instead of the Portal?
+
+Automation: This is the biggest benefit. You can write scripts to create dozens of VMs with identical configurations, ensuring consistency and saving time.
+
+Infrastructure as Code (IaC): The CLI commands can be saved as scripts, which act as documentation and can be version-controlled using Git.
+
+Efficiency: For experienced users, typing commands is often faster than navigating through multiple web pages and clicking through wizards.
+
+Integration with CI/CD: Tools like Jenkins, GitHub Actions, and Azure DevOps can execute Azure CLI commands as part of their pipelines to automatically deploy infrastructure.
+
+Use Cases for CLI-based VM Creation:
+
+Automated Environment Setup: Scripting the creation of entire development, testing, and production environments.
+
+Disaster Recovery: Quickly recreating infrastructure in a new region by running a pre-written script.
+
+Scaling: Writing scripts to automatically create new VMs when load increases (auto-scaling).
+
+Reproducibility: Ensuring every team member creates their test environment in exactly the same way.
+
+
+Step-by-Step Solution for Day 3 Lab
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-deddfe6511d94567@azurefreekmlprod.onmicrosoft.com -p 3mzxen5#
+Step 2: Verify You're Connected
+bash
+az account show
+Step 3: Check Existing Resource Groups
+bash
+az group list --output table
+You should see your resource group: kml_rg_main-b72e955290584106
+
+Step 4: Create the VM with Correct Syntax
+bash
+az vm create \
+  --resource-group kml_rg_main-b72e955290584106 \
+  --name xfusion-vm \
+  --image Ubuntu2204 \
+  --size Standard_B2s \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --os-disk-size-gb 30 \
+  --storage-sku Standard_LRS \
+  --public-ip-sku Standard
+Or as a single line:
+
+bash
+az vm create --resource-group kml_rg_main-b72e955290584106 --name xfusion-vm --image Ubuntu2204 --size Standard_B2s --admin-username azureuser --generate-ssh-keys --os-disk-size-gb 30 --storage-sku Standard_LRS --public-ip-sku Standard
+Step 5: Verify VM Creation
+bash
+# Check VM status
+az vm show --resource-group kml_rg_main-b72e955290584106 --name xfusion-vm --query "provisioningState"
+
+# Check VM power state
+az vm get-instance-view --resource-group kml_rg_main-b72e955290584106 --name xfusion-vm --query "instanceView.statuses[1].displayStatus"
+Step 6: Get VM IP Address
+bash
+az vm list-ip-addresses --resource-group kml_rg_main-b72e955290584106 --name xfusion-vm --output table
+Step 7: SSH into the VM
+bash
+# Use the IP address from Step 6
+ssh -i ~/.ssh/id_rsa azureuser@<PUBLIC_IP_ADDRESS>
+Step 8: Verify VM is Running (Final Check)
+bash
+# This should return "VM running"
+az vm get-instance-view --resource-group kml_rg_main-b72e955290584106 --name xfusion-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+Expected Output:
+After Step 4: You'll see JSON output with VM details and public IP
+
+After Step 5: Should show "Succeeded"
+
+After Step 7: You should get an Ubuntu command prompt on your new VM
+
+After Step 8: Should show "VM running"
+
