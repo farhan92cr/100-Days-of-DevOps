@@ -1,0 +1,91 @@
+Day 1: Create SSH Key Pair for Azure Virtual Machine:
+The Nautilus DevOps team is strategizing the migration of a portion of their infrastructure to the Azure cloud. Recognizing the scale of this undertaking, they have opted to approach the migration in incremental steps rather than as a single massive transition. To achieve this, they have segmented large tasks into smaller, more manageable units. This granular approach enables the team to execute the migration in gradual phases, ensuring smoother implementation and minimizing disruption to ongoing operations. By breaking down the migration into smaller tasks, the Nautilus DevOps team can systematically progress through each stage, allowing for better control, risk mitigation, and optimization of resources throughout the migration process.
+
+For this task, create an SSH key pair with the following requirements:
+
+The name of the SSH key pair should be devops-kp.
+
+The key pair type must be rsa.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve these credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-5663fe86799a4419@azurefreekmlprod.onmicrosoft.com
+Password	wEdrL9ww
+Start Time	Wed Nov 26 07:06:05 UTC 2025
+End Time	Wed Nov 26 08:06:05 UTC 2025
+
+
+
+SOLUTION:
+
+Simple Explanation of the Lab
+This lab is the very first, foundational step. Before you can create any servers (called Virtual Machines, or VMs) in the cloud, you need a secure way to access them. Instead of using a simple password, which can be guessed or stolen, we use a much stronger method called an SSH Key Pair.
+
+Think of it like this:
+
+The Private Key is like the actual key to your house. You keep it super safe and never give it to anyone. In this case, it stays on your local computer (the "jump server").
+
+The Public Key is like the lock on your door. You can freely give this to anyone. You will install this "lock" on any Azure VM you create.
+
+When you try to connect, the VM (with the public key/lock) challenges your local machine (with the private key/key) to prove it has the right key. If it matches, you're granted access. This is far more secure than a password.
+
+Your task is simply to create this special key-and-lock set (the SSH key pair) and name it devops-kp.
+
+Key Terms Defined
+SSH (Secure Shell): A network protocol that gives you a secure way to access and manage computers over an unsecured network. It's the standard way to log into Linux servers.
+
+SSH Key Pair: A set of two cryptographically linked keys: a public key and a private key. They are used to authenticate your identity without needing a password.
+
+Public Key: The key you can safely share. It's placed on the servers you want to connect to.
+
+Private Key: The key you must keep absolutely secret. It remains on the client machine you use to connect from.
+
+RSA (Rivest–Shamir–Adleman): A specific, widely-used algorithm for encrypting and decrypting the data used in the SSH key pair. The lab specifies you must use this type.
+
+Azure Virtual Machine (VM): A software emulation of a physical computer, running in Microsoft's Azure cloud. It's an on-demand, scalable server you can create in minutes.
+
+Benefits and Use Cases
+Why do we use SSH Key Pairs?
+
+Enhanced Security: They are significantly more secure than passwords. A strong SSH key is virtually impossible to brute-force, while passwords can be guessed, stolen, or cracked.
+
+Automation-Friendly: Many automated processes (like scripts and CI/CD pipelines) need to access servers. It's much safer and easier to use a key for this than to hardcode a password into a script.
+
+Compliance: Many security standards and best practices explicitly recommend or require key-based authentication over password authentication for server access.
+
+Convenience: While it seems like an extra step initially, once set up, you can often log into your servers without having to type a password every time.
+
+Use Cases:
+
+Accessing Cloud Servers: The primary use case for this lab. Every time you create a Linux VM in Azure, AWS, or GCP, you will provide an SSH public key to gain access.
+
+Secure File Transfers: Tools like scp and sftp use SSH keys for secure file copying.
+
+Git Operations: Platforms like GitHub and GitLab use SSH keys to securely identify you when you push and pull code.
+
+Server-to-Server Communication: Automated scripts and services on one server can use SSH keys to securely connect to another server.
+
+How to Approach This Lab
+You will be performing this task from the jump server (jump_host), which is your designated starting point for managing the infrastructure.
+
+The typical command to generate an RSA SSH key pair on a Linux-based jump server is:
+
+bash
+ssh-keygen -t rsa -f ~/.ssh/devops-kp
+Let's break down the command:
+
+ssh-keygen: The command-line utility for creating key pairs.
+
+-t rsa: Specifies the type of key to create, which is rsa as required.
+
+-f ~/.ssh/devops-kp: Specifies the filename for the key pair. This will create two files: devops-kp (the private key) and devops-kp.pub (the public key) in the .ssh directory of your home folder.
+
+Important Note: When you run the command, it will ask for a "passphrase." For the purpose of these labs, you can typically just press Enter twice to leave it empty. In a real production environment, you should always use a strong passphrase for an extra layer of security.
+
+Once you run this command, your first lab is complete! You have created the secure credential needed to build and access Azure VMs in the upcoming days.
+
+Good luck with Day 1! Let me know when you're ready for the next lab.
+

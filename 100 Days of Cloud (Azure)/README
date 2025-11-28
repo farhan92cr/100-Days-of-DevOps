@@ -1,0 +1,53 @@
+Here are the essential basic commands to check your Azure connection and existing resources:
+
+1. Check Azure Login Status
+bash
+# Check if you're logged in and see account info
+az account show
+
+# List all subscriptions available to your account
+az account list
+2. Check Existing Resources
+bash
+# List all resource groups
+az group list
+
+# List all virtual machines in your subscription
+az vm list
+
+# List VMs with more details (including power state)
+az vm list -o table
+
+# List all disks
+az disk list
+3. Check Specific VM Details
+bash
+# Get details about a specific VM
+az vm show --name <vm-name> --resource-group <resource-group-name>
+
+# Check VM power state
+az vm get-instance-view --name <vm-name> --resource-group <resource-group-name> --query "instanceView.statuses[1]" -o table
+
+# List IP addresses of a VM
+az vm list-ip-addresses --name <vm-name>
+4. Quick Status Commands
+bash
+# One-liner to check login and list VMs
+az account show && az vm list -o table
+
+# Check available VM sizes in a region
+az vm list-sizes --location "West US" -o table
+
+# Check available VM images
+az vm image list --offer UbuntuServer --sku 22_04-lts --all -o table
+5. Most Useful for This Lab
+bash
+# Check current login
+az account show --query "user.name" -o tsv
+
+# See ALL resources you have access to
+az resource list -o table
+
+# Just show me my VMs and their states quickly
+az vm list --show-details --query "[].{Name:name, ResourceGroup:resourceGroup, Status:powerState}" -o table
+Run az account show first - if it returns your user info, you're connected. If you get an error, you need to login with az login -u <username> -p <password>.
