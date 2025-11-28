@@ -1,0 +1,117 @@
+The Nautilus DevOps team is strategizing the migration of a portion of their infrastructure to the AWS cloud. Recognizing the scale of this undertaking, they have opted to approach the migration in incremental steps rather than as a single massive transition. To achieve this, they have segmented large tasks into smaller, more manageable units. This granular approach enables the team to execute the migration in gradual phases, ensuring smoother implementation and minimizing disruption to ongoing operations. By breaking down the migration into smaller tasks, the Nautilus DevOps team can systematically progress through each stage, allowing for better control, risk mitigation, and optimization of resources throughout the migration process.
+
+For this task, create a key pair with the following requirements:
+
+Name of the key pair should be datacenter-kp.
+
+Key pair type must be rsa
+
+
+
+Use below given AWS Credentials: (You can run the showcreds command on aws-client host to retrieve these credentials)
+
+Console URL	https://527862500710.signin.aws.amazon.com/console?region=us-east-1
+Username	kk_labs_user_572769
+Password	Tr@%rIDRx1t7
+Start Time	Wed Nov 26 06:35:45 UTC 2025
+End Time	Wed Nov 26 07:35:45 UTC 2025
+
+
+SOLUTION:
+
+🔐 Day 1 Lab: Creating an AWS Key Pair
+📖 Lab Explanation
+This lab introduces you to creating an AWS Key Pair, which is your first step in working with AWS EC2 instances. Think of it as creating a secure digital key to access your cloud servers.
+
+🔍 Key Terms Defined
+Key Pair
+What: A security credential consisting of two parts:
+
+Public Key: Stored by AWS
+
+Private Key: You download and keep secure
+
+Purpose: Used instead of passwords for secure SSH access to EC2 instances
+
+RSA (Rivest–Shamir–Adleman)
+What: A widely used encryption algorithm
+
+Purpose: Creates mathematically linked public and private keys
+
+Alternative: ED25519 (newer, more efficient)
+
+🚀 Benefits & Why We Use Key Pairs
+🔒 Security Advantages
+More Secure than passwords (resistant to brute-force attacks)
+
+No Password Sharing - private key never leaves your computer
+
+Automatic Encryption - all communication is encrypted
+
+💡 Practical Benefits
+Required for SSH access to EC2 Linux instances
+
+One-time Setup - create once, use for multiple instances
+
+Easy Management - can be reused across instances
+
+🎯 Use Cases
+SSH Access to EC2 instances
+
+Secure File Transfers
+
+Automated Scripts accessing cloud resources
+
+Disaster Recovery - having backup keys for critical instances
+
+🛠️ Step-by-Step Solution
+Method 1: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://527862500710.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_572769
+Password: Tr@%rIDRx1t7
+Navigate to EC2 Service
+
+Go to Services → EC2
+
+In left sidebar, find "Network & Security" → "Key Pairs"
+
+Create Key Pair
+
+Click "Create key pair"
+
+Name: datacenter-kp
+
+Key pair type: RSA
+
+Private key file format: .pem (for Linux/Mac) or .ppk (for Windows/PuTTY)
+
+Click "Create key pair"
+
+Download & Secure
+
+The private key will automatically download
+
+Important: Store it securely - you can't download it again!
+
+Set proper permissions: chmod 400 datacenter-kp.pem
+
+Method 2: AWS CLI (Alternative)
+bash
+aws ec2 create-key-pair --key-name datacenter-kp --key-type rsa --query 'KeyMaterial' --output text > datacenter-kp.pem
+⚠️ Important Notes
+Keep Private Key Safe - Never share or lose it!
+
+Backup - Store in multiple secure locations
+
+Permissions - Set file permissions to read-only for owner
+
+🎉 Congratulations!
+You've completed Day 1! You now have a secure key to access AWS EC2 instances. This foundational skill will be used throughout your AWS journey.
+
+Ready for Day 2? 🚀
+
+
