@@ -11,3 +11,25 @@ The Terraform working directory is /home/bob/terraform. Create the main.tf file 
 
 Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
 
+Lab 1: Create Key Pair Using Terraform
+Simple Explanation
+This lab teaches you to create an SSH key pair using Terraform. You'll generate a secure RSA key pair where the public key gets stored in AWS and the private key is saved locally for secure authentication to AWS resources.
+
+Key Terms
+Key Pair: Cryptographic keys (public + private) for secure server authentication
+
+RSA: Encryption algorithm used for secure data transmission
+
+Terraform Resource: Infrastructure component defined in Terraform code
+
+SSH: Protocol for secure remote server access
+
+Benefits and Use Cases
+Secure Server Access: More secure than password-based authentication
+
+AWS EC2 Instances: Required for SSH access to cloud servers
+
+Automation: Enables scripted access without manual intervention
+
+Infrastructure as Code: Consistent, version-controlled key management
+
