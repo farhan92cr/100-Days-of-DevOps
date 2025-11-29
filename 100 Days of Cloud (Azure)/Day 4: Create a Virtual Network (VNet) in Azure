@@ -47,5 +47,100 @@ Network Segmentation: Isolate different departments or projects within the same 
 
 DMZ Configurations: Create perimeter networks for internet-facing applications.
 
+UI Step-by-Step Solution for Day 4 Lab
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials:
+
+Username: kk_lab_user_main-ba97d3a7b10b4268@azurefreekmlprod.onmicrosoft.com
+
+Password: xhg#p=5&
+
+Step 2: Navigate to Virtual Networks
+In the left sidebar, click "Create a resource" (plus icon)
+
+Search for "Virtual network" in the marketplace
+
+Click "Virtual network" from the results
+
+Click the "Create" button
+
+Step 3: Fill in Basic Details
+Project details:
+
+Subscription: Use the default one
+
+Resource group: Select your existing resource group (from the dropdown)
+
+Instance details:
+
+Name: nautilus-vnet
+
+Region: East US
+
+Step 4: Configure IP Addresses
+IP Addresses tab:
+
+IPv4 address space: 10.0.0.0/16
+
+This is your CIDR block
+
+You can click "+ Add an IPv4 address space" if you want additional ranges, but just 10.0.0.0/16 is sufficient
+
+Subnets section:
+
+A default subnet will be created automatically (usually 10.0.0.0/24)
+
+You can leave this as is for the lab
+
+Step 5: Review and Create
+Click "Review + create" button (blue) at the bottom
+
+Wait for validation to pass (green checkmark)
+
+Click "Create" button to deploy the virtual network
+
+Step 6: Verify Creation
+Go to the Azure Portal homepage
+
+Click "All resources" in the left sidebar
+
+Look for "nautilus-vnet" in the list
+
+Or search for "nautilus-vnet" in the top search bar
+
+Alternative Navigation Method:
+In the search bar at top, type "Virtual networks"
+
+Click on "Virtual networks" service
+
+Click "+ Create" button
+
+Follow Steps 3-5 above
+
+What You Should See:
+Deployment in progress notification
+
+"Your deployment is complete" message (takes 1-2 minutes)
+
+nautilus-vnet appears in your list of resources
+
+Quick Verification in UI:
+Go to Virtual networks service
+
+Click on nautilus-vnet
+
+Check that:
+
+Status: Succeeded
+
+Location: East US
+
+Address space: 10.0.0.0/16
+
+The VNet is now ready! This creates the foundational networking for your Azure resources. Let me know if you need help with any specific step in the UI.
+
+
 
 
