@@ -1,0 +1,16 @@
+The Nautilus DevOps team is strategizing the migration of a portion of their infrastructure to the Azure cloud. Recognizing the scale of this undertaking, they have opted to approach the migration in incremental steps rather than as a single massive transition. To achieve this, they have segmented large tasks into smaller, more manageable units. This granular approach enables the team to execute the migration in gradual phases, ensuring smoother implementation and minimizing disruption to ongoing operations.
+
+Create a Virtual Network (VNet) named nautilus-vnet in the East US region with any IPv4 CIDR block.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve these credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-ba97d3a7b10b4268@azurefreekmlprod.onmicrosoft.com
+Password	xhg#p=5&
+Start Time	Sat Nov 29 04:35:44 UTC 2025
+End Time	Sat Nov 29 05:35:44 UTC 2025
+
+SOLUTION:
+
