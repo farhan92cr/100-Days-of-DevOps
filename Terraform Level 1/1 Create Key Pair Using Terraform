@@ -2,11 +2,11 @@ The Nautilus DevOps team is strategizing the migration of a portion of their inf
 
 For this task, create a key pair using Terraform with the following requirements:
 
-Name of the key pair should be nautilus-kp.
+Name of the key pair should be xfusion-kp.
 
 Key pair type must be rsa.
 
-The private key file should be saved under /home/bob/nautilus-kp.pem.
+The private key file should be saved under /home/bob/xfusion-kp.pem.
 The Terraform working directory is /home/bob/terraform. Create the main.tf file (do not create a different .tf file) to accomplish this task.
 
 Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
@@ -32,4 +32,85 @@ AWS EC2 Instances: Required for SSH access to cloud servers
 Automation: Enables scripted access without manual intervention
 
 Infrastructure as Code: Consistent, version-controlled key management
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in the EXPLORER section (left panel)
+
+Select "Open in Integrated Terminal"
+
+This will open a terminal at the bottom of VS Code
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create main.tf File
+
+bash
+touch main.tf
+Step 4: Edit main.tf File
+
+Click on the main.tf file in VS Code explorer to open it
+
+Copy and paste the following Terraform code:
+
+main.tf File Content
+hcl
+# Generate RSA private key
+resource "tls_private_key" "nautilus_rsa" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Create AWS key pair
+resource "aws_key_pair" "nautilus_key" {
+  key_name   = "nautilus-kp"
+  public_key = tls_private_key.nautilus_rsa.public_key_openssh
+}
+
+# Save private key to file
+resource "local_file" "private_key" {
+  content     = tls_private_key.nautilus_rsa.private_key_pem
+  filename    = "/home/bob/nautilus-kp.pem"
+  file_permission = "0600"
+}
+
+
+Step 5: Initialize Terraform
+
+bash
+terraform init
+Step 6: Plan the Infrastructure
+
+bash
+terraform plan
+Step 7: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted to confirm
+
+Step 8: Verify the Creation
+
+bash
+# Check private key file
+ls -l /home/bob/nautilus-kp.pem
+
+# Verify permissions (should show -rw-------)
+ls -la /home/bob/nautilus-kp.pem
+Expected Output:
+✅ Key pair "nautilus-kp" created in AWS
+
+✅ Private key saved at /home/bob/nautilus-kp.pem
+
+✅ File permissions set to 0600 (owner read/write only)
+
+Security Notes:
+The 0600 permission ensures only you can access the private key
+
+Never share or commit the private key to version control
+
+This key will be used for secure EC2 instance access in future labs
 
