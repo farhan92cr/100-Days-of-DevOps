@@ -18,5 +18,140 @@ Create the resources only in us-east-1 region.
 
 To display or hide the terminal of the AWS client machine, you can use the expand toggle button as shown below:
 
+SOlution:
+
+🌐 Day 4 Lab: Allocating an Elastic IP Address
+📖 Lab Explanation
+Today, we're allocating an Elastic IP Address - a static, public IPv4 address designed for dynamic cloud computing. Unlike regular public IPs that change when you stop/start instances, Elastic IPs remain constant.
+
+🔍 Key Terms Defined
+Elastic IP (EIP)
+What: A static, public IPv4 address that you can allocate to your AWS account
+
+Purpose: Provides a consistent public IP address that doesn't change
+
+Key Feature: Can be remapped between different EC2 instances
+
+Public IP vs Elastic IP
+Public IP: Dynamic, changes when instance stops/starts
+
+Elastic IP: Static, persists until you release it
+
+IP Address Allocation
+What: The process of reserving an IP address from AWS's pool
+
+Scope: Regional - allocated to a specific AWS region
+
+🚀 Benefits & Why We Use Elastic IPs
+🔧 Technical Advantages
+Static Addressing - consistent IP for DNS records, firewalls, etc.
+
+High Availability - quickly remap to backup instances during failures
+
+No DNS Propagation - immediate failover without DNS changes
+
+💡 Practical Benefits
+Service Continuity - maintain same IP even if instance changes
+
+SSL Certificates - required for SSL/TLS certificates that bind to IP
+
+Whitelisting - easy firewall/security group configuration
+
+🎯 Use Cases
+Web Servers - consistent public facing IP
+
+VPN Servers - static IP for remote access
+
+Database Access - whitelisted IP for external connections
+
+Disaster Recovery - quick failover to backup systems
+
+⚠️ Important Considerations
+Cost: Free when attached to running instance, charges apply when unused
+
+Limit: 5 Elastic IPs per region by default (can be increased)
+
+Association: Must be associated with an EC2 instance or other resource
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://386532143645.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_244282
+Password: 6MMFt@4tPYjR
+Region: us-east-1 (VERIFY THIS!)
+Navigate to EC2 Service
+
+Go to Services → EC2
+
+In left sidebar, find "Network & Security" → "Elastic IPs"
+
+Allocate Elastic IP Address
+
+Click "Allocate Elastic IP address"
+
+Network border group: Keep default (us-east-1)
+
+Public IPv4 address pool: Amazon's pool (default)
+
+Tags (Optional but recommended):
+
+Key: Name
+
+Value: nautilus-eip
+
+Click "Allocate"
+
+Verify Allocation
+
+You should see the new Elastic IP in the list
+
+Note the allocated IP address (e.g., 54.210.132.105)
+
+Status should show as "available"
+
+Add Name Tag (if not done during creation)
+
+Select the Elastic IP
+
+Click "Actions" → "Add/edit tags"
+
+Add tag: Key=Name, Value=nautilus-eip
+
+Click "Save"
+
+📋 What We Created
+Resource: Elastic IP Address
+
+Name: nautilus-eip
+
+Status: Available (not yet associated with any instance)
+
+Scope: us-east-1 region
+
+🔧 Next Steps
+This Elastic IP is now ready to be associated with:
+
+EC2 instances
+
+NAT gateways
+
+Network interfaces
+
+💰 Cost Reminder
+Free: When associated with a running instance
+
+Charged: When allocated but not associated ($0.005/hour)
+
+Best Practice: Only allocate when needed, release when done
+
+🎉 Congratulations!
+You've completed Day 4! You now have a static public IP address ready for use with EC2 instances or other AWS resources that require consistent public addressing.
+
+Tomorrow's Preview: We'll likely associate this EIP with an EC2 instance! 🚀
+
 
 
