@@ -14,3 +14,38 @@ End Time	Sat Nov 29 05:35:44 UTC 2025
 
 SOLUTION:
 
+Simple Explanation of the Lab
+Today you're creating a Virtual Network (VNet) in Azure. Think of a VNet as your own private, isolated section of the Azure cloud - similar to having your own dedicated network in a data center. It's a fundamental building block for organizing and securing your cloud resources.
+
+Key Terms Defined
+Virtual Network (VNet): A logically isolated network in Azure where you can place your VMs, databases, and other resources. It provides isolation and security boundaries.
+
+CIDR Block (Classless Inter-Domain Routing): A method for allocating IP addresses and routing Internet Protocol packets. In simple terms, it defines the range of IP addresses available in your network (e.g., 10.0.0.0/16).
+
+East US Region: One of Azure's geographical data center locations in Virginia, USA.
+
+Address Prefix: The IP address range for your VNet (we're using 10.0.0.0/16 which provides 65,536 IP addresses).
+
+Benefits and Use Cases
+Why do we use Virtual Networks?
+
+Isolation: Keep your development, testing, and production environments completely separate and secure from each other.
+
+Security: Control traffic flow between subnets and resources using Network Security Groups (NSGs).
+
+Connectivity: Connect your VNet to other VNets, your on-premises datacenter, or the internet.
+
+IP Address Management: Define your own private IP address space that won't conflict with other networks.
+
+Use Cases:
+
+Multi-tier Applications: Create separate subnets for web servers, application servers, and databases within the same VNet.
+
+Hybrid Cloud: Connect your on-premises network to Azure using VPN or ExpressRoute.
+
+Network Segmentation: Isolate different departments or projects within the same subscription.
+
+DMZ Configurations: Create perimeter networks for internet-facing applications.
+
+
+
