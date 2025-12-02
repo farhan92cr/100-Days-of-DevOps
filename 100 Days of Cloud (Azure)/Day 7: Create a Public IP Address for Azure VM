@@ -16,3 +16,158 @@ End Time	Tue Dec 02 05:56:55 UTC 2025
 
 SOLUTION:
 
+Simple Explanation of Day 7 Lab
+Today you're creating a Public IP Address in Azure. Think of this like getting a public phone number for your server. Without a public IP, your Azure VM is like a computer with no phone number - it can't be reached from the internet.
+
+You're creating a standalone public IP address named devops-pip that can later be assigned to a Virtual Machine, Load Balancer, or other Azure resource.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-7b6d26f13ed746c6@azurefreekmlprod.onmicrosoft.com -p HKByyLt2
+Step 2: Check Resource Groups
+bash
+az group list --output table
+Note the resource group name for Step 4
+
+Step 3: Create Public IP Address
+bash
+az network public-ip create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --name devops-pip \
+  --location "East US" \
+  --sku Standard \
+  --allocation-method Static
+Single line version:
+
+bash
+az network public-ip create --resource-group <YOUR_RESOURCE_GROUP> --name devops-pip --location "East US" --sku Standard --allocation-method Static
+Step 4: Verify Creation
+bash
+# Check the public IP was created
+az network public-ip show --resource-group <YOUR_RESOURCE_GROUP> --name devops-pip --query "{Name:name, IP:ipAddress, State:provisioningState}"
+
+# List all public IPs
+az network public-ip list --resource-group <YOUR_RESOURCE_GROUP> --output table
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Create Public IP Address
+Click "Create a resource" → Search "Public IP address" → "Create"
+
+Step 3: Configure Settings
+Basics tab:
+
+Name: devops-pip
+
+Region: East US (or any region, but East US is common)
+
+SKU: Standard (choose from dropdown)
+
+Tier: Regional (default)
+
+IP version: IPv4 (default)
+
+IP address assignment: Static
+
+Note: Leave other settings as default
+
+Step 4: Review and Create
+Click "Review + create"
+
+Wait for validation
+
+Click "Create"
+
+Step 5: Verify Creation
+Go to "All resources"
+
+Search for devops-pip
+
+Click on it to see details
+
+Verify:
+
+IP address: Shows a public IP (like 20.xxx.xxx.xxx)
+
+Assignment: Static
+
+SKU: Standard
+
+Key Terms Explained
+Public IP Address: A globally reachable IP address that can be accessed from the internet.
+
+SKU (Stock Keeping Unit):
+
+Basic: Free tier, limited features, dynamic IP by default
+
+Standard: Paid tier, more features, supports availability zones, static IP recommended
+
+Allocation Method:
+
+Dynamic: IP changes when resource is stopped/started
+
+Static: IP remains the same (what you're using today)
+
+IPv4 vs IPv6: You're creating an IPv4 address (most common).
+
+Benefits and Use Cases
+Why create standalone Public IPs?
+
+Flexibility: Create IPs in advance and assign them to resources later
+
+DNS Management: Associate with domain names before creating resources
+
+Cost Management: Can delete resources but keep the IP (if static)
+
+Reusability: Move IP from one resource to another
+
+Use Cases:
+
+Assign to a single VM for direct access
+
+Use with Load Balancers for high availability
+
+Assign to Application Gateways for web apps
+
+Use with VPN Gateways for site-to-site connections
+
+Reserve IPs for future use
+
+Important Notes
+Static vs Dynamic: You're using Static - the IP won't change even if you restart the resource.
+
+Cost: Public IPs have a small cost when not attached to a running resource.
+
+Assignment: This IP is not yet assigned to any VM - it's just allocated/reserved.
+
+Standard SKU Benefits:
+
+Zone-redundant (survives zone failures)
+
+Better integration with Load Balancers
+
+More secure by default
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-7b6d26f13ed746c6@azurefreekmlprod.onmicrosoft.com -p HKByyLt2
+
+# 2. Find resource group
+az group list --output table
+# Output: kml_rg_main-xxxxx
+
+# 3. Create Public IP (replace YOUR_RG)
+az network public-ip create --resource-group YOUR_RG --name devops-pip --location "East US" --sku Standard --allocation-method Static
+
+# 4. Get the actual IP address
+az network public-ip show --resource-group YOUR_RG --name devops-pip --query ipAddress -o tsv
+Expected output: You'll get a public IP address like 20.xxx.xxx.xxx that you can use to connect to resources later.
+
+You've now reserved a public "phone number" for your future Azure resources! This is essential for making your services accessible on the internet.
+
+
