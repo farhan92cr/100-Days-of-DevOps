@@ -28,4 +28,156 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION:
 
+💾 Day 5 Lab: Creating a GP3 EBS Volume
+📖 Lab Explanation
+Today, we're creating an EBS (Elastic Block Store) Volume - a persistent block storage device for EC2 instances. Specifically, we're creating a GP3 volume, which is AWS's latest generation of general-purpose SSD storage.
+
+🔍 Key Terms Defined
+EBS (Elastic Block Store)
+What: Persistent block-level storage volumes for EC2 instances
+
+Purpose: Provides durable, network-attached storage
+
+Persistence: Data persists independently from instance lifecycle
+
+GP3 Volume Type
+What: General Purpose SSD volume (3rd generation)
+
+Features:
+
+Baseline performance: 3,000 IOPS, 125 MB/s throughput
+
+Cost-effective: Separates storage, IOPS, and throughput pricing
+
+Modern: Successor to GP2 volumes
+
+GiB (Gibibyte)
+What: 2^30 bytes = 1,073,741,824 bytes
+
+vs GB: GiB is binary-based, GB is decimal-based (AWS uses GiB)
+
+🚀 Benefits & Why We Use EBS Volumes
+🔧 Technical Advantages
+Persistence: Data remains after instance termination
+
+Snapshots: Create point-in-time backups
+
+Encryption: Built-in AES-256 encryption
+
+Flexibility: Resize without downtime (with some limitations)
+
+💡 GP3 Specific Benefits
+Cost Savings: 20% cheaper than GP2 for same storage
+
+Performance Control: Independent IOPS and throughput scaling
+
+Consistent Performance: Baseline performance without bursting
+
+🎯 Use Cases
+Boot Volumes: For EC2 instance operating systems
+
+Application Storage: Database files, application data
+
+Data Processing: Temporary storage for data processing
+
+Backup Storage: Target for backup and recovery
+
+⚖️ Volume Type Comparison
+Type	Best For	Performance	Cost
+gp3	General purpose workloads	3K-16K IOPS, 125-1000 MB/s	💰💰
+gp2	Legacy workloads	3K-16K IOPS, 128 MB/s max	💰💰💰
+io1/io2	Critical databases	Up to 256K IOPS	💰💰💰💰
+st1	Big data, data warehouses	500 MB/s max	💰💰
+sc1	Cold data, archives	250 MB/s max	💰
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://588840379073.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_955199
+Password: RiP0^@3lW%B2
+Region: us-east-1 (VERIFY THIS!)
+Navigate to EC2 Service
+
+Go to Services → EC2
+
+In left sidebar, find "Elastic Block Store" → "Volumes"
+
+Create Volume
+
+Click "Create volume"
+
+Volume settings:
+
+Volume type: General Purpose SSD (gp3)
+
+Size: 2 GiB
+
+IOPS: Leave default (3000) or set minimum 3000
+
+Throughput: Leave default (125) or set minimum 125 MB/s
+
+Availability Zone: Choose any AZ in us-east-1 (e.g., us-east-1a)
+
+Snapshot ID: Leave blank (creating new empty volume)
+
+Volume encryption: Optional (disabled by default)
+
+Add Tags
+
+Click "Add tag"
+
+Key: Name
+
+Value: xfusion-volume
+
+(Optional: Add more tags like Environment, Project, etc.)
+
+Create and Verify
+
+Click "Create volume"
+
+You'll see "Successfully created volume"
+
+Click "View volumes" to see it in list
+
+Status should show as "available"
+
+📋 What We Created
+Name: xfusion-volume
+
+Type: gp3 (General Purpose SSD)
+
+Size: 2 GiB
+
+Status: Available (not attached to any instance)
+
+Location: us-east-1 availability zone
+
+🔧 Next Steps
+This volume can now be:
+
+Attached to an EC2 instance in the same AZ
+
+Used as a data disk (not boot volume in this case)
+
+Encrypted later if needed (cannot encrypt after creation)
+
+⚠️ Important Notes
+AZ Locked: Can only attach to instances in same Availability Zone
+
+Attachment: Must be attached to an instance to be used
+
+File System: Need to create file system after attachment (mkfs)
+
+Mounting: Need to mount to a directory after file system creation
+
+🎉 Congratulations!
+You've completed Day 5! You now have persistent block storage ready for use with EC2 instances. GP3 volumes provide the best price-performance ratio for most workloads.
+
+Tomorrow's Preview: We'll likely create an EC2 instance and start attaching our resources! 🚀
+
+
 
