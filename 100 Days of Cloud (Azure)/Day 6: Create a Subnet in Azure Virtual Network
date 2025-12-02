@@ -14,3 +14,151 @@ End Time	Tue Dec 02 05:43:44 UTC 2025
 
 SOLution:
 
+Simple Explanation of Day 6 Lab
+Today you're creating both a Virtual Network AND a Subnet. A subnet is like creating smaller, segmented networks within your main Virtual Network. Think of it like:
+
+Virtual Network (VNet) = Your entire office building (with address 10.0.0.0/16)
+
+Subnet = Individual departments within that building (like 10.0.1.0/24 for the IT department)
+
+You need to create both in one operation. The VNet will have the large IP range, and you'll create one subnet inside it.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-37daa879965b40e3@azurefreekmlprod.onmicrosoft.com -p +r5=^r&y
+Step 2: Check Resource Groups
+bash
+az group list --output table
+Note the resource group name for Step 4
+
+Step 3: Create VNet with Subnet in One Command
+bash
+az network vnet create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --name datacenter-vnet \
+  --location "East US" \
+  --address-prefix 10.0.0.0/16 \
+  --subnet-name datacenter-subnet \
+  --subnet-prefix 10.0.0.0/24
+Single line version:
+
+bash
+az network vnet create --resource-group <YOUR_RESOURCE_GROUP> --name datacenter-vnet --location "East US" --address-prefix 10.0.0.0/16 --subnet-name datacenter-subnet --subnet-prefix 10.0.0.0/24
+Step 4: Verify Both Were Created
+bash
+# Check VNet
+az network vnet show --resource-group <YOUR_RESOURCE_GROUP> --name datacenter-vnet --query "{Name:name, AddressSpace:addressSpace.addressPrefixes}"
+
+# Check Subnet
+az network vnet subnet show --resource-group <YOUR_RESOURCE_GROUP> --vnet-name datacenter-vnet --name datacenter-subnet --query "{Name:name, AddressPrefix:addressPrefix}"
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Create Virtual Network
+Click "Create a resource" → Search "Virtual network" → "Create"
+
+Step 3: Fill in Basics
+Basics tab:
+
+Resource group: Select existing group
+
+Name: datacenter-vnet
+
+Region: East US
+
+Step 4: Configure IP Addresses (IMPORTANT)
+IP Addresses tab:
+
+IPv4 address space: 10.0.0.0/16
+
+This is the VNet's total IP range
+
+Subnet name: datacenter-subnet
+
+Click on the default subnet name and rename it
+
+Subnet address range: 10.0.0.0/24
+
+This is the subnet's specific IP range
+
+Must be within the VNet range (10.0.0.0/16)
+
+/24 means 256 IP addresses for this subnet
+
+Your configuration should look like:
+
+text
+Virtual network address space: 10.0.0.0/16
+↓
+Subnet: datacenter-subnet
+Subnet address range: 10.0.0.0/24
+Step 5: Review and Create
+Click "Review + create"
+
+Wait for validation
+
+Click "Create"
+
+Step 6: Verify Creation
+Go to "Virtual networks"
+
+Click on "datacenter-vnet"
+
+Click "Subnets" in the left menu
+
+Verify you see datacenter-subnet with address range 10.0.0.0/24
+
+Key Terms Explained
+Virtual Network (VNet): Your main network space (10.0.0.0/16 = 65,536 IP addresses)
+
+Subnet: A smaller segment within the VNet (10.0.0.0/24 = 256 IP addresses)
+
+Address Prefix/CIDR:
+
+/16 = First 16 bits are fixed (large network)
+
+/24 = First 24 bits are fixed (smaller network within the large one)
+
+Why Create Subnets?
+Benefits:
+
+Security: Isolate different types of resources (web servers vs databases)
+
+Organization: Group related resources together
+
+Traffic Control: Apply different firewall rules to different subnets
+
+Route Management: Control how traffic flows between subnets
+
+Use Cases:
+
+Web tier subnet (public-facing servers)
+
+Application tier subnet (middleware servers)
+
+Database tier subnet (private, secure databases)
+
+Management subnet (bastion/jump hosts)
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-37daa879965b40e3@azurefreekmlprod.onmicrosoft.com -p +r5=^r&y
+
+# 2. Find resource group (example output: kml_rg_main-xxxxx)
+az group list --output table
+
+# 3. Create VNet with subnet (replace YOUR_RG)
+az network vnet create --resource-group YOUR_RG --name datacenter-vnet --location "East US" --address-prefix 10.0.0.0/16 --subnet-name datacenter-subnet --subnet-prefix 10.0.0.0/24
+
+# 4. Verify
+az network vnet subnet list --resource-group YOUR_RG --vnet-name datacenter-vnet --output table
+Expected output: You should see datacenter-subnet with address prefix 10.0.0.0/24.
+
+You've now learned how to create segmented networks within Azure! This is crucial for organizing and securing your cloud infrastructure.
+
+
