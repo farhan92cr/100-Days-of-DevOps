@@ -19,3 +19,126 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+Lab 2: Create Security Group Using Terraform
+Simple Explanation
+This lab teaches you to create an AWS Security Group, which is like a virtual firewall for your cloud servers. It controls what traffic is allowed in and out of your instances.
+
+Key Terms
+Security Group: Virtual firewall for EC2 instances that controls inbound/outbound traffic
+
+VPC (Virtual Private Cloud): Isolated network section in AWS
+
+Default VPC: Pre-configured VPC that AWS creates in each region
+
+Inbound Rule: Rule controlling incoming traffic to instances
+
+CIDR Range: IP address range notation (0.0.0.0/0 means "anywhere")
+
+Benefits and Use Cases
+Network Security: Controls access to your servers
+
+Port Management: Opens only necessary ports (80 for web, 22 for SSH)
+
+Access Control: Restricts who can connect to your servers
+
+EC2 Protection: Essential security layer for cloud instances
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER section → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create/Edit main.tf File
+Since you already have provider.tf, add this to your main.tf:
+
+hcl
+# Create Security Group
+resource "aws_security_group" "devops_sg" {
+  name        = "devops-sg"
+  description = "Security group for Nautilus App Servers"
+  vpc_id      = data.aws_vpc.default.id
+
+  # HTTP inbound rule (port 80)
+  ingress {
+    description = "Allow HTTP access"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # SSH inbound rule (port 22)
+  ingress {
+    description = "Allow SSH access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "devops-sg"
+  }
+}
+
+# Get the default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+Step 4: Initialize Terraform (if not already done)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the Security Group
+
+bash
+# Check if security group was created
+terraform show
+What This Creates:
+Security Group named "devops-sg"
+
+Inbound Rule 1: Allows HTTP traffic on port 80 from anywhere
+
+Inbound Rule 2: Allows SSH traffic on port 22 from anywhere
+
+Outbound Rule: Allows all outgoing traffic (standard for AWS)
+
+Important Notes:
+The security group is attached to the default VPC automatically
+
+0.0.0.0/0 means "allow from any IP address" (use cautiously in production)
+
+Port 80 = Web traffic (HTTP)
+
+Port 22 = SSH access for remote management
+
+The security group will be used in future labs for EC2 instances
+
+Security Best Practice:
+In production, you would restrict SSH access (port 22) to specific IPs instead of 0.0.0.0/0 for better security.
+
+
+
+
