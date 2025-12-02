@@ -36,3 +36,206 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION:
 
+🖥️ Day 6 Lab: Launching an EC2 Instance
+📖 Lab Explanation
+Today, we're launching an EC2 (Elastic Compute Cloud) Instance - a virtual server in AWS cloud. This is the core compute service where we'll run our applications. We're creating a t2.micro instance, which is free-tier eligible.
+
+🔍 Key Terms Defined
+EC2 (Elastic Compute Cloud)
+What: Virtual servers in the cloud
+
+Purpose: Provides resizable compute capacity
+
+Flexibility: Can scale up/down based on demand
+
+AMI (Amazon Machine Image)
+What: Pre-configured virtual machine template
+
+Contains: OS, application server, applications
+
+Amazon Linux AMI: AWS-optimized Linux distribution
+
+t2.micro Instance Type
+Family: Burstable performance instances
+
+vCPUs: 1 virtual CPU
+
+Memory: 1 GiB
+
+Free Tier: Eligible (750 hours/month free for 12 months)
+
+Key Pair
+What: SSH key for secure instance access
+
+RSA: Encryption algorithm for key generation
+
+🚀 Benefits & Why We Use EC2
+🔧 Technical Advantages
+Scalability: Launch instances in minutes, scale as needed
+
+Flexibility: Choose OS, instance type, storage, networking
+
+Control: Root/administrator access to instances
+
+Integration: Works with other AWS services
+
+💡 Business Benefits
+Cost Effective: Pay only for what you use
+
+Reliable: 99.99% availability SLA
+
+Secure: Built-in security features and compliance
+
+🎯 Use Cases
+Web Applications: Host websites and web apps
+
+Development/Test: Sandbox environments
+
+Batch Processing: Data processing workloads
+
+Enterprise Applications: Run business applications
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://277968024163.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_351521
+Password: P^8^Sz!gS%qT
+Region: us-east-1 (VERIFY THIS!)
+Navigate to EC2 Dashboard
+
+Go to Services → EC2
+
+Click "Launch instance" button
+
+Step 1: Name and Tags
+
+Name: devops-ec2
+
+(Optional: Add more tags)
+
+Step 2: Application and OS Images
+
+Quick Start: Amazon Linux
+
+AMI: Select "Amazon Linux 2 AMI" or "Amazon Linux 2023 AMI"
+
+Architecture: 64-bit (x86)
+
+Step 3: Instance Type
+
+Select t2.micro (Free tier eligible)
+
+Click "Next: Configure Instance Details"
+
+Step 4: Configure Instance Details
+
+Number of instances: 1
+
+Network: Default VPC
+
+Subnet: Any default subnet
+
+Leave other settings as default
+
+Click "Next: Add Storage"
+
+Step 5: Add Storage
+
+Root volume: Keep default (8 GB gp2/gp3)
+
+Click "Next: Add Tags"
+
+Step 6: Add Tags (Optional - already named in Step 1)
+
+Verify Name tag: devops-ec2
+
+Click "Next: Configure Security Group"
+
+Step 7: Configure Security Group
+
+Assign a security group: Select existing security group
+
+Choose default security group (usually named "default")
+
+Description: Default security group
+
+Click "Review and Launch"
+
+Step 8: Review Instance Launch
+
+Review all settings
+
+Click "Launch"
+
+Key Pair Dialog
+
+Create a new key pair
+
+Key pair name: devops-kp
+
+Key pair type: RSA
+
+Private key file format: .pem (for Linux/Mac)
+
+Download Key Pair: Click "Download Key Pair"
+
+IMPORTANT: Save the .pem file securely
+
+Check "I acknowledge..."
+
+Click "Launch Instances"
+
+Success Message
+
+Click "View all instances"
+
+Instance will show "pending" then "running"
+
+📋 What We Created
+Instance Name: devops-ec2
+
+AMI: Amazon Linux
+
+Instance Type: t2.micro
+
+Key Pair: devops-kp (downloaded)
+
+Security Group: Default
+
+Status: Running
+
+🔑 Important: Key Pair Security
+text
+# Set proper permissions for the key
+chmod 400 devops-kp.pem
+
+# SSH to instance (when public IP known)
+ssh -i devops-kp.pem ec2-user@<public-ip>
+📊 Instance Details to Note
+Public IP: Assigned automatically (changes on stop/start)
+
+Private IP: Internal network IP
+
+Instance ID: e.g., i-0abcdef1234567890
+
+State: Running
+
+⚠️ Important Notes
+Free Tier: t2.micro is free-tier eligible
+
+Cost: Will incur charges if running beyond free tier limits
+
+Security: Default security group may need stricter rules for production
+
+Access: Use ec2-user username for Amazon Linux
+
+🎉 Congratulations!
+You've completed Day 6! You now have a running EC2 instance in AWS. This is a fundamental building block for cloud infrastructure.
+
+Tomorrow's Preview: We'll likely connect to this instance and configure it! 🚀
+
+
