@@ -1,0 +1,178 @@
+Day 7: Change EC2 Instance Type:
+
+
+🔄 Day 7 Lab: Changing EC2 Instance Type
+📖 Lab Explanation
+Today, we're changing an EC2 instance type from t2.micro to t2.nano. This demonstrates AWS's elasticity - you can easily resize instances based on utilization. t2.nano is smaller and cheaper than t2.micro, suitable for underutilized instances.
+
+🔍 Key Terms Defined
+Instance Type Change
+What: Modifying the hardware configuration of a running EC2 instance
+
+Purpose: Right-sizing resources based on actual usage
+
+Benefit: Cost optimization by matching instance size to workload
+
+t2.nano vs t2.micro
+Feature	t2.nano	t2.micro
+vCPUs	1	1
+Memory	0.5 GiB	1 GiB
+Baseline Performance	5%	10%
+Burstable	Yes	Yes
+Cost	~50% cheaper	Baseline
+Status Checks
+System Status Check: Physical host health
+
+Instance Status Check: Instance OS and network configuration
+
+Initializing: Instance is still booting/configuring
+
+🚀 Benefits & Why We Change Instance Types
+💰 Cost Optimization
+Right-sizing: Match resources to actual needs
+
+Cost Savings: t2.nano is cheaper than t2.micro
+
+Flexibility: Scale down during low utilization periods
+
+🔄 Operational Benefits
+No Data Loss: Instance storage persists
+
+Quick Change: Usually takes 1-2 minutes
+
+Minimal Downtime: Instance reboots but retains IP/config
+
+🎯 When to Change Instance Types
+Underutilized Resources: CPU/memory consistently low
+
+Cost Reduction: Optimize spending
+
+Performance Issues: Need more power (scale up)
+
+Testing: Try different instance types for benchmarking
+
+⚠️ Important Considerations
+Instance Stop Required: Must stop instance before changing type
+
+Public IP Change: May lose public IP unless using Elastic IP
+
+Status Checks: Must pass before and after change
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://345865620496.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_519004
+Password: zjpVX3tN8DBK
+Region: us-east-1 (VERIFY THIS!)
+Navigate to EC2 Dashboard
+
+Go to Services → EC2
+
+In left sidebar, click "Instances"
+
+Verify Instance Status
+
+Find instance named devops-ec2
+
+Check Status Checks column:
+
+Should show "2/2 checks passed"
+
+If "Initializing", wait a few minutes
+
+Note instance state should be "Running"
+
+Stop the Instance
+
+Select devops-ec2 instance
+
+Click Instance state → Stop instance
+
+Confirm in dialog: Click "Stop"
+
+Wait for state to change to "Stopped"
+
+This may take 1-2 minutes
+
+Change Instance Type
+
+With instance still selected (and in Stopped state)
+
+Click Actions → Instance settings → Change instance type
+
+Instance type: Select t2.nano
+
+Click "Apply"
+
+Start the Instance
+
+Select the instance
+
+Click Instance state → Start instance
+
+Wait for state to change to "Running"
+
+Wait for Status Checks to show "2/2 checks passed"
+
+Verify the Change
+
+Select the instance
+
+Check Details tab
+
+Instance type should now show t2.nano
+
+Instance state should be "Running"
+
+📋 What We Changed
+Instance: devops-ec2
+
+Old Type: t2.micro
+
+New Type: t2.nano
+
+Memory Reduced: 1 GiB → 0.5 GiB
+
+Cost: Approximately 50% reduction
+
+🔧 Alternative Method: AWS CLI
+bash
+# Stop instance
+aws ec2 stop-instances --instance-ids i-xxxxxxxx
+
+# Change instance type
+aws ec2 modify-instance-attribute \
+  --instance-id i-xxxxxxxx \
+  --instance-type "t2.nano"
+
+# Start instance
+aws ec2 start-instances --instance-ids i-xxxxxxxx
+⚠️ Important Notes
+Stopping Required: Cannot change type while instance is running
+
+Public IP: May get new public IP unless using Elastic IP
+
+Elastic IP: If attached, it remains after change
+
+Downtime: ~2-5 minutes during stop/start cycle
+
+Data Persistence: EBS volumes retain data
+
+💰 Cost Impact
+t2.micro: ~$0.0116/hour ($8.50/month)
+
+t2.nano: ~$0.0058/hour ($4.25/month)
+
+Savings: ~50% reduction in compute costs
+
+🎉 Congratulations!
+You've completed Day 7! You've successfully optimized costs by right-sizing an EC2 instance. This is a crucial skill for managing cloud resources efficiently.
+
+Tomorrow's Preview: We'll likely work with instance storage or networking! 🚀
+
+
+
