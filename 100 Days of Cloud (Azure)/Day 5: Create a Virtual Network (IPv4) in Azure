@@ -14,3 +14,119 @@ End Time	Tue Dec 02 05:36:07 UTC 2025
 
 
 SOLUTION:
+Simple Explanation of Day 5 Lab
+This is very similar to Day 4, but with a specific IP range requirement: 192.168.0.0/24. You're creating a Virtual Network (VNet) with this exact IP address range in the East US region. The main difference from Day 4 is the specific CIDR block you must use.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-e487c2d31a2b4490@azurefreekmlprod.onmicrosoft.com -p 7rk##d@4
+Step 2: Check Existing Resource Groups
+bash
+az group list --output table
+Note down the resource group name (you'll use it in Step 4)
+
+Step 3: Create the Virtual Network with SPECIFIC CIDR
+bash
+az network vnet create \
+  --resource-group <YOUR_RESOURCE_GROUP_NAME> \
+  --name nautilus-vnet \
+  --location "East US" \
+  --address-prefix 192.168.0.0/24
+Single line version:
+
+bash
+az network vnet create --resource-group <YOUR_RESOURCE_GROUP_NAME> --name nautilus-vnet --location "East US" --address-prefix 192.168.0.0/24
+Step 4: Verify the VNet was Created Correctly
+bash
+# Check provisioning state
+az network vnet show --resource-group <YOUR_RESOURCE_GROUP_NAME> --name nautilus-vnet --query "provisioningState"
+
+# Verify the address space
+az network vnet show --resource-group <YOUR_RESOURCE_GROUP_NAME> --name nautilus-vnet --query "addressSpace.addressPrefixes"
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials:
+
+Username: kk_lab_user_main-e487c2d31a2b4490@azurefreekmlprod.onmicrosoft.com
+
+Password: 7rk##d@4
+
+Step 2: Create Virtual Network
+Click "Create a resource" (+) → Search "Virtual network" → Click "Create"
+
+Step 3: Fill in Details
+Basics tab:
+
+Resource group: Select your existing group
+
+Name: nautilus-vnet
+
+Region: East US
+
+Step 4: Configure IP Addresses (CRITICAL STEP)
+IP Addresses tab:
+
+IPv4 address space: Delete the default and enter exactly: 192.168.0.0/24
+
+Important: Use this exact CIDR, not 10.0.0.0/16 like yesterday
+
+Subnet name: default subnet will be created automatically
+
+You can leave the default subnet range (192.168.0.0/24)
+
+Step 5: Review and Create
+Click "Review + create"
+
+Wait for validation (green checkmark)
+
+Click "Create"
+
+Step 6: Verify Creation
+Go to "Virtual networks" service
+
+Click on "nautilus-vnet"
+
+Verify:
+
+Address space: 192.168.0.0/24
+
+Location: East US
+
+Status: Succeeded
+
+Key Difference from Day 4
+Day 4	Day 5
+Could use any IPv4 CIDR	Must use specific CIDR: 192.168.0.0/24
+Example: 10.0.0.0/16	Must be exactly: 192.168.0.0/24
+About the CIDR: 192.168.0.0/24
+This provides 256 total IP addresses (192.168.0.0 to 192.168.0.255)
+
+It's a private IP range (cannot be routed on the public internet)
+
+First IP (192.168.0.0) is network address
+
+Last IP (192.168.0.255) is broadcast address
+
+Usable IPs: 192.168.0.1 to 192.168.0.254 (254 addresses)
+
+Complete CLI Commands (Example with placeholder):
+bash
+# 1. Login
+az login -u kk_lab_user_main-e487c2d31a2b4490@azurefreekmlprod.onmicrosoft.com -p 7rk##d@4
+
+# 2. Find resource group
+az group list --output table
+# Output might show: kml_rg_main-xxxxx
+
+# 3. Create VNet (replace YOUR_RG with actual name)
+az network vnet create --resource-group YOUR_RG --name nautilus-vnet --location "East US" --address-prefix 192.168.0.0/24
+
+# 4. Verify
+az network vnet list --resource-group YOUR_RG --output table
+Expected result: You'll see nautilus-vnet with address space 192.168.0.0/24 in East US region.
+
+Let me know if you need help finding your resource group name or encounter any issues!
+
