@@ -1,0 +1,16 @@
+The Nautilus DevOps team is strategically planning the migration of a portion of their infrastructure to the Azure cloud. Acknowledging the magnitude of this endeavor, they have chosen to tackle the migration incrementally rather than as a single, massive transition. Their approach involves creating Virtual Networks (VNets) as the initial step, as they will be provisioning various services under different VNets.
+
+Create a Virtual Network (VNet) named nautilus-vnet in the East US region with 192.168.0.0/24 IPv4 CIDR.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-e487c2d31a2b4490@azurefreekmlprod.onmicrosoft.com
+Password	7rk##d@4
+Start Time	Tue Dec 02 04:36:07 UTC 2025
+End Time	Tue Dec 02 05:36:07 UTC 2025
+
+
+SOLUTION:
