@@ -172,3 +172,7 @@ Expected result: Disk nautilus-disk appears in the VM's data disks list, and VM 
 You've successfully added extra storage to your VM! Remember, inside the OS you'd still need to format and mount this disk to actually use it.
 
 
+---------------------------DONE---------------------------
+
+
+
