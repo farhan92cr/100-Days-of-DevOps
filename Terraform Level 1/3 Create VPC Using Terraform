@@ -11,3 +11,106 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+Lab 3: Create VPC Using Terraform
+Simple Explanation
+This lab teaches you to create a VPC (Virtual Private Cloud), which is your own private network space in AWS. Think of it as your own isolated section of the AWS cloud where you can deploy resources securely.
+
+Key Terms
+VPC (Virtual Private Cloud): Your own isolated network in AWS
+
+CIDR Block: IP address range for your VPC (like 10.0.0.0/16)
+
+IPv4: Internet Protocol version 4 (standard IP addresses)
+
+Region: Geographic location where AWS resources are deployed
+
+Benefits and Use Cases
+Network Isolation: Your resources are separated from others
+
+Custom Networking: Define your own IP ranges and subnets
+
+Security: Control traffic flow between resources
+
+Foundation: Required for most AWS services (EC2, RDS, etc.)
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER section → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create/Edit main.tf File
+Add this to your main.tf (you can keep previous resources, Terraform will manage all):
+
+hcl
+# Create VPC
+resource "aws_vpc" "nautilus_vpc" {
+  cidr_block       = "10.0.0.0/16"  # Common CIDR for VPCs
+  instance_tenancy = "default"
+  
+  tags = {
+    Name = "nautilus-vpc"
+  }
+}
+Step 4: Initialize Terraform (if not already done)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the VPC Creation
+
+bash
+# Check if VPC was created
+terraform show
+
+# You can also check with AWS CLI (if configured)
+aws ec2 describe-vpcs --filters "Name=tag:Name,Values=nautilus-vpc"
+What This Creates:
+VPC named "nautilus-vpc" in us-east-1 region
+
+CIDR Block: 10.0.0.0/16 (65,536 IP addresses)
+
+Default tenancy: Shared hardware (cheaper than dedicated)
+
+Important Notes:
+CIDR Block Choice: 10.0.0.0/16 is common for VPCs (private IP range)
+
+Other CIDR Options: You could use 172.16.0.0/16 or 192.168.0.0/16
+
+No Overlap: Ensure CIDR doesn't overlap with your existing networks
+
+VPC is Foundation: You'll add subnets, route tables, etc., to this VPC in future labs
+
+CIDR Block Examples You Could Use:
+10.0.0.0/16 (10.0.0.0 - 10.0.255.255) ← Recommended for this lab
+
+172.16.0.0/16 (172.16.0.0 - 172.16.255.255)
+
+192.168.0.0/16 (192.168.0.0 - 192.168.255.255)
+
+Real-World Use:
+This VPC will be the foundation for:
+
+Subnets (public/private)
+
+EC2 instances
+
+Databases
+
+Load balancers
+
+All other AWS resources in your network
+
+
