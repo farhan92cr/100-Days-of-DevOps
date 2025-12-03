@@ -19,3 +19,156 @@ End Time	Wed Dec 03 06:25:51 UTC 2025
 
 SOLUTION:
 
+Simple Explanation of Day 8 Lab
+Today you're attaching an existing disk to an existing Virtual Machine. Think of this like plugging an external hard drive into your computer. You have:
+
+A VM (nautilus-vm) - your "computer"
+
+A Managed Disk (nautilus-disk) - your "external hard drive"
+
+Your task is to connect them together so the VM can use the extra storage.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-70b74dcefa4b4b54@azurefreekmlprod.onmicrosoft.com -p 6sc^v#kv
+Step 2: Check Existing Resources
+bash
+# Check if VM exists
+az vm list --query "[?name=='nautilus-vm'].{Name:name, ResourceGroup:resourceGroup, Location:location}" -o table
+
+# Check if Disk exists
+az disk list --query "[?name=='nautilus-disk'].{Name:name, ResourceGroup:resourceGroup}" -o table
+Step 3: Attach the Disk to VM
+bash
+az vm disk attach \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --vm-name nautilus-vm \
+  --name nautilus-disk
+Single line version:
+
+bash
+az vm disk attach --resource-group <YOUR_RESOURCE_GROUP> --vm-name nautilus-vm --name nautilus-disk
+Step 4: Verify Disk Attachment
+bash
+# Check disk is attached
+az vm show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "storageProfile.dataDisks[].{Name:name, DiskSizeGB:diskSizeGB}"
+
+# Alternative check
+az vm get-instance-view --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "instanceView.statuses[].displayStatus"
+Step 5: Wait for VM Initialization (IMPORTANT)
+bash
+# Check VM status - should show "VM running"
+az vm get-instance-view --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+
+# If not running, start it
+az vm start --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Navigate to the VM
+Search for nautilus-vm in the search bar
+
+Click on the VM
+
+Step 3: Attach Existing Disk
+In the VM menu, click "Disks" (under Settings)
+
+Click "+ Add data disk"
+
+In "Data disks" section:
+
+LUN: Leave default (usually 0)
+
+Name: Select nautilus-disk from dropdown
+
+Caching: Leave as default (usually "None")
+
+Click "Save" at the top
+
+Step 4: Wait for Operation to Complete
+Watch for notification: "Updating virtual machine disks..."
+
+Wait for success notification: "Successfully updated virtual machine disks"
+
+Step 5: Verify Attachment
+Stay on the VM's "Disks" page
+
+Under "Data disks", you should see nautilus-disk listed
+
+Check VM status is "Running" at the top
+
+Key Terms Explained
+Managed Disk: Azure-managed storage disks. Azure handles the underlying storage infrastructure.
+
+Data Disk: Additional storage attached to a VM (not the OS disk).
+
+LUN (Logical Unit Number): A unique identifier for the disk on the VM (like drive letter in Windows).
+
+VM Initialization: The process of the VM starting up and being ready for operations.
+
+Benefits and Use Cases
+Why attach additional disks?
+
+Storage Expansion: Add more space without resizing the VM
+
+Data Separation: Keep OS on one disk, applications/data on another
+
+Performance: Use different disk types (SSD vs HDD) for different needs
+
+Backup/Recovery: Easily detach and reattach disks during maintenance
+
+Use Cases:
+
+Database storage on separate disks
+
+Log file storage
+
+Application data storage
+
+Temporary storage for processing
+
+Important Notes
+Disk Must Be Unattached: The disk must not be attached to another VM
+
+VM Status: VM should be running or stopped (not deleted)
+
+Location: Both VM and disk must be in same region (East US)
+
+After Attachment (Inside VM):
+
+The disk will appear as a new block device (e.g., /dev/sdc)
+
+You need to partition, format, and mount it inside the OS
+
+This is NOT part of this lab - just attaching is enough
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-70b74dcefa4b4b54@azurefreekmlprod.onmicrosoft.com -p 6sc^v#kv
+
+# 2. Find resource group
+az group list --output table
+# Output: kml_rg_main-xxxxx
+
+# 3. Verify resources exist
+az vm list --resource-group YOUR_RG --query "[?name=='nautilus-vm'].name" -o tsv
+az disk list --resource-group YOUR_RG --query "[?name=='nautilus-disk'].name" -o tsv
+
+# 4. Attach disk (replace YOUR_RG)
+az vm disk attach --resource-group YOUR_RG --vm-name nautilus-vm --name nautilus-disk
+
+# 5. Verify
+az vm show --resource-group YOUR_RG --name nautilus-vm --query "storageProfile.dataDisks[].name"
+
+# 6. Check VM status
+az vm get-instance-view --resource-group YOUR_RG --name nautilus-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+Expected result: Disk nautilus-disk appears in the VM's data disks list, and VM shows "VM running" status.
+
+You've successfully added extra storage to your VM! Remember, inside the OS you'd still need to format and mount this disk to actually use it.
+
+
