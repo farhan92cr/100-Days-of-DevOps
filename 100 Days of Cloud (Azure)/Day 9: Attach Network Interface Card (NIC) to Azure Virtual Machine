@@ -1,0 +1,21 @@
+Day 9: Attach Network Interface Card (NIC) to Azure Virtual Machine:
+
+The Nautilus DevOps team is migrating services to Azure. They are breaking down tasks to ensure better control and optimization. You are tasked with attaching an existing network interface (NIC) to a virtual machine (VM).
+
+An existing VM named xfusion-vm and a network interface named xfusion-nic already exist in the West US region.
+
+Attach the network interface xfusion-nic to the VM xfusion-vm.
+Ensure the NIC's status is attached before submitting the task.
+Make sure that the virtual machine initialization has been completed before submitting this task.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-1a7d044ea82a4fcd@azurefreekmlprod.onmicrosoft.com
+Password	xT9k7Gbp
+Start Time	Thu Dec 04 04:06:07 UTC 2025
+End Time	Thu Dec 04 05:06:07 UTC 2025
+
+
