@@ -1,0 +1,25 @@
+As part of the migration, there were some components created under the AWS account. The Nautilus DevOps team created one EC2 instance where they forgot to enable the termination protection which is needed for this instance.
+
+An instance named devops-ec2 already exists in us-east-1 region. Enable termination protection for the same.
+
+
+
+Use below given AWS Credentials: (You can run the showcreds command on aws-client host to retrieve these credentials)
+
+Console URL	https://903068777644.signin.aws.amazon.com/console?region=us-east-1
+Username	kk_labs_user_152580
+Password	SW5X!AVi7jEx
+Start Time	Thu Dec 04 04:21:26 UTC 2025
+End Time	Thu Dec 04 05:21:26 UTC 2025
+
+Notes:
+
+Create the resources only in us-east-1 region.
+
+To display or hide the terminal of the AWS client machine, you can use the expand toggle button as shown below:
+
+
+
+SOLuRION:
+
+
