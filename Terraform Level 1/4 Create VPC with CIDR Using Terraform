@@ -10,4 +10,124 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+Lab 4: Create VPC with Specific CIDR Using Terraform
+Simple Explanation
+This lab teaches you to create a VPC with a specific IP address range (CIDR). You're creating a smaller, more specific network range compared to the previous lab.
+
+Key Terms
+CIDR (Classless Inter-Domain Routing): Notation for IP address ranges and network masks
+
+/24 CIDR: Means 256 IP addresses (192.168.0.0 - 192.168.0.255)
+
+VPC: Your private network space in AWS
+
+IPv4 CIDR: Standard IP addressing system
+
+Benefits and Use Cases
+Precise Sizing: Create VPCs with exact IP capacity needed
+
+Network Planning: Match VPC size to expected resource count
+
+Multi-VPC Strategy: Different VPCs for different environments (prod, dev, test)
+
+IP Management: Controlled IP address allocation
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create/Edit main.tf File
+Add this VPC resource to your main.tf:
+
+hcl
+# Create VPC with specific CIDR
+resource "aws_vpc" "datacenter_vpc" {
+  cidr_block       = "192.168.0.0/24"  # Specific CIDR as required
+  instance_tenancy = "default"
+  
+  tags = {
+    Name = "datacenter-vpc"
+  }
+}
+Step 4: Initialize Terraform (if needed)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the VPC Creation
+
+bash
+# Check the created VPC
+terraform show
+
+# Look for aws_vpc.datacenter_vpc in the output
+What This Creates:
+VPC named "datacenter-vpc" in us-east-1 region
+
+Specific CIDR Block: 192.168.0.0/24
+
+IP Range: 192.168.0.0 to 192.168.0.255 (256 total IPs)
+
+CIDR Size Comparison:
+/24 CIDR (this lab): 256 IP addresses
+
+/16 CIDR (previous lab): 65,536 IP addresses
+
+/8 CIDR: 16,777,216 IP addresses
+
+Why This Specific CIDR Matters:
+192.168.0.0/24 is a common private IP range
+
+Smaller size = More efficient IP usage
+
+Planning: You know exactly how many resources can fit (256)
+
+Network Segmentation: Different VPCs for different purposes
+
+Important Notes:
+CIDR Cannot Be Changed: Once created, VPC CIDR cannot be modified
+
+No Overlap: Ensure this CIDR doesn't overlap with your other VPCs
+
+Private Range: 192.168.x.x is reserved for private networks
+
+Real IP Count: 251 usable IPs (5 are reserved by AWS for system use)
+
+Use Case Scenario:
+This "datacenter-vpc" could be for:
+
+Development environment
+
+Specific application cluster
+
+Database servers only
+
+Testing/staging infrastructure
+
+Your main.tf Now Contains:
+Key pair resource (from Lab 1)
+
+Security group resource (from Lab 2)
+
+First VPC (nautilus-vpc from Lab 3)
+
+Second VPC (datacenter-vpc from Lab 4)
+
+All resources coexist and Terraform manages them all together!
+
+
 
