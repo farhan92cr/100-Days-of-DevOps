@@ -23,3 +23,98 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 SOLuRION:
 
 
+🛡️ Enabling Termination Protection for EC2 Instance
+📖 Lab Explanation
+We're enabling Termination Protection for an existing EC2 instance (devops-ec2). This is the exact same concept as Day 8, but now applying it to a different instance. Termination protection prevents accidental stopping or termination of critical instances.
+
+🔍 Quick Recap: Key Terms
+Termination Protection
+What: Safety feature preventing accidental stop/termination
+
+Also Called: Stop Protection (same feature)
+
+AWS Term: "Disable API termination" attribute
+
+🚀 Why This Matters
+Human Error Prevention: Stops accidental "oops" moments
+
+Production Safety: Critical for live systems
+
+Change Control: Enforces proper change procedures
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://903068777644.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_152580
+Password: SW5X!AVi7jEx
+Region: us-east-1 (VERIFY THIS!)
+Navigate to EC2 Dashboard
+
+Go to Services → EC2
+
+In left sidebar, click "Instances"
+
+Locate the Instance
+
+Find instance named devops-ec2
+
+Use search/filter if needed
+
+Verify region is us-east-1
+
+Enable Termination Protection
+
+Select the devops-ec2 instance
+
+Click Actions → Instance settings → Change termination protection
+
+Check "Enable"
+
+Click "Save"
+
+Verify Protection
+
+Select the instance
+
+Check Details tab
+
+Termination protection: Should show Enabled
+
+📋 What We Configured
+Instance: devops-ec2
+
+Feature: Termination Protection Enabled
+
+Effect: Cannot be stopped or terminated without disabling first
+
+🔧 Quick CLI Method
+bash
+# One-liner to enable protection
+aws ec2 modify-instance-attribute \
+  --instance-id $(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=devops-ec2" \
+    --query "Reservations[0].Instances[0].InstanceId" \
+    --output text) \
+  --disable-api-termination "{\"Value\": true}"
+⚠️ Important Reminders
+Not Foolproof: Authorized users can still disable it
+
+Charges Continue: Instance still incurs costs
+
+Backup Still Needed: Protection ≠ backup strategy
+
+✅ Verification Steps
+Try to stop instance → Should fail with error
+
+Try to terminate instance → Should fail with error
+
+Both require disabling protection first
+
+🎉 Done!
+Termination protection is now enabled for devops-ec2. This instance is now protected from accidental shutdowns or deletions.
+
+
