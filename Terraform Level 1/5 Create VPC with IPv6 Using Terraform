@@ -11,3 +11,133 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 SOLUTION:
 
 
+Lab 5: Create VPC with IPv6 Using Terraform
+Simple Explanation
+This lab teaches you to create a VPC with both IPv4 and IPv6 addresses. IPv6 is the next-generation internet protocol with a much larger address space than IPv4.
+
+Key Terms
+IPv6: Internet Protocol version 6 (newer, larger address space)
+
+IPv4: Internet Protocol version 4 (traditional IP addresses)
+
+Amazon-provided IPv6 CIDR: IPv6 address range automatically assigned by AWS
+
+Dual-stack: VPC that supports both IPv4 and IPv6
+
+Benefits and Use Cases
+Future-proofing: IPv6 adoption is growing globally
+
+Larger Address Space: 340 undecillion addresses vs IPv4's 4.3 billion
+
+Modern Applications: Required for IoT, mobile networks, new services
+
+Compliance: Some regions/organizations require IPv6 support
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create/Edit main.tf File
+Add this VPC resource to your main.tf:
+
+hcl
+# Create VPC with IPv6 support
+resource "aws_vpc" "xfusion_vpc" {
+  cidr_block                       = "10.1.0.0/16"  # Required IPv4 CIDR
+  assign_generated_ipv6_cidr_block = true           # Request Amazon-provided IPv6 CIDR
+  instance_tenancy                 = "default"
+  
+  tags = {
+    Name = "xfusion-vpc"
+  }
+}
+Step 4: Initialize Terraform (if needed)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the VPC Creation
+
+bash
+# Check the created VPC
+terraform show
+
+# Look for IPv6 CIDR in the output
+aws ec2 describe-vpcs --filters "Name=tag:Name,Values=xfusion-vpc"
+What This Creates:
+VPC named "xfusion-vpc" in us-east-1 region
+
+IPv4 CIDR Block: 10.1.0.0/16 (standard IPv4 range)
+
+IPv6 CIDR Block: Automatically assigned by AWS (e.g., 2600:1f18:...)
+
+Dual-stack VPC: Supports both IPv4 and IPv6 addressing
+
+Key Differences from Previous Labs:
+Feature	Previous VPCs	This VPC
+IPv4 Only	✓	✓
+IPv6 Support	✗	✓
+CIDR Choice	We specified	AWS provides IPv6
+Important Notes:
+Dual Requirement: Must have IPv4 CIDR (we chose 10.1.0.0/16) + request IPv6
+
+Amazon-provided: AWS automatically assigns IPv6 CIDR from their pool
+
+No Custom IPv6: Cannot specify your own IPv6 CIDR for VPC
+
+Global Unicast: AWS provides globally routable IPv6 addresses
+
+/56 Block: AWS assigns a /56 IPv6 CIDR block (256 /64 subnets)
+
+IPv6 Address Example:
+text
+IPv4: 10.1.0.0/16
+IPv6: 2600:1f18:1234:abcd::/56  (assigned by AWS)
+Why Use IPv6?
+Exhaustion: IPv4 addresses are running out
+
+IoT/Mobile: Essential for billions of connected devices
+
+Simpler Networking: No NAT required
+
+Better Performance: Simplified packet processing
+
+Real-World Use:
+This VPC would be ideal for:
+
+Modern web applications
+
+Mobile app backends
+
+IoT platforms
+
+Services needing global connectivity
+
+Your Infrastructure Now Has:
+✅ Key pair
+
+✅ Security group
+
+✅ VPC with /16 IPv4 (nautilus-vpc)
+
+✅ VPC with /24 IPv4 (datacenter-vpc)
+
+✅ VPC with IPv4+IPv6 (xfusion-vpc)
+
+All managed by Terraform in one state file!
+
+
