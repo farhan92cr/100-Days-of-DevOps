@@ -19,3 +19,164 @@ End Time	Fri Dec 05 05:28:19 UTC 2025
 SOLUTION:
 
 
+Simple Explanation of This Lab
+Today you're attaching a Public IP Address to a VM's Network Interface Card (NIC). This is like assigning a public phone number to your server's network port. You have:
+
+A VM (nautilus-vm-pip) - your server
+
+A Public IP (nautilus-pip) - the public phone number
+
+A NIC (attached to the VM) - the network port
+
+Your task is to connect the public IP to the VM's NIC so the VM can be reached from the internet.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-d8dd9f1ba8274ea6@azurefreekmlprod.onmicrosoft.com -p 99suYdMd
+Step 2: Check Existing Resources
+bash
+# Check if VM exists
+az vm list --query "[?name=='nautilus-vm-pip'].{Name:name, ResourceGroup:resourceGroup}" -o table
+
+# Check if Public IP exists
+az network public-ip list --query "[?name=='nautilus-pip'].{Name:name, ResourceGroup:resourceGroup, IP:ipAddress}" -o table
+
+# Find the NIC attached to the VM
+az vm show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm-pip --query "networkProfile.networkInterfaces[0].id"
+Step 3: Get the NIC Name
+First, find the exact NIC name attached to the VM:
+
+bash
+# Get the full NIC ID
+NIC_ID=$(az vm show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm-pip --query "networkProfile.networkInterfaces[0].id" -o tsv)
+
+# Extract just the NIC name from the ID
+NIC_NAME=$(basename $NIC_ID)
+echo "NIC Name: $NIC_NAME"
+Step 4: Attach Public IP to NIC
+bash
+az network nic ip-config update \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --nic-name $NIC_NAME \
+  --name ipconfig1 \
+  --public-ip-address nautilus-pip
+Step 5: Verify the Assignment
+bash
+# Check the NIC now has the public IP
+az network nic show --resource-group <YOUR_RESOURCE_GROUP> --name $NIC_NAME --query "ipConfigurations[].{PrivateIP:privateIpAddress, PublicIP:publicIpAddress.ipAddress}"
+
+# Check from VM perspective
+az vm list-ip-addresses --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm-pip --output table
+
+# Verify Public IP details
+az network public-ip show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-pip --query "{Name:name, IP:ipAddress, Assignment:publicIpAllocationMethod}"
+Step 6: Test Connectivity (Optional)
+bash
+# Get the public IP
+PUBLIC_IP=$(az network public-ip show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-pip --query ipAddress -o tsv)
+echo "Public IP: $PUBLIC_IP"
+
+# Try to ping (may be blocked by firewall)
+ping -c 2 $PUBLIC_IP
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Navigate to the VM's NIC
+Search for nautilus-vm-pip in the search bar
+
+Click on the VM
+
+Click "Networking" in the left menu
+
+Click on the Network Interface link (it will be something like nautilus-vm-pipXXX)
+
+Step 3: Attach Public IP to NIC
+In the NIC page, click "IP configurations" in the left menu
+
+Click on ipconfig1 (the primary IP configuration)
+
+Under "Public IP address settings", click "Associate"
+
+Select "nautilus-pip" from the dropdown
+
+Click "Save"
+
+Step 4: Verify Assignment
+Go back to the VM page (nautilus-vm-pip)
+
+Click "Networking"
+
+You should see the Public IP address column shows nautilus-pip with an IP
+
+Alternatively, check the "Overview" page of the VM - it should show the public IP
+
+Step 5: Alternative Verification
+Go to "Public IP addresses" service
+
+Click on nautilus-pip
+
+Under "Associated to", it should show the NIC name
+
+Key Terms Explained
+Public IP Association: Linking a public IP address to a NIC's IP configuration
+
+IP Configuration (ipconfig): A VM's NIC can have multiple IP configurations (like multiple IP addresses on one network card)
+
+NIC vs VM: The public IP is attached to the NIC, not directly to the VM
+
+Static vs Dynamic: The lab likely uses a Static public IP (permanent address)
+
+Benefits and Use Cases
+Why attach Public IPs to VMs?
+
+Direct Access: SSH/RDP directly to the VM from internet
+
+Web Services: Host websites, APIs, or applications
+
+Remote Management: Manage servers from anywhere
+
+Testing: Access development/test environments
+
+Important Security Note:
+
+Always use Network Security Groups (firewall rules) to restrict access
+
+Consider using Bastion Host or VPN for production systems instead of direct public IP
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-d8dd9f1ba8274ea6@azurefreekmlprod.onmicrosoft.com -p 99suYdMd
+
+# 2. Find resource group
+az group list --output table
+# Output: kml_rg_main-xxxxx
+
+# 3. Get NIC name (replace YOUR_RG)
+NIC_ID=$(az vm show --resource-group YOUR_RG --name nautilus-vm-pip --query "networkProfile.networkInterfaces[0].id" -o tsv)
+NIC_NAME=$(basename $NIC_ID)
+echo "Working with NIC: $NIC_NAME"
+
+# 4. Attach Public IP to NIC
+az network nic ip-config update --resource-group YOUR_RG --nic-name $NIC_NAME --name ipconfig1 --public-ip-address nautilus-pip
+
+# 5. Verify
+az vm list-ip-addresses --resource-group YOUR_RG --name nautilus-vm-pip --output table
+
+# 6. Get the actual IP
+az network public-ip show --resource-group YOUR_RG --name nautilus-pip --query ipAddress -o tsv
+Expected results:
+
+VM shows both private and public IP addresses
+
+Public IP nautilus-pip is associated with the VM's NIC
+
+You can see the actual public IP address (like 20.xxx.xxx.xxx)
+
+You've now made your VM accessible from the internet! Remember to configure proper security rules.
+
+
