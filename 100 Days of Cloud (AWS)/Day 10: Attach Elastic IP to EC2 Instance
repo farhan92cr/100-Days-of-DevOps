@@ -23,3 +23,178 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 SOLUTION:
 
 
+🌐 Day 10 Lab: Attaching Elastic IP to EC2 Instance
+📖 Lab Explanation
+Today, we're attaching an Elastic IP to an EC2 instance. This gives our instance a static public IP address that won't change when we stop/start the instance. This is crucial for services that need consistent public addressing (like web servers, VPN endpoints, etc.).
+
+🔍 Key Terms Defined
+Elastic IP (EIP)
+What: Static, persistent public IPv4 address
+
+Key Feature: Remains same even if instance is stopped/started
+
+Cost: Free when attached to running instance
+
+Public IP vs Elastic IP
+Public IP: Dynamic, changes on stop/start
+
+Elastic IP: Static, persists until released
+
+Association
+What: Linking an EIP to an instance's network interface
+
+One-to-One: One EIP to one instance at a time
+
+Reassociation: Can be moved between instances
+
+🚀 Benefits & Why We Use Elastic IPs
+🔧 Technical Advantages
+DNS Consistency: DNS records don't need frequent updates
+
+Firewall Rules: Static IP for whitelisting in security groups
+
+SSL Certificates: Some SSL certs bind to specific IP addresses
+
+Service Discovery: Consistent endpoint for other services
+
+💡 Operational Benefits
+Disaster Recovery: Quick failover to backup instances
+
+Maintenance: Preserve IP during instance replacement
+
+Testing: Same IP across dev/test/prod environments
+
+🎯 Common Use Cases
+Web Servers: Hosting public websites
+
+VPN Servers: Remote access endpoints
+
+API Gateways: Public API endpoints
+
+Database Access: Whitelisted external connections
+
+⚠️ Important Considerations
+Charges: Free when attached, charges if unallocated ($0.005/hr)
+
+Limits: 5 EIPs per region by default
+
+Best Practice: Use Route53 DNS instead of IP when possible
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://067458473202.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_521797
+Password: 6inC^zx2N@y0
+Region: us-east-1 (VERIFY THIS!)
+Navigate to Elastic IPs
+
+Go to Services → EC2
+
+In left sidebar, find "Network & Security" → "Elastic IPs"
+
+Locate the Elastic IP
+
+Find Elastic IP named devops-ec2-eip
+
+If not visible by name, check tags or list all EIPs
+
+Status should be "available" (not associated)
+
+Associate Elastic IP
+
+Select the devops-ec2-eip
+
+Click Actions → Associate Elastic IP address
+
+Resource type: Select "Instance"
+
+Instance: Select devops-ec2 from dropdown
+
+Private IP address: Auto-populated (choose the instance's primary private IP)
+
+Check "Allow this Elastic IP address to be reassociated"
+
+Click "Associate"
+
+Verify Association
+
+Back in Elastic IPs list
+
+Status should now show "in-use"
+
+Associated instance ID should show the devops-ec2 instance
+
+Association ID will be displayed
+
+Verify on Instance
+
+Go to EC2 → Instances
+
+Select devops-ec2
+
+Check Details tab
+
+Public IPv4 address should now show the Elastic IP
+
+Elastic IP field should show the same address
+
+📋 What We Configured
+Elastic IP: devops-ec2-eip → Attached to devops-ec2
+
+Result: Instance now has static public IP
+
+Status: EIP is "in-use", instance shows EIP as public IP
+
+🔧 Alternative Method: AWS CLI
+bash
+# Get instance ID
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=devops-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+# Get Elastic IP allocation ID
+ALLOCATION_ID=$(aws ec2 describe-addresses \
+  --filters "Name=tag:Name,Values=devops-ec2-eip" \
+  --query "Addresses[0].AllocationId" \
+  --output text)
+
+# Associate EIP with instance
+aws ec2 associate-address \
+  --instance-id $INSTANCE_ID \
+  --allocation-id $ALLOCATION_ID
+🔄 Disassociation Process
+bash
+# To remove EIP (if needed later)
+aws ec2 disassociate-address --association-id <association-id>
+📊 Network Architecture
+text
+Internet → Elastic IP (Static) → EC2 Instance (devops-ec2)
+         54.210.132.105         → Private IP: 172.31.XX.XX
+⚠️ Important Notes
+Existing Public IP: Instance's original public IP is released
+
+Reassociation: Can move EIP to different instance anytime
+
+DNS Consideration: Update DNS records if using IP directly
+
+Cost Alert: Don't leave EIPs unassociated (they incur charges)
+
+🔐 Security Best Practices
+Use with Security Groups: EIP + strict security group rules
+
+Monitor Costs: Alert on unattached EIPs
+
+Documentation: Record EIP assignments
+
+Cleanup: Release unused EIPs
+
+🎉 Congratulations!
+You've completed Day 10! Your EC2 instance now has a static public IP address, making it reliable for public-facing services and eliminating IP changes during maintenance.
+
+Tomorrow's Preview: We might work with instance storage or load balancing! 🚀
+
