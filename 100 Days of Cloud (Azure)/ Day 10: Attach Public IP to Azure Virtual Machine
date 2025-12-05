@@ -1,0 +1,21 @@
+The Nautilus DevOps team has already set up a virtual machine and allocated a public IP address. The final task is to attach this public IP to the VM's network interface card (NIC).
+
+An existing VM named nautilus-vm-pip and a public IP address named nautilus-pip already exist.
+
+Attach the public IP nautilus-pip to the network interface of the VM nautilus-vm-pip.
+Make sure the VM is properly assigned the public IP.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-d8dd9f1ba8274ea6@azurefreekmlprod.onmicrosoft.com
+Password	99suYdMd
+Start Time	Fri Dec 05 04:28:19 UTC 2025
+End Time	Fri Dec 05 05:28:19 UTC 2025
+
+
+SOLUTION:
+
+
