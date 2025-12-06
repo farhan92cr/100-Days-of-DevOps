@@ -9,4 +9,139 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+Lab 6: Create Elastic IP Using Terraform
+Simple Explanation
+This lab teaches you to create an Elastic IP (EIP) - a static, public IP address that you can assign to AWS resources like EC2 instances. Unlike regular IPs that change when you stop/start instances, Elastic IPs stay the same.
+
+Key Terms
+Elastic IP (EIP): Static, public IPv4 address that doesn't change
+
+Public IP: Internet-routable address accessible from anywhere
+
+Allocation: Process of reserving an EIP in your AWS account
+
+Association: Attaching the EIP to a specific resource (like EC2)
+
+Benefits and Use Cases
+Static Addressing: IP address remains constant
+
+DNS Records: Use with domain names (no need to update DNS when IP changes)
+
+Failover: Quickly reassign to backup instance if primary fails
+
+NAT Gateways: Required for NAT instances/gateways
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create/Edit main.tf File
+Add this Elastic IP resource to your main.tf:
+
+hcl
+# Create Elastic IP
+resource "aws_eip" "nautilus_eip" {
+  vpc = true  # EIP for VPC (not EC2-Classic)
+  
+  tags = {
+    Name = "nautilus-eip"
+  }
+}
+Step 4: Initialize Terraform (if needed)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the Elastic IP Creation
+
+bash
+# Check the created Elastic IP
+terraform show
+
+# You'll see the public IP address assigned
+# Example: 54.210.167.227
+What This Creates:
+Elastic IP named "nautilus-eip"
+
+Public IPv4 Address: Randomly assigned from AWS pool
+
+VPC Scope: EIP allocated for VPC use (not EC2-Classic)
+
+Reserved Address: IP is now reserved in your AWS account
+
+Key Features:
+Static: IP won't change unless you release it
+
+Billable: Free when attached to running instance, costs if unattached
+
+Regional: EIP is tied to the AWS region
+
+Reusable: Can be detached and attached to different resources
+
+Important Notes:
+vpc = true: Required for VPC environments (modern AWS)
+
+No Instance Association Yet: This just reserves the IP, doesn't attach it
+
+Public IP Visible: You'll see the actual IP address in terraform show
+
+Cost Alert: Charged hourly if not attached to a running instance
+
+Example Output:
+text
+aws_eip.nautilus_eip:
+  id = eipalloc-0a1b2c3d4e5f67890
+  allocation_id = eipalloc-0a1b2c3d4e5f67890
+  association_id = (empty - not associated yet)
+  domain = vpc
+  public_ip = 54.210.167.227
+  tags = { Name = "nautilus-eip" }
+Real-World Use Cases:
+Web Servers: Assign to EC2 instances hosting websites
+
+NAT Gateway: Use for outbound internet access from private subnets
+
+VPN Servers: Static IP for consistent remote access
+
+Load Balancers: Sometimes used with Application Load Balancers
+
+Database Access: Whitelist static IP for external connections
+
+Next Steps (Future Labs):
+This EIP will likely be:
+
+Associated with an EC2 instance
+
+Used for a NAT gateway
+
+Referenced in DNS records
+
+Whitelisted in firewall rules
+
+Your Infrastructure Now Has:
+✅ Key pair
+
+✅ Security group
+
+✅ 3 VPCs (different configurations)
+
+✅ Elastic IP (static public address)
+
+Ready for Lab 7! 🚀
+
+
 
