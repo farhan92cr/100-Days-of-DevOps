@@ -23,3 +23,186 @@ Make sure the VM is in the Running state after resizing.
 SOLUTION:
 
 
+Simple Explanation of Day 11 Lab
+Today you're resizing (changing the size) of an existing Virtual Machine. This is like upgrading your computer's CPU and RAM without buying a new machine. You're changing from:
+
+Current size: Standard_B1s (1 vCPU, 1 GiB RAM)
+
+New size: Standard_B2s (2 vCPUs, 4 GiB RAM)
+
+This is called vertical scaling - making a single VM more powerful.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-2fdb58fc17284886@azurefreekmlprod.onmicrosoft.com -p 8QD4HuV5
+Step 2: Check Current VM Status and Size
+bash
+# Check if VM exists and its current size
+az vm show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "{Name:name, Size:hardwareProfile.vmSize, Location:location, State:provisioningState}"
+
+# Check current power state
+az vm get-instance-view --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "instanceView.statuses[1].displayStatus"
+Step 3: Deallocate the VM (Required Before Resizing)
+bash
+# Stop and deallocate the VM (different from just stopping)
+az vm deallocate --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm
+
+# Wait for deallocation to complete
+sleep 30
+
+# Verify VM is deallocated
+az vm get-instance-view --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+Step 4: Resize the VM
+bash
+# Change VM size to Standard_B2s
+az vm resize \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --name nautilus-vm \
+  --size Standard_B2s
+Step 5: Start the VM
+bash
+# Start the VM after resizing
+az vm start --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm
+
+# Wait for startup
+sleep 30
+
+# Verify VM is running
+az vm get-instance-view --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+Step 6: Verify New Size
+bash
+# Confirm the size changed
+az vm show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "hardwareProfile.vmSize"
+
+# Get full details
+az vm show --resource-group <YOUR_RESOURCE_GROUP> --name nautilus-vm --query "{Name:name, NewSize:hardwareProfile.vmSize, State:provisioningState, PowerState:'VM running'}"
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Navigate to the VM
+Search for nautilus-vm in the search bar
+
+Click on the VM
+
+Verify it's in East US region
+
+Step 3: Stop/Deallocate the VM
+On the VM overview page, click "Stop" at the top
+
+Wait for the VM to fully stop (status changes to "Stopped (deallocated)")
+
+Important: Make sure it says "Stopped (deallocated)" not just "Stopped"
+
+Step 4: Change the Size
+Click "Size" in the left menu (under Settings)
+
+Search for Standard_B2s in the list
+
+Select Standard_B2s from the results
+
+Click "Resize" button
+
+Step 5: Start the VM
+Click "Start" button at the top
+
+Wait for VM to start (status changes to "Running")
+
+This may take 2-3 minutes
+
+Step 6: Verify
+On the Overview page, check:
+
+Status: Running
+
+Size: Standard_B2s
+
+Or go to "Size" page again to confirm Standard_B2s is selected
+
+Key Terms Explained
+Vertical Scaling (Scale Up/Down): Changing a VM's size (CPU/RAM) to handle more/less load.
+
+Deallocation: Fully stopping a VM and releasing its hardware resources. Required before resizing.
+
+Standard_B1s vs Standard_B2s:
+
+B1s: 1 vCPU, 1 GiB RAM (Burstable)
+
+B2s: 2 vCPUs, 4 GiB RAM (Burstable)
+
+Burstable VMs: Can burst CPU performance when needed, cost-effective for variable workloads.
+
+Benefits and Use Cases
+Why resize VMs?
+
+Cost Optimization: Downsize underutilized VMs to save money
+
+Performance Improvement: Upsize VMs experiencing performance issues
+
+Right-sizing: Match VM size to actual workload requirements
+
+Flexibility: Easily adjust resources as needs change
+
+Use Cases:
+
+Development/test VMs can be smaller
+
+Production VMs can be resized for seasonal traffic
+
+Database servers needing more RAM
+
+Web servers needing more CPU
+
+Important Notes
+Must Deallocate: You CANNOT resize a running VM. Must stop and deallocate first.
+
+Downtime Required: Resizing requires VM restart = temporary downtime.
+
+Location Constraints: Some VM sizes are only available in certain regions.
+
+Cost Change: Larger size = higher cost, smaller size = lower cost.
+
+IP Address: Public IP may change if VM is deallocated (unless using static IP).
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-2fdb58fc17284886@azurefreekmlprod.onmicrosoft.com -p 8QD4HuV5
+
+# 2. Find resource group
+az group list --output table
+# Output: kml_rg_main-xxxxx
+
+# 3. Check current size (replace YOUR_RG)
+az vm show --resource-group YOUR_RG --name nautilus-vm --query "hardwareProfile.vmSize"
+
+# 4. Deallocate VM
+az vm deallocate --resource-group YOUR_RG --name nautilus-vm
+echo "Waiting for deallocation..."
+sleep 45
+
+# 5. Resize VM
+az vm resize --resource-group YOUR_RG --name nautilus-vm --size Standard_B2s
+
+# 6. Start VM
+az vm start --resource-group YOUR_RG --name nautilus-vm
+echo "Waiting for startup..."
+sleep 45
+
+# 7. Verify
+az vm show --resource-group YOUR_RG --name nautilus-vm --query "{Name:name, Size:hardwareProfile.vmSize}"
+az vm get-instance-view --resource-group YOUR_RG --name nautilus-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+Expected results:
+
+VM size changes from Standard_B1s to Standard_B2s
+
+VM ends in "Running" state
+
+No errors during the process
+
+You've successfully optimized your VM resources! This is a common task for cost management and performance tuning.
+
+
