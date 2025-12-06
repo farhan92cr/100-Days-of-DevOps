@@ -25,3 +25,214 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 SOLUTION:
 
 
+🌐 Day 11 Lab: Attaching Elastic Network Interface to EC2 Instance
+📖 Lab Explanation
+Today, we're attaching an Elastic Network Interface (ENI) to an EC2 instance. ENIs are virtual network cards that give instances additional network capabilities, like multiple IP addresses, different security groups, or network separation.
+
+🔍 Key Terms Defined
+Elastic Network Interface (ENI)
+What: Virtual network card for EC2 instances
+
+Purpose: Provides network connectivity to instances
+
+Features: Can have multiple private IPs, security groups, etc.
+
+Primary vs Secondary ENI
+Primary ENI: Created automatically with instance, cannot be detached
+
+Secondary ENI: Additional interfaces we can attach/detach
+
+ENI States
+Available: Created but not attached
+
+Attaching: In process of attaching
+
+In-use: Successfully attached to instance
+
+Detaching: In process of detaching
+
+🚀 Benefits & Why We Use ENIs
+🔧 Technical Advantages
+Multiple IPs: Single instance with multiple IP addresses
+
+Network Separation: Different subnets/security groups per interface
+
+High Availability: Move ENI between instances for failover
+
+Network Management: Different traffic types on different interfaces
+
+💡 Use Case Benefits
+Network Appliances: Firewalls, routers with multiple network segments
+
+Multi-homed Servers: Web servers on public/private networks
+
+Management Separation: Separate management/data planes
+
+IP Address Management: Additional IPs without new instances
+
+🎯 Common Use Cases
+Bastion Hosts: Separate management interface
+
+Proxy Servers: Multiple network segments
+
+Network Security: IDS/IPS with monitoring interfaces
+
+Multi-tier Apps: Different interfaces for different tiers
+
+⚠️ Important Considerations
+AZ Bound: ENI must be in same AZ as instance
+
+Instance Limits: Varies by instance type (e.g., t2.micro: 2 ENIs)
+
+Attachment Time: Requires instance stop for some configurations
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://198646816501.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_184698
+Password: BhwME8EnHLEl
+Region: us-east-1 (VERIFY THIS!)
+Verify Instance Status
+
+Go to Services → EC2 → Instances
+
+Find datacenter-ec2 instance
+
+Status Checks: Must show "2/2 checks passed"
+
+Instance State: Must be "running"
+
+If "initializing", wait a few minutes
+
+Navigate to Network Interfaces
+
+In left sidebar, find "Network & Security" → "Network Interfaces"
+
+Find ENI named datacenter-eni
+
+Check Status: Should be "available"
+
+Check Availability Zone: Must match instance's AZ
+
+Attach ENI to Instance
+
+Select datacenter-eni
+
+Click Actions → Attach
+
+Instance: Select datacenter-ec2 from dropdown
+
+Device Index:
+
+Primary interface is eth0 (device index 0)
+
+Secondary interfaces start at 1
+
+Leave default (usually auto-calculates next available)
+
+Click "Attach"
+
+Verify Attachment
+
+Refresh Network Interfaces list
+
+Status: Should change to "in-use"
+
+Attachment ID: Will be displayed
+
+Attached To: Should show datacenter-ec2
+
+Attachment Status: Should be "attached" (not "attaching")
+
+Verify on Instance
+
+Go back to Instances
+
+Select datacenter-ec2
+
+Click Networking tab (or check Details)
+
+Should show multiple network interfaces
+
+Verify ENI appears in network interfaces list
+
+📋 What We Configured
+ENI: datacenter-eni → Attached to datacenter-ec2
+
+Result: Instance now has additional network interface
+
+Status: ENI is "in-use" and "attached"
+
+🔧 Alternative Method: AWS CLI
+bash
+# Get instance ID
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=datacenter-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+# Get ENI ID
+ENI_ID=$(aws ec2 describe-network-interfaces \
+  --filters "Name=tag:Name,Values=datacenter-eni" \
+  --query "NetworkInterfaces[0].NetworkInterfaceId" \
+  --output text)
+
+# Attach ENI (device index 1 for first secondary interface)
+aws ec2 attach-network-interface \
+  --network-interface-id $ENI_ID \
+  --instance-id $INSTANCE_ID \
+  --device-index 1
+
+# Check attachment status
+aws ec2 describe-network-interfaces \
+  --network-interface-ids $ENI_ID \
+  --query "NetworkInterfaces[0].Attachment.Status"
+🔍 Verification Commands (on Linux Instance)
+bash
+# SSH to instance (when connected)
+ssh -i key.pem user@instance-ip
+
+# Check network interfaces
+ip link show
+ifconfig -a
+
+# Check specific interface
+ip addr show dev eth1  # if device index 1
+⚠️ Important Notes
+Device Index: Primary=0, Secondary start at 1
+
+Instance Stop: Some ENI changes require instance stop
+
+Security Groups: ENI can have different SG than instance
+
+IP Configuration: ENI brings its own IP addresses
+
+🔐 Network Security Considerations
+Security Groups: ENI can have different SGs than primary interface
+
+Network ACLs: Subnet-level traffic control still applies
+
+Route Tables: Traffic routing based on subnet routes
+
+IP Addressing: Multiple private IPs possible per ENI
+
+🔄 Detachment Process
+bash
+# Get attachment ID first
+ATTACHMENT_ID=$(aws ec2 describe-network-interfaces \
+  --network-interface-ids $ENI_ID \
+  --query "NetworkInterfaces[0].Attachment.AttachmentId" \
+  --output text)
+
+# Detach ENI
+aws ec2 detach-network-interface --attachment-id $ATTACHMENT_ID
+🎉 Congratulations!
+You've completed Day 11! Your EC2 instance now has an additional network interface, enabling advanced networking configurations like multi-homing, network separation, and additional IP addresses.
+
+Tomorrow's Preview: We might work with instance storage, snapshots, or AMIs! 🚀
+
+
