@@ -34,5 +34,97 @@ End Time	Mon Dec 08 05:13:22 UTC 2025
 SOLUTION:
 
 
+Simple Explanation of Day 13 Lab
+Today you're configuring SSH key-based authentication for an Azure VM. This means:
+
+You have a VM (datacenter-vm) in West US region
+
+You need to add your public SSH key to the VM so you can log in without a password
+
+You're setting this up for the root user (administrator) on the VM
+
+The key is already on your Azure client host at /root/.ssh/id_rsa.pub
+
+This is a crucial security practice - using keys instead of passwords for SSH access.
+
+Step-by-Step Solution
+Solution:
+Get your public key:
+
+bash
+cat /root/.ssh/id_rsa.pub
+Copy the entire output.
+
+Step 2: First, SSH as azureuser (Default User)
+bash
+# SSH as azureuser (you'll need to use a password or existing key)
+ssh azureuser@<VM_PUBLIC_IP>
+# If prompted for password, you may need to check lab credentials or use SSH key if available
+Step 3: Once Connected as azureuser, Switch to Root
+bash
+# Inside the VM, switch to root
+sudo -i
+
+# Now you're root on the VM
+Step 4: Configure SSH for Root User
+bash
+# Create .ssh directory for root if it doesn't exist
+mkdir -p /root/.ssh
+
+
+# Create authorized_keys file and add your public key
+# You'll need to copy the content from /root/.ssh/id_rsa.pub on your client host
+# One way: manually copy and paste, or use echo
+# Example (replace with YOUR actual public key):
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... [rest of your key]" >> /root/.ssh/authorized_keys
+
+# Set correct permissions (CRITICAL - SSH is strict about permissions)
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+chown -R root:root /root/.ssh
+
+The VM has PasswordAuthentication disabled for root. You need to:
+
+On the VM (as azureuser):
+bash
+ssh azureuser@20.245.224.253
+sudo -i
+Edit SSH config to allow root with key only:
+bash
+vi /etc/ssh/sshd_config
+Find this line:
+
+bash
+#PermitRootLogin prohibit-password
+Make sure it's uncommented and set to:
+
+bash
+PermitRootLogin prohibit-password
+NOT PermitRootLogin yes
+
+Also ensure PubkeyAuthentication is enabled:
+bash
+PubkeyAuthentication yes
+Restart SSH:
+bash
+systemctl restart sshd
+exit
+exit
+Now test with -i flag pointing to your private key:
+bash
+ssh -i /root/.ssh/id_rsa root@20.245.224.253
+
+
+
+
+Step 6: Test SSH as Root from Client Host
+bash
+# Exit the VM (back to your client host)
+exit
+exit
+
+# Now SSH directly as root
+ssh root@<VM_PUBLIC_IP>
+# Should connect without password prompt
 
 
