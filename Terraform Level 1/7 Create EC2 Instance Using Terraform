@@ -19,6 +19,280 @@ The Terraform working directory is /home/bob/terraform. Create the main.tf file 
 Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
 
 
+SOlution:
+
+Lab 7: Create EC2 Instance Using Terraform
+Simple Explanation
+This lab teaches you to create an EC2 instance - a virtual server in AWS. This is like spinning up your own computer in the cloud that you can access remotely.
+
+Key Terms
+EC2 Instance: Elastic Compute Cloud - virtual server in AWS
+
+AMI (Amazon Machine Image): Pre-configured template for the instance (OS + software)
+
+Instance Type: Hardware specification (CPU, RAM) - t2.micro is smallest/free tier
+
+Key Pair: SSH key for secure login to the instance
+
+Security Group: Firewall rules for the instance
+
+Benefits and Use Cases
+Scalable Compute: Launch servers on-demand
+
+Cost-effective: Pay only for what you use
+
+Flexible: Choose OS, hardware, configuration
+
+Foundation: Building block for most AWS architectures
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Create/Edit main.tf File
+Add these resources to your main.tf:
+
+hcl
+# Create new RSA key for the EC2 instance
+resource "tls_private_key" "xfusion_rsa" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Create AWS key pair from the RSA key
+resource "aws_key_pair" "xfusion_key" {
+  key_name   = "xfusion-kp"
+  public_key = tls_private_key.xfusion_rsa.public_key_openssh
+}
+
+# Create EC2 instance
+resource "aws_instance" "xfusion_ec2" {
+  ami           = "ami-0c101f26f147fa7fd"  # Amazon Linux AMI
+  instance_type = "t2.micro"
+  key_name      = aws_key_pair.xfusion_key.key_name  # Use the key pair we created
+  
+  # Use default security group (available in default VPC)
+  vpc_security_group_ids = [aws_security_group.default.id]
+
+  tags = {
+    Name = "xfusion-ec2"
+  }
+}
+
+# Get the default security group from default VPC
+resource "aws_security_group" "default" {
+  name        = "default"
+  description = "Default security group"
+  vpc_id      = data.aws_vpc.default.id
+}
+
+# Get default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+Step 4: Initialize Terraform (if needed)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the EC2 Instance
+
+bash
+# Check the created instance
+terraform show
+
+# You should see:
+# - Instance ID
+# - Public IP address
+# - State (running)
+# - Key pair name
+What This Creates:
+EC2 Instance named "xfusion-ec2" with t2.micro instance type
+
+Key pair "xfusion-kp" for SSH access
+
+Amazon Linux OS from specified AMI
+
+Default security group attached (allows no inbound traffic by default)
+
+Important Notes:
+AMI ID: ami-0c101f26f147fa7fd is for Amazon Linux in us-east-1
+
+Default Security Group: Initially blocks all inbound traffic (you'll need to modify it to allow SSH/HTTP)
+
+Key Pair: New key created specifically for this instance
+
+No SSH Access Yet: Default security group blocks SSH (port 22)
+
+To Allow SSH Access (Optional - for future use):
+hcl
+# Add to your security group resource if you want SSH access
+resource "aws_security_group" "default" {
+  name        = "default"
+  description = "Default security group"
+  vpc_id      = data.aws_vpc.default.id
+
+  # Add SSH rule (optional)
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+Key Components Explained:
+AMI: Operating system template
+
+t2.micro: 1 vCPU, 1GB RAM (free tier eligible)
+
+Key Pair: Your "password" for SSH login
+
+Security Group: Controls network access
+
+Tags: Metadata for identification
+
+Expected Output:
+text
+aws_instance.xfusion_ec2:
+  id = i-0123456789abcdef0
+  ami = ami-0c101f26f147fa7fd
+  instance_type = t2.micro
+  key_name = xfusion-kp
+  public_ip = 54.210.167.227
+  tags = { Name = "xfusion-ec2" }
+  vpc_security_group_ids = [sg-0123456789abcdef]
+Your Infrastructure Now Has:
+✅ Key pairs (devops-kp, xfusion-kp)
+
+✅ Security groups
+
+✅ 3 VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance (running server!)
+
+Ready for Lab 8! 🚀
+
+
+
+
+
+
+Error Analysis
+Problem: The default security group already exists in your default VPC. You cannot create another security group with the same name.
+
+Why this happens: Every VPC comes with a pre-existing default security group. You're trying to create a new one with the same name.
+
+Solution
+Step 1: Instead of CREATING a new default security group, use the EXISTING one:
+
+Replace your EC2 instance configuration with this:
+
+hcl
+# Create new RSA key for the EC2 instance
+resource "tls_private_key" "xfusion_rsa" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Create AWS key pair from the RSA key
+resource "aws_key_pair" "xfusion_key" {
+  key_name   = "xfusion-kp"
+  public_key = tls_private_key.xfusion_rsa.public_key_openssh
+}
+
+# Create EC2 instance
+resource "aws_instance" "xfusion_ec2" {
+  ami           = "ami-0c101f26f147fa7fd"  # Amazon Linux AMI
+  instance_type = "t2.micro"
+  key_name      = aws_key_pair.xfusion_key.key_name  # Use the key pair we created
+  
+  # Use the EXISTING default security group (don't create new)
+  vpc_security_group_ids = [data.aws_security_group.default.id]
+
+  tags = {
+    Name = "xfusion-ec2"
+  }
+}
+
+# Get the EXISTING default security group from default VPC
+data "aws_security_group" "default" {
+  name   = "default"
+  vpc_id = data.aws_vpc.default.id
+}
+
+# Get default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+Step 2: Clean up the partially created resources
+
+First, let's see what was created:
+
+bash
+terraform state list
+Step 3: Remove the failed security group resource from state
+
+bash
+terraform state rm aws_security_group.default
+Step 4: Update your main.tf file with the corrected code above
+
+Step 5: Apply the configuration
+
+bash
+terraform apply
+Key Changes:
+data "aws_security_group" instead of resource "aws_security_group"
+
+data = Read existing resource
+
+resource = Create new resource
+
+Using existing default security group that AWS automatically provides
+
+Why This Works:
+Every VPC has a default security group already (named "default")
+
+You can't create another one with the same name
+
+Use data source to reference existing resources
+
+The lab requirement says "attach the default security group" - meaning the one that exists by default
+
+Alternative Solution (if you want a new security group):
+If you prefer to create a new security group (not use the default one), you can:
+
+hcl
+# Create a NEW security group with DIFFERENT name
+resource "aws_security_group" "xfusion_sg" {
+  name        = "xfusion-sg"
+  description = "Security group for xfusion EC2"
+  vpc_id      = data.aws_vpc.default.id
+  
+  # Add any rules you need
+}
+
+# Then use this new SG in your EC2 instance
+vpc_security_group_ids = [aws_security_group.xfusion_sg.id]
+But for this lab, using the existing default security group is correct according to requirements.
+
+
 
 
 
