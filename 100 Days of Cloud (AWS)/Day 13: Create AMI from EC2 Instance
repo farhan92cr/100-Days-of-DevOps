@@ -1,2 +1,253 @@
 Day 13: Create AMI from EC2 Instance:
 
+Day 13: Create AMI from EC2 Instance:
+The Nautilus DevOps team is strategizing the migration of a portion of their infrastructure to the AWS cloud. Recognizing the scale of this undertaking, they have opted to approach the migration in incremental steps rather than as a single massive transition. To achieve this, they have segmented large tasks into smaller, more manageable units. This granular approach enables the team to execute the migration in gradual phases, ensuring smoother implementation and minimizing disruption to ongoing operations. By breaking down the migration into smaller tasks, the Nautilus DevOps team can systematically progress through each stage, allowing for better control, risk mitigation, and optimization of resources throughout the migration process.
+
+For this task, create an AMI from an existing EC2 instance named datacenter-ec2 with the following requirement:
+
+Name of the AMI should be datacenter-ec2-ami, make sure AMI is in available state.
+
+
+
+Use below given AWS Credentials: (You can run the showcreds command on aws-client host to retrieve these credentials)
+
+Console URL	https://852335442799.signin.aws.amazon.com/console?region=us-east-1
+Username	kk_labs_user_191974
+Password	0DyXSmN^0@19
+Start Time	Mon Dec 08 05:39:50 UTC 2025
+End Time	Mon Dec 08 06:39:50 UTC 2025
+
+Notes:
+
+Create the resources only in us-east-1 region.
+
+To display or hide the terminal of the AWS client machine, you can use the expand toggle button as shown below:
+
+
+SOLUTION:
+
+
+
+
+
+
+📸 Day 13 Lab: Creating AMI from EC2 Instance
+📖 Lab Explanation
+Today, we're creating an AMI (Amazon Machine Image) from an existing EC2 instance. An AMI is a template that contains the software configuration (OS, applications, settings) needed to launch an instance. It's like taking a snapshot of your entire server configuration to create reusable templates.
+
+🔍 Key Terms Defined
+AMI (Amazon Machine Image)
+What: Pre-configured virtual machine template
+
+Contains: OS, application server, applications, configuration
+
+Purpose: Launch new instances with identical configuration
+
+AMI Creation Process
+Snapshot: Creates EBS snapshots of attached volumes
+
+Metadata: Stores instance configuration details
+
+Registration: Registers the image in your account
+
+AMI States
+pending: Creation in progress
+
+available: Ready to use
+
+failed: Creation failed
+
+deregistered: Removed from catalog
+
+🚀 Benefits & Why We Create AMIs
+🔧 Technical Advantages
+Consistency: Identical environments every time
+
+Speed: Launch pre-configured instances in minutes
+
+Automation: Enable auto-scaling with custom AMIs
+
+Backup: Capture system state at a point in time
+
+💡 Operational Benefits
+Disaster Recovery: Quick recovery from system failures
+
+Testing: Create exact copies for testing
+
+Compliance: Maintain approved, hardened images
+
+Version Control: Track system configurations over time
+
+🎯 Common Use Cases
+Golden Images: Pre-approved, hardened server templates
+
+Auto-scaling: Launch templates for auto-scaling groups
+
+Disaster Recovery: Backup entire server configuration
+
+Development: Share development environments across team
+
+⚠️ Important Considerations
+Instance State: Should be running (or stopped) for clean AMI
+
+Storage Costs: AMIs consume storage (charged for snapshots)
+
+Time: Takes several minutes to complete
+
+Data Consistency: For databases, consider quiescing before AMI
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://852335442799.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_191974
+Password: 0DyXSmN^0@19
+Region: us-east-1 (VERIFY THIS!)
+Navigate to EC2 Instance
+
+Go to Services → EC2
+
+In left sidebar, click "Instances"
+
+Find instance named datacenter-ec2
+
+Verify it's in running or stopped state
+
+Create Image from Instance
+
+Select datacenter-ec2 instance
+
+Click Actions → Image and templates → Create image
+
+Create Image dialog appears
+
+Configure Image Settings
+
+Image name: datacenter-ec2-ami
+
+Image description: (Optional) e.g., "AMI from datacenter-ec2"
+
+No reboot: UNCHECK this (recommended for clean AMI)
+
+If checked, AWS won't reboot instance but may affect data consistency
+
+For production, leave unchecked to ensure consistent state
+
+Tags: (Optional) Add tags if needed
+
+Click Create image
+
+Monitor AMI Creation
+
+You'll see: "Successfully initiated creation of AMI"
+
+Click "View pending image ami-xxxx"
+
+Or go to: EC2 → AMIs → Owned by me
+
+Status will show pending
+
+Wait for AMI to Become Available
+
+AMI creation takes 5-15 minutes depending on volume size
+
+Refresh AMI list periodically
+
+Check Status column
+
+When complete, status changes to available
+
+Verify AMI Details
+
+Select the AMI datacenter-ec2-ami
+
+Check Status: Should be available
+
+Note AMI ID: e.g., ami-0abcdef1234567890
+
+Check Root device type: EBS
+
+Check Virtualization type: hvm
+
+📋 What We Created
+AMI Name: datacenter-ec2-ami
+
+Source: datacenter-ec2 instance
+
+Status: Available (after completion)
+
+Contains: Entire instance configuration including volumes
+
+🔧 Alternative Method: AWS CLI
+bash
+# Create AMI from instance
+aws ec2 create-image \
+  --instance-id $(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=datacenter-ec2" \
+    --query "Reservations[0].Instances[0].InstanceId" \
+    --output text) \
+  --name "datacenter-ec2-ami" \
+  --description "AMI created from datacenter-ec2" \
+  --no-reboot  # Add this flag to avoid instance reboot
+
+# Check AMI status
+aws ec2 describe-images \
+  --filters "Name=name,Values=datacenter-ec2-ami" \
+  --query "Images[0].State"
+🔍 Behind the Scenes
+When creating an AMI:
+
+Snapshots created for each EBS volume
+
+Metadata collected about instance configuration
+
+AMI registered in your account
+
+Launch permissions set (private by default)
+
+⚠️ Important Notes
+Cost: You pay for EBS snapshots storage
+
+Time: Don't submit task until AMI shows "available" status
+
+Reboot: Instance may reboot during creation (if "No reboot" not checked)
+
+Instance Use: Can continue using instance during AMI creation
+
+EBS-backed: Modern AMIs are EBS-backed (not instance store)
+
+📊 AMI Components Created
+text
+datacenter-ec2-ami (AMI)
+├── Snapshot of root volume (sda1)
+├── Snapshot of data volumes (if any)
+├── Instance metadata (type, architecture, etc.)
+└── Launch permissions (private/public)
+🔄 Using the AMI
+Once available, you can:
+
+bash
+# Launch new instance from AMI
+aws ec2 run-instances \
+  --image-id ami-0abcdef1234567890 \
+  --instance-type t2.micro \
+  --key-name your-key-pair \
+  --security-group-ids sg-xxxx
+🔐 Security Best Practices
+Regular Updates: Create updated AMIs with security patches
+
+Hardening: Apply security hardening before creating AMI
+
+Access Control: Keep AMIs private unless needed publicly
+
+Cleanup: Deregister unused AMIs to save costs
+
+🎉 Congratulations!
+You've completed Day 13! You now have a reusable server template (AMI) that captures the complete configuration of your datacenter-ec2 instance. This is essential for scalability, consistency, and disaster recovery.
+
+Wait for AMI status to show "available" before submitting the task! ⏳
+
+Ready for Day 14! 🚀
