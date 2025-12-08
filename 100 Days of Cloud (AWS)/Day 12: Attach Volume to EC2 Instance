@@ -1,0 +1,22 @@
+The Nautilus DevOps team has been creating a couple of services on AWS cloud. They have been breaking down the migration into smaller tasks, allowing for better control, risk mitigation, and optimization of resources throughout the migration process. Recently they came up with requirements mentioned below.
+
+An instance named devops-ec2 and a volume named devops-volume already exists in us-east-1 region. Attach the devops-volume volume to the devops-ec2 instance, make sure to set the device name to /dev/sdb while attaching the volume.
+
+
+
+Use below given AWS Credentials: (You can run the showcreds command on aws-client host to retrieve these credentials)
+
+Console URL	https://187354226259.signin.aws.amazon.com/console?region=us-east-1
+Username	kk_labs_user_398443
+Password	qI6EUARWgLSx
+Start Time	Mon Dec 08 05:16:33 UTC 2025
+End Time	Mon Dec 08 06:16:33 UTC 2025
+Notes:
+
+Create the resources only in us-east-1 region.
+
+To display or hide the terminal of the AWS client machine, you can use the expand toggle button as shown below:
+
+
+SOLUTION:
+
