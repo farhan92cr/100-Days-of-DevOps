@@ -1,0 +1,14 @@
+The Nautilus DevOps team is migrating a portion of their infrastructure to Azure. During the migration, they have created several virtual machines (VMs) in different regions. The team has identified one VM that is not tagged properly so they decided to tag it as needed.
+
+Add the tag Environment=dev to the virtual machine named nautilus-vm.
+
+
+
+Use the below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve these credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-353a645b3e2a476f@azurefreekmlprod.onmicrosoft.com
+Password	PH$#TX8F
+Start Time	Mon Dec 08 04:01:22 UTC 2025
+End Time	Mon Dec 08 05:01:22 UTC 2025
+
