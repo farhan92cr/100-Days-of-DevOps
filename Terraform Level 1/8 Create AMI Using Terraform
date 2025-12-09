@@ -15,4 +15,163 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 SOLUTION:
 
 
+Lab 8: Create AMI Using Terraform
+Simple Explanation
+This lab teaches you to create an AMI (Amazon Machine Image) from an existing EC2 instance. An AMI is like taking a snapshot/backup of your server that you can use to launch identical instances later.
+
+Key Terms
+AMI (Amazon Machine Image): Template containing OS, applications, and configuration
+
+Source Instance: The EC2 instance you're copying to create the AMI
+
+AMI Creation Process: Takes a snapshot of the instance's root volume
+
+Available State: AMI is ready to use for launching new instances
+
+Benefits and Use Cases
+Backup: Create point-in-time backups of your servers
+
+Cloning: Launch identical instances for scaling
+
+Golden Images: Pre-configured templates with all required software
+
+Disaster Recovery: Quick recovery from known good state
+
+Consistency: Ensure all instances start from identical configuration
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Add AMI Creation to main.tf File
+Add this resource to your existing main.tf:
+
+# Create EC2 instance first (if it doesn't exist)
+resource "aws_instance" "xfusion_ec2" {
+  ami           = "ami-0c101f26f147fa7fd"
+  instance_type = "t2.micro"
+  
+  # Use default security group
+  vpc_security_group_ids = [data.aws_security_group.default.id]
+
+  tags = {
+    Name = "xfusion-ec2"
+  }
+}
+
+# Get default security group
+data "aws_security_group" "default" {
+  name   = "default"
+  vpc_id = data.aws_vpc.default.id
+}
+
+# Get default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+
+# Then create AMI from it
+resource "aws_ami_from_instance" "xfusion_ami" {
+  name               = "xfusion-ec2-ami"
+  source_instance_id = aws_instance.xfusion_ec2.id
+  
+  tags = {
+    Name = "xfusion-ec2-ami"
+  }
+}
+
+
+Step 4: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 5: Check AMI Creation Status
+
+bash
+# Check if AMI was created
+terraform show
+
+# Look for aws_ami_from_instance.xfusion_ami
+# Check the "state" field - should say "available"
+
+# You can also check with AWS CLI
+aws ec2 describe-images --filters "Name=name,Values=xfusion-ec2-ami"
+What This Creates:
+AMI named "xfusion-ec2-ami" created from the xfusion-ec2 instance
+
+Snapshot: Creates EBS snapshot of the instance's root volume
+
+AMI Metadata: Registers the snapshot as a launchable AMI
+
+Important Notes:
+Source Instance Must Exist: The xfusion-ec2 instance must be running or stopped (not terminated)
+
+AMI Creation Time: Can take several minutes depending on instance size
+
+Instance State: The instance can be running or stopped during AMI creation
+
+No Reboot: By default, AWS tries to create AMI without rebooting the instance
+
+Cost: Storage cost for the AMI/snapshot
+
+AMI Creation Process:
+Initiate: Terraform sends create AMI request
+
+Snapshot: AWS creates snapshot of instance volumes
+
+Register: AWS registers snapshot as AMI
+
+Available: AMI ready for use (takes 2-10 minutes)
+
+To Verify AMI is Available:
+bash
+# This will show AMI details including state
+terraform refresh
+terraform show | grep -A5 "aws_ami_from_instance.xfusion_ami"
+Expected Output:
+text
+aws_ami_from_instance.xfusion_ami:
+  id = ami-0123456789abcdef0
+  name = xfusion-ec2-ami
+  source_instance_id = i-0123456789abcdef0
+  state = "available"  # This confirms success!
+  tags = { Name = "xfusion-ec2-ami" }
+Use Cases for This AMI:
+Scaling: Launch more identical web servers
+
+Testing: Create test environments matching production
+
+Updates: Create updated AMI with new software patches
+
+Backup: Restore instance if something goes wrong
+
+Important Warning:
+Don't Delete Source Instance: Keep the source instance until AMI is created
+
+Storage Costs: AMIs incur storage charges
+
+Region-specific: AMI is only available in the region where created
+
+Your Infrastructure Now Has:
+✅ Key pairs
+
+✅ Security groups
+
+✅ VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance
+
+✅ AMI (template for future instances)
+
+Ready for Lab 9! 🚀
+
 
