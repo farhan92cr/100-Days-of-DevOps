@@ -22,3 +22,181 @@ End Time	Tue Dec 09 05:23:41 UTC 2025
 
 SOLUTION:
 
+Simple Explanation of Day 14 Lab
+Today you're creating a Managed Disk in Azure. Think of this like creating a virtual hard drive that you can attach to any Virtual Machine later. You're creating a 2GB standard hard disk named datacenter-disk.
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-3b153d4ff1b94945@azurefreekmlprod.onmicrosoft.com -p L$Ec-Kf&
+Step 2: Find Your Resource Group
+bash
+az group list --output table
+Note the resource group name for Step 4
+
+Step 3: Create the Managed Disk
+bash
+az disk create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --name datacenter-disk \
+  --location "East US" \
+  --sku Standard_LRS \
+  --size-gb 2
+Single line version:
+
+bash
+az disk create --resource-group <YOUR_RESOURCE_GROUP> --name datacenter-disk --location "East US" --sku Standard_LRS --size-gb 2
+Step 4: Verify Disk Creation
+bash
+# Check disk details
+az disk show --resource-group <YOUR_RESOURCE_GROUP> --name datacenter-disk --query "{Name:name, SizeGB:diskSizeGb, SKU:sku.name, Location:location, State:provisioningState}"
+
+# List all disks
+az disk list --resource-group <YOUR_RESOURCE_GROUP> --output table
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Create Managed Disk
+Click "Create a resource" → Search "Managed Disks" → "Create"
+
+Step 3: Configure Disk
+Basics tab:
+
+Resource group: Select existing group
+
+Disk name: datacenter-disk
+
+Region: East US (or any region)
+
+Availability zone: None (default)
+
+Source type: None (empty disk)
+
+Disk size tab:
+
+Size: Click "Change size"
+
+Filter by: Standard HDD
+
+Select any 2GB size (look for 2 GiB)
+
+Click "Select"
+
+Advanced tab:
+
+SKU: Standard HDD (Standard_LRS)
+
+Leave other settings as default
+
+Step 4: Review and Create
+Click "Review + create"
+
+Wait for validation
+
+Click "Create"
+
+Step 5: Verify Creation
+Go to "Disks" service
+
+Search for datacenter-disk
+
+Click on it
+
+Verify:
+
+Size: 2 GiB
+
+SKU: Standard HDD
+
+Status: Succeeded
+
+Key Terms Explained
+Managed Disk: Azure-managed block storage. Azure handles infrastructure, replication, availability.
+
+Standard_LRS: Locally Redundant Storage - 3 copies within one datacenter. Cheapest option.
+
+GiB (Gibibyte): 2^30 bytes (1,073,741,824 bytes). Slightly different from GB (10^9 bytes).
+
+Empty Disk: Disk with no OS or data - blank storage.
+
+Benefits and Use Cases
+Why create standalone disks?
+
+Flexibility: Create disks independently, attach to VMs later
+
+Data Persistence: Keep data when deleting VMs
+
+Migration: Easily move disks between VMs
+
+Backup: Take snapshots of disks for backup
+
+Use Cases:
+
+Additional storage for databases
+
+Log file storage
+
+Application data storage
+
+Temporary workspace disks
+
+Backup target storage
+
+Important Notes
+Size: 2 GiB is very small (minimum size). Good for testing.
+
+Cost: Even empty disks incur small storage costs.
+
+Location: Disk should be in same region as the VMs that will use it.
+
+SKU Types:
+
+Standard HDD (Standard_LRS): Cheap, slower
+
+Standard SSD (StandardSSD_LRS): Balanced
+
+Premium SSD (Premium_LRS): Fast, expensive
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-3b153d4ff1b94945@azurefreekmlprod.onmicrosoft.com -p L$Ec-Kf&
+
+# 2. Find resource group
+az group list --output table
+# Output: kml_rg_main-xxxxx
+
+# 3. Create disk (replace YOUR_RG)
+az disk create --resource-group YOUR_RG --name datacenter-disk --location "East US" --sku Standard_LRS --size-gb 2
+
+# 4. Verify
+az disk show --resource-group YOUR_RG --name datacenter-disk --query "{Name:name, Size:diskSizeGb, SKU:sku.name, Location:location}"
+
+# 5. Quick check
+az disk list --resource-group YOUR_RG --query "[?name=='datacenter-disk'].{Name:name, Size:diskSizeGb}" -o table
+Expected results:
+
+Disk datacenter-disk created successfully
+
+Size shows as 2 GiB
+
+SKU shows as Standard_LRS
+
+Provisioning state is Succeeded
+
+Common Next Steps (Not Required for Lab)
+bash
+# Attach this disk to a VM later
+az vm disk attach --resource-group YOUR_RG --vm-name YOUR_VM --name datacenter-disk
+
+# Create snapshot for backup
+az snapshot create --resource-group YOUR_RG --name datacenter-disk-backup --source datacenter-disk
+
+# Resize disk if needed
+az disk update --resource-group YOUR_RG --name datacenter-disk --size-gb 10
+You've successfully created a standalone virtual hard disk! This disk can now be attached to any VM in the same region.
+
+
