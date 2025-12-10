@@ -28,3 +28,262 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION:
 
+📸 Day 15 Lab: Creating EBS Volume Snapshot
+📖 Lab Explanation
+Today, we're creating an EBS Snapshot - a point-in-time backup of an EBS volume. Snapshots capture the exact state of a volume at a specific moment and are stored in S3 (though not visible in S3 console). They're incremental and cost-effective for backups.
+
+🔍 Key Terms Defined
+EBS Snapshot
+What: Point-in-time backup of an EBS volume
+
+Storage: Stored in Amazon S3 (managed by AWS)
+
+Incremental: Only stores blocks changed since last snapshot
+
+Encryption: Can be encrypted even if source volume isn't
+
+Snapshot States
+pending: Creation in progress
+
+completed: Successfully created and available
+
+error: Creation failed
+
+recoverable: Can be restored with support help
+
+Snapshot vs AMI
+Snapshot: Backup of a single volume
+
+AMI: Complete instance template (includes one or more snapshots + metadata)
+
+🚀 Benefits & Why We Create Snapshots
+🔧 Technical Advantages
+Backup: Point-in-time recovery of data
+
+Incremental: Saves storage costs (only changes stored)
+
+Cross-Region: Can copy to other regions for DR
+
+Cross-Account: Can share with other accounts
+
+💡 Operational Benefits
+Disaster Recovery: Restore volumes after failures
+
+Testing: Create test environments from production data
+
+Migration: Move volumes between AZs or regions
+
+Compliance: Meet backup requirements
+
+🎯 Common Use Cases
+Database Backups: Regular backups of database volumes
+
+System Backups: Backup root volumes before updates
+
+Data Archival: Long-term storage of important data
+
+Volume Migration: Move volumes to different AZs/regions
+
+⚠️ Important Considerations
+Volume State: Can create snapshot while volume is in use (recommend unmounting for consistency)
+
+Time: Takes several minutes depending on volume size and changes
+
+Cost: Pay for snapshot storage (per GB-month)
+
+Encryption: Snapshots inherit volume encryption
+
+🛠️ Step-by-Step Solution
+Method: AWS Management Console
+Login to AWS Console
+
+bash
+# Use the provided credentials:
+URL: https://424546785893.signin.aws.amazon.com/console?region=us-east-1
+Username: kk_labs_user_699286
+Password: GZeI1vj5h0r%
+Region: us-east-1 (VERIFY THIS!)
+Navigate to Volumes
+
+Go to Services → EC2
+
+In left sidebar, find "Elastic Block Store" → Volumes
+
+Find volume named devops-vol
+
+Verify it exists and is in "in-use" or "available" state
+
+Create Snapshot
+
+Select devops-vol
+
+Click Actions → Create snapshot
+
+Create snapshot dialog appears
+
+Configure Snapshot Details
+
+Name: devops-vol-ss (EXACTLY as specified)
+
+Description: devops Snapshot (EXACTLY as specified)
+
+Tags: (Optional) Add tags if needed
+
+Click Create snapshot
+
+Monitor Snapshot Creation
+
+You'll see: "Successfully initiated snapshot creation"
+
+Click "View pending snapshots"
+
+Or go to: EC2 → Snapshots → Owned by me
+
+Find snapshot devops-vol-ss
+
+Status will show pending
+
+Wait for Completion
+
+Snapshot creation takes time:
+
+Small volumes (2-10 GB): 2-5 minutes
+
+Large volumes: Several minutes to hours
+
+Refresh snapshot list periodically (F5 or refresh button)
+
+Monitor Progress percentage
+
+Wait for Status to change to completed
+
+Verify Snapshot Details
+
+Select snapshot devops-vol-ss
+
+Check Status: Must be completed
+
+Check Description: devops Snapshot
+
+Check Volume ID: Should match devops-vol
+
+Check Size: Should match original volume size
+
+📋 What We Created
+Snapshot Name: devops-vol-ss
+
+Description: devops Snapshot
+
+Source Volume: devops-vol
+
+Status: completed
+
+Storage: Incremental backup in S3
+
+🔧 Alternative Method: AWS CLI
+bash
+# Get volume ID
+VOLUME_ID=$(aws ec2 describe-volumes \
+  --filters "Name=tag:Name,Values=devops-vol" \
+  --query "Volumes[0].VolumeId" \
+  --output text)
+
+# Create snapshot
+SNAPSHOT_ID=$(aws ec2 create-snapshot \
+  --volume-id $VOLUME_ID \
+  --description "devops Snapshot" \
+  --tag-specifications 'ResourceType=snapshot,Tags=[{Key=Name,Value=devops-vol-ss}]' \
+  --query "SnapshotId" \
+  --output text)
+
+# Monitor snapshot status
+aws ec2 describe-snapshots \
+  --snapshot-ids $SNAPSHOT_ID \
+  --query "Snapshots[0].State"
+
+# Wait for completion (polling)
+while true; do
+  STATUS=$(aws ec2 describe-snapshots \
+    --snapshot-ids $SNAPSHOT_ID \
+    --query "Snapshots[0].State" \
+    --output text)
+  echo "Snapshot status: $STATUS"
+  if [[ "$STATUS" == "completed" ]]; then
+    echo "Snapshot completed!"
+    break
+  fi
+  sleep 30
+done
+🔍 Behind the Scenes
+When creating a snapshot:
+
+Initial snapshot: Copies all data blocks
+
+Subsequent snapshots: Only changed blocks (incremental)
+
+Storage: All snapshots reference initial full backup + changes
+
+Deletion: When deleting snapshots, only unused blocks are removed
+
+⚠️ Important Notes
+Data Consistency: For databases, consider stopping writes or using application-consistent methods
+
+Performance: Volume performance may be slightly impacted during snapshot
+
+Completion Time: Depends on volume size and amount of changed data
+
+Status Check: DO NOT submit task until status shows completed
+
+📊 Snapshot Lifecycle
+text
+devops-vol (EBS Volume)
+    ↓ (Create snapshot)
+devops-vol-ss (Snapshot) → Stored in S3
+    ↓ (Can create new volume)
+New EBS Volume (exact copy)
+🔐 Security Features
+Encryption: Snapshots inherit source volume encryption
+
+Permissions: IAM controls who can create/restore snapshots
+
+Sharing: Can share with specific AWS accounts
+
+Public: Can make public (not recommended)
+
+🔄 Using Snapshots
+Once completed, you can:
+
+bash
+# Create new volume from snapshot
+aws ec2 create-volume \
+  --snapshot-id snap-0abcdef1234567890 \
+  --availability-zone us-east-1a \
+  --volume-type gp3
+
+# Create AMI from snapshot
+# (Through console: Images → AMIs → Create → Use snapshot)
+💰 Cost Considerations
+Storage: ~$0.05 per GB-month in us-east-1
+
+API Calls: Minimal cost for snapshot operations
+
+Data Transfer: Free within same region
+
+✅ Verification Checklist
+Snapshot name: devops-vol-ss
+
+Description: devops Snapshot
+
+Status: completed (not pending)
+
+Source volume: devops-vol
+
+Progress: 100%
+
+🎉 Congratulations!
+You've completed Day 15! You now have a point-in-time backup of your EBS volume. Snapshots are essential for data protection, disaster recovery, and volume management in AWS.
+
+Wait for snapshot status to show "completed" before submitting the task! ⏳
+
+Ready for Day 16! 🚀
+
