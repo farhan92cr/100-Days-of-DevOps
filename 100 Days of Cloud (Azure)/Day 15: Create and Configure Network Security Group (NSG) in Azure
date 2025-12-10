@@ -24,4 +24,224 @@ End Time	Wed Dec 10 05:26:06 UTC 2025
 
 SOLUTION:
 
+Simple Explanation of Day 15 Lab
+Today you're creating a Network Security Group (NSG) - a virtual firewall for your Azure resources. Think of it as setting up security rules for what traffic can enter/leave your network. You're creating:
+
+A firewall named datacenter-nsg
+
+Rule 1: Allow HTTP traffic (port 80) from anywhere
+
+Rule 2: Allow SSH traffic (port 22) from anywhere
+
+Step-by-Step Solution (Using Azure CLI)
+Step 1: Login to Azure
+bash
+az login -u kk_lab_user_main-e95c8569d96740b9@azurefreekmlprod.onmicrosoft.com -p Rm=3pR^Q
+Step 2: Find Your Resource Group
+bash
+az group list --output table
+Note the resource group name for all commands
+
+Step 3: Create the NSG
+bash
+az network nsg create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --name datacenter-nsg \
+  --location "East US"
+Step 4: Add HTTP Rule (Port 80)
+bash
+az network nsg rule create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --nsg-name datacenter-nsg \
+  --name Allow-HTTP \
+  --priority 1000 \
+  --direction Inbound \
+  --access Allow \
+  --protocol Tcp \
+  --source-address-prefixes 0.0.0.0/0 \
+  --source-port-ranges "*" \
+  --destination-address-prefixes "*" \
+  --destination-port-ranges 80
+Step 5: Add SSH Rule (Port 22)
+bash
+az network nsg rule create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --nsg-name datacenter-nsg \
+  --name Allow-SSH \
+  --priority 1001 \
+  --direction Inbound \
+  --access Allow \
+  --protocol Tcp \
+  --source-address-prefixes 0.0.0.0/0 \
+  --source-port-ranges "*" \
+  --destination-address-prefixes "*" \
+  --destination-port-ranges 22
+Step 6: Verify the NSG and Rules
+bash
+# Check NSG details
+az network nsg show --resource-group <YOUR_RESOURCE_GROUP> --name datacenter-nsg --query "{Name:name, Location:location, Rules:securityRules[].{Name:name, Port:destinationPortRange, Access:access}}"
+
+# List all rules
+az network nsg rule list --resource-group <YOUR_RESOURCE_GROUP> --nsg-name datacenter-nsg --output table
+Step-by-Step Solution (Using Azure UI/Portal)
+Step 1: Login to Azure Portal
+Go to https://portal.azure.com
+
+Use credentials provided
+
+Step 2: Create NSG
+Click "Create a resource" → Search "Network security group" → "Create"
+
+Basics tab:
+
+Resource group: Select existing
+
+Name: datacenter-nsg
+
+Region: East US
+
+Click "Review + create" → "Create"
+
+Step 3: Add HTTP Rule
+Go to the created NSG (datacenter-nsg)
+
+Click "Inbound security rules" in left menu
+
+Click "+ Add"
+
+Configure:
+
+Source: Any
+
+Source port ranges: *
+
+Destination: Any
+
+Service: HTTP (will auto-fill port 80)
+
+Action: Allow
+
+Priority: 1000
+
+Name: Allow-HTTP
+
+Click "Add"
+
+Step 4: Add SSH Rule
+Click "+ Add" again
+
+Configure:
+
+Source: Any
+
+Source port ranges: *
+
+Destination: Any
+
+Service: SSH (will auto-fill port 22)
+
+Action: Allow
+
+Priority: 1001
+
+Name: Allow-SSH
+
+Click "Add"
+
+Step 5: Verify
+Go to "Inbound security rules"
+
+You should see both rules
+
+Check they have correct ports and actions
+
+Key Terms Explained
+Network Security Group (NSG): Virtual firewall controlling traffic to/from Azure resources.
+
+Inbound Rule: Controls incoming traffic to your resources.
+
+Priority: Lower number = higher priority (e.g., 100 runs before 200).
+
+CIDR 0.0.0.0/0: Means "from any IP address" (entire internet).
+
+Ports:
+
+80: HTTP (web traffic)
+
+22: SSH (secure shell for management)
+
+Benefits and Use Cases
+Why use NSGs?
+
+Security: Control what traffic reaches your VMs
+
+Segmentation: Different rules for different subnets/VMs
+
+Compliance: Meet security requirements
+
+Troubleshooting: Log and monitor network traffic
+
+Use Cases:
+
+Web servers: Allow HTTP/HTTPS, block other ports
+
+Database servers: Allow only from application servers
+
+Bastion hosts: Allow SSH only from specific IPs
+
+Multi-tier apps: Different rules for web/app/db tiers
+
+Important Security Notes
+⚠️ Warning: 0.0.0.0/0 means "entire internet" - use carefully!
+
+In production, restrict SSH to specific IPs
+
+Consider using Azure Bastion instead of open SSH
+
+Always use least privilege principle
+
+Default NSG Rules:
+
+Azure creates default allow/deny rules
+
+Your custom rules override defaults based on priority
+
+Complete CLI Example:
+bash
+# 1. Login
+az login -u kk_lab_user_main-e95c8569d96740b9@azurefreekmlprod.onmicrosoft.com -p Rm=3pR^Q
+
+# 2. Find resource group
+RG=$(az group list --query "[0].name" -o tsv)
+echo "Using Resource Group: $RG"
+
+# 3. Create NSG
+az network nsg create --resource-group $RG --name datacenter-nsg --location "East US"
+
+# 4. Add HTTP rule
+az network nsg rule create --resource-group $RG --nsg-name datacenter-nsg --name Allow-HTTP --priority 1000 --direction Inbound --access Allow --protocol Tcp --source-address-prefixes 0.0.0.0/0 --source-port-ranges "*" --destination-address-prefixes "*" --destination-port-ranges 80
+
+# 5. Add SSH rule
+az network nsg rule create --resource-group $RG --nsg-name datacenter-nsg --name Allow-SSH --priority 1001 --direction Inbound --access Allow --protocol Tcp --source-address-prefixes 0.0.0.0/0 --source-port-ranges "*" --destination-address-prefixes "*" --destination-port-ranges 22
+
+# 6. Verify
+az network nsg rule list --resource-group $RG --nsg-name datacenter-nsg --query "[].{Name:name, Port:destinationPortRange, Priority:priority}" -o table
+Expected results:
+
+NSG datacenter-nsg created
+
+Two rules: Allow-HTTP (port 80) and Allow-SSH (port 22)
+
+Both allow traffic from 0.0.0.0/0 (anywhere)
+
+Next Steps (Not Required for Lab)
+bash
+# Attach NSG to a subnet
+az network vnet subnet update --resource-group $RG --vnet-name YOUR_VNET --name YOUR_SUBNET --network-security-group datacenter-nsg
+
+# Attach NSG to a NIC
+az network nic update --resource-group $RG --name YOUR_NIC --network-security-group datacenter-nsg
+You've created a virtual firewall! This NSG can now be attached to subnets or network interfaces to protect your resources.
+
+
 
