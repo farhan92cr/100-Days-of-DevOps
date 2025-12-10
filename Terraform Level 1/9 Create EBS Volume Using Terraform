@@ -17,3 +17,6 @@ The Terraform working directory is /home/bob/terraform. Create the main.tf file 
 
 Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
 
+SOLUTION:
+
+
