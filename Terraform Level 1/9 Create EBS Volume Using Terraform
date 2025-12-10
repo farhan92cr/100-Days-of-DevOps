@@ -20,3 +20,178 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 SOLUTION:
 
 
+Lab 9: Create EBS Volume Using Terraform
+Simple Explanation
+This lab teaches you to create an EBS (Elastic Block Store) volume - a virtual hard disk for AWS EC2 instances. EBS volumes provide persistent block-level storage that can be attached to EC2 instances.
+
+Key Terms
+EBS Volume: Virtual hard disk for EC2 instances
+
+gp3: General Purpose SSD volume type (latest generation)
+
+GiB: Gibibyte (storage measurement, 1 GiB = 1024 MiB)
+
+AZ (Availability Zone): Isolated data center within a region
+
+Benefits and Use Cases
+Persistent Storage: Data persists even if instance stops/terminates
+
+Expandable: Can increase size without downtime
+
+Snapshot Backup: Create point-in-time backups
+
+Multi-Attach: Some volume types can attach to multiple instances
+
+Database Storage: Ideal for database files, application data
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Add EBS Volume to main.tf File
+Add this resource to your existing main.tf:
+
+hcl
+# Create EBS Volume
+resource "aws_ebs_volume" "devops_volume" {
+  availability_zone = "us-east-1a"  # Must specify an AZ within us-east-1
+  size              = 2             # Size in GiB
+  type              = "gp3"         # Volume type
+  
+  tags = {
+    Name = "devops-volume"
+  }
+}
+Step 4: Initialize Terraform (if needed)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the EBS Volume
+
+bash
+# Check the created volume
+terraform show
+
+# Look for aws_ebs_volume.devops_volume
+What This Creates:
+EBS Volume named "devops-volume"
+
+Size: 2 GiB (2GB storage)
+
+Type: gp3 (General Purpose SSD, latest generation)
+
+Location: us-east-1a Availability Zone
+
+Unattached: Volume is created but not attached to any instance
+
+Important Notes:
+Availability Zone Required: EBS volumes exist in a specific AZ
+
+Cannot Move: EBS volume cannot be moved to another AZ (but can snapshot/copy)
+
+gp3 Benefits: Baseline 3000 IOPS, 125 MB/s throughput, cost-effective
+
+Unattached Cost: You pay for storage even if not attached to instance
+
+Attachment: Need separate step to attach to EC2 instance
+
+Alternative AZ Options (us-east-1):
+us-east-1a
+
+us-east-1b
+
+us-east-1c
+
+us-east-1d
+
+us-east-1e
+
+us-east-1f
+
+Complete Example with Output:
+hcl
+# Optional: Output volume details
+output "volume_id" {
+  value = aws_ebs_volume.devops_volume.id
+  description = "The ID of the created EBS volume"
+}
+
+output "volume_az" {
+  value = aws_ebs_volume.devops_volume.availability_zone
+  description = "The Availability Zone of the EBS volume"
+}
+Expected Output:
+text
+aws_ebs_volume.devops_volume:
+  id = vol-0123456789abcdef0
+  availability_zone = "us-east-1a"
+  size = 2
+  type = "gp3"
+  tags = { Name = "devops-volume" }
+  state = "available"  # Ready to attach
+Real-World Use Cases:
+Additional Storage: Add extra disk space to an instance
+
+Database Storage: Store database files separately from OS
+
+Application Data: Store application logs, uploads, cache
+
+Backup Target: Use as destination for backups
+
+Swap Space: Additional virtual memory
+
+Next Steps (Future Labs):
+This volume will likely be:
+
+Attached to an EC2 instance
+
+Formatted with a filesystem (ext4, xfs)
+
+Mounted to a directory (/data, /mnt/volume)
+
+Used for application storage
+
+Volume Type Comparison:
+gp3: General Purpose SSD (balanced, default for most workloads)
+
+gp2: Older GP SSD (being phased out)
+
+io1/io2: Provisioned IOPS SSD (high-performance databases)
+
+st1: Throughput Optimized HDD (big data, logs)
+
+sc1: Cold HDD (infrequently accessed data)
+
+Your Infrastructure Now Has:
+✅ Key pairs
+
+✅ Security groups
+
+✅ VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance
+
+✅ AMI
+
+✅ EBS Volume (virtual hard disk)
+
+Ready for Lab 10! 🚀
+
+
