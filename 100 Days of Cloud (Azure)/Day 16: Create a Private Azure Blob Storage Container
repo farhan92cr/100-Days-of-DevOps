@@ -1,1 +1,19 @@
 Day 16: Create a Private Azure Blob Storage Container:
+As part of the data migration process, the Nautilus DevOps team is actively creating several storage containers on Azure. They plan to utilize private Blob containers to store the relevant data. Given the ongoing migration of other infrastructure to Azure, it is logical to consolidate data storage within the Azure environment as well.
+
+Create a new storage account named devopsst3095 and a private Blob container named devops-blob-13395 within the storage account.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-8c28fb9a88754530@azurefreekmlprod.onmicrosoft.com
+Password	#x8&mwfd
+Start Time	Thu Dec 11 05:48:27 UTC 2025
+End Time	Thu Dec 11 06:48:27 UTC 2025
+
+
+SOLUTION:
+
+
