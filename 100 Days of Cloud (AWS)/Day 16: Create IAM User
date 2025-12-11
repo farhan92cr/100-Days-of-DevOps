@@ -22,4 +22,9 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION:
 
+For Day 16, your task is to create a basic IAM user. While the requirement is straightforward, it's important to understand that creating IAM users with long-term credentials is not the modern AWS security best practice. The preferred method for human users is to use federation with an identity provider to access AWS with temporary credentials.
+
+However, for this lab task, here is a step-by-step guide to create the IAM user iamuser_jim via the AWS Management Console.
+
+
 
