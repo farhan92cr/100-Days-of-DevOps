@@ -26,5 +26,67 @@ For Day 16, your task is to create a basic IAM user. While the requirement is st
 
 However, for this lab task, here is a step-by-step guide to create the IAM user iamuser_jim via the AWS Management Console.
 
+🛠️ Step-by-Step Solution for Day 16: Create IAM User (iamuser_jim)
+Follow these exact steps in order:
+
+Login to the AWS Console
+
+Open a web browser.
+
+Go to the provided Console URL: https://178729889921.signin.aws.amazon.com/console?region=us-east-1
+
+Enter the provided credentials:
+
+Username: kk_labs_user_251586
+
+Password: pJfMgG!2ppCY
+
+Click Sign In.
+
+Navigate to the IAM Service
+
+Once logged in, you will be at the AWS Management Console home.
+
+At the top of the screen, use the search bar and type "IAM".
+
+Click on the "IAM" service that appears in the results.
+
+Go to the Users Page
+
+In the left-hand navigation menu, find and click on "Users" (under "Access management").
+
+Start Creating the New User
+
+On the Users page, click the bright orange button: "Create user".
+
+Step 1: Specify User Details
+
+In the "User name" box, type exactly: iamuser_jim.
+
+IMPORTANT FOR THIS LAB: You do not need to check any boxes under "Select AWS credential type." Leave both "Provide user access to the AWS Management Console" and "Access key - Programmatic access" unchecked.
+
+Click the blue "Next" button at the bottom.
+
+Step 2: Set Permissions (Skip This Step)
+
+On the "Set permissions" page, you will not add any permissions. This is correct for this task.
+
+Simply click the blue "Next" button again.
+
+Step 3: Review and Create
+
+You will see a review page. Double-check that the "User name" is iamuser_jim.
+
+Scroll to the bottom and click the orange "Create user" button.
+
+Verification (Final Step)
+
+You will see a green success banner saying "The user iamuser_jim was created successfully."
+
+You will be taken to a list of all users. Verify that iamuser_jim appears in the list with an "Access key ID" column showing "None" (because you did not create credentials).
+
+Task Complete! ✅ You have successfully created the IAM user iamuser_jim with no permissions (which is correct for this lab).
+
+
 
 
