@@ -14,12 +14,4 @@ The Terraform working directory is /home/bob/terraform. Update the main.tf file 
 Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
 
 
-resource "aws_ebs_volume" "k8s_volume" {
-  availability_zone = "us-east-1a"
-  size              = 5
-  type              = "gp2"
 
-  tags = {
-    Name        = "nautilus-vol"
-  }
-}
