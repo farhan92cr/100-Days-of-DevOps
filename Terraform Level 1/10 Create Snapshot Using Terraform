@@ -15,3 +15,189 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 
 
+Lab 10: Create Snapshot Using Terraform
+Simple Explanation
+This lab teaches you to create an EBS Snapshot - a point-in-time backup of an EBS volume. Snapshots capture the exact state of a volume at a specific moment and can be used to restore data or create new volumes.
+
+Key Terms
+EBS Snapshot: Point-in-time backup of an EBS volume
+
+Volume: The source disk being backed up
+
+Completed Status: Snapshot creation finished successfully
+
+Incremental Backup: Only changed blocks are saved after first snapshot
+
+Benefits and Use Cases
+Data Backup: Protect against data loss
+
+Disaster Recovery: Restore volumes after failures
+
+Volume Migration: Copy volumes between regions/AZs
+
+AMI Creation: Base for creating machine images
+
+Testing: Create test environments from production snapshots
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Add Snapshot Creation to main.tf File
+Add these resources to your existing main.tf:
+
+hcl
+# Find the existing volume by its name tag
+data "aws_ebs_volume" "nautilus_vol" {
+  filter {
+    name   = "tag:Name"
+    values = ["nautilus-vol"]
+  }
+}
+
+# Create snapshot from the volume
+resource "aws_ebs_snapshot" "nautilus_snapshot" {
+  volume_id   = data.aws_ebs_volume.nautilus_vol.id
+  description = "Nautilus Snapshot"
+  
+  tags = {
+    Name = "nautilus-vol-ss"
+  }
+}
+
+# Wait for snapshot to be completed
+resource "null_resource" "wait_for_snapshot" {
+  depends_on = [aws_ebs_snapshot.nautilus_snapshot]
+  
+  # This triggers when snapshot changes
+  triggers = {
+    snapshot_id = aws_ebs_snapshot.nautilus_snapshot.id
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "Waiting for snapshot to complete..."
+      aws ec2 wait snapshot-completed \
+        --snapshot-ids ${aws_ebs_snapshot.nautilus_snapshot.id} \
+        --region us-east-1
+      echo "Snapshot completed!"
+    EOT
+  }
+}
+Step 4: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 5: Monitor Snapshot Creation
+
+bash
+# Check snapshot status
+terraform show | grep -A10 "aws_ebs_snapshot.nautilus_snapshot"
+
+# Check if snapshot is completed
+aws ec2 describe-snapshots \
+  --snapshot-ids $(terraform output -raw snapshot_id 2>/dev/null || echo "") \
+  --query "Snapshots[0].State"
+Alternative Simpler Solution (if null_resource not available):
+hcl
+# Find the existing volume
+data "aws_ebs_volume" "nautilus_vol" {
+  filter {
+    name   = "tag:Name"
+    values = ["nautilus-vol"]
+  }
+}
+
+# Create snapshot
+resource "aws_ebs_snapshot" "nautilus_snapshot" {
+  volume_id   = data.aws_ebs_volume.nautilus_vol.id
+  description = "Nautilus Snapshot"
+  
+  tags = {
+    Name = "nautilus-vol-ss"
+  }
+}
+
+# Output to verify snapshot status
+output "snapshot_id" {
+  value = aws_ebs_snapshot.nautilus_snapshot.id
+}
+
+output "snapshot_status" {
+  value = aws_ebs_snapshot.nautilus_snapshot.state
+}
+What This Creates:
+Snapshot named "nautilus-vol-ss" from volume "nautilus-vol"
+
+Description: "Nautilus Snapshot"
+
+Status: "completed" (after creation finishes)
+
+Incremental Backup: Only stores changed blocks since last snapshot
+
+Important Notes:
+Volume Must Exist: The "nautilus-vol" must already exist in AWS
+
+Snapshot Time: Can take several minutes depending on volume size
+
+No Downtime: Can snapshot while volume is in use
+
+Storage Cost: You pay for snapshot storage
+
+Cross-Region: Can copy snapshots to other regions
+
+To Verify Snapshot is Completed:
+bash
+# Wait 2-5 minutes after terraform apply completes
+terraform refresh
+terraform output snapshot_status
+
+# Should show "completed"
+Expected Output:
+text
+aws_ebs_snapshot.nautilus_snapshot:
+  id = snap-0123456789abcdef0
+  volume_id = vol-0123456789abcdef0
+  description = "Nautilus Snapshot"
+  state = "completed"  # This confirms success!
+  tags = { Name = "nautilus-vol-ss" }
+Snapshot vs Volume:
+Feature	EBS Volume	EBS Snapshot
+Purpose	Active storage	Backup/restore
+Cost	Per GB-month	Per GB-month of snapshot
+Location	Specific AZ	Regional (can copy)
+Usage	Attached to instance	Create volumes from it
+Real-World Backup Strategy:
+Daily Snapshots: Automate with AWS Backup or cron jobs
+
+Retention Policy: Keep 7 daily, 4 weekly, 12 monthly
+
+Cross-Region: Copy critical snapshots to another region
+
+Testing: Regularly test restoration process
+
+Your Infrastructure Now Has:
+✅ Key pairs
+
+✅ Security groups
+
+✅ VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance
+
+✅ AMI
+
+✅ EBS Volume
+
+✅ EBS Snapshot (backup)
+
+Note: If the "nautilus-vol" doesn't exist, you'll need to create it first or use a different existing volume name.
