@@ -52,43 +52,19 @@ Step 3: Add Snapshot Creation to main.tf File
 Add these resources to your existing main.tf:
 
 hcl
-# Find the existing volume by its name tag
-data "aws_ebs_volume" "nautilus_vol" {
-  filter {
-    name   = "tag:Name"
-    values = ["nautilus-vol"]
-  }
+resource "aws_ebs_volume" "k8s_volume" {
+  availability_zone = "us-east-1a"
+  size              = 5
+  type              = "gp2"
+  tags = { Name = "nautilus-vol" }
 }
 
-# Create snapshot from the volume
 resource "aws_ebs_snapshot" "nautilus_snapshot" {
-  volume_id   = data.aws_ebs_volume.nautilus_vol.id
+  volume_id   = aws_ebs_volume.k8s_volume.id
   description = "Nautilus Snapshot"
-  
-  tags = {
-    Name = "nautilus-vol-ss"
-  }
+  tags = { Name = "nautilus-vol-ss" }
 }
 
-# Wait for snapshot to be completed
-resource "null_resource" "wait_for_snapshot" {
-  depends_on = [aws_ebs_snapshot.nautilus_snapshot]
-  
-  # This triggers when snapshot changes
-  triggers = {
-    snapshot_id = aws_ebs_snapshot.nautilus_snapshot.id
-  }
-
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "Waiting for snapshot to complete..."
-      aws ec2 wait snapshot-completed \
-        --snapshot-ids ${aws_ebs_snapshot.nautilus_snapshot.id} \
-        --region us-east-1
-      echo "Snapshot completed!"
-    EOT
-  }
-}
 Step 4: Apply the Configuration
 
 bash
