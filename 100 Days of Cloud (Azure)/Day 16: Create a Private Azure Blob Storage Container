@@ -96,4 +96,74 @@ You now have:
 This is the foundation for storing any type of data securely in Azure cloud!
 
 
+For Day 16, you need to create an Azure Blob Storage account and a private container within it. You can do this entirely from the command line using the Azure CLI.
+
+Here are the steps to complete the lab.
+
+🔑 Step 1: Log in to Azure
+Use the provided credentials to authenticate with your Azure account.
+
+bash
+az login -u kk_lab_user_main-8c28fb9a88754530@azurefreekmlprod.onmicrosoft.com -p "#x8&mwfd"
+📦 Step 2: Create the Storage Account
+You need to create a storage account with the exact name devopsst3095. First, find your resource group, then run the create command.
+
+Find your resource group name:
+
+bash
+az group list --output table
+Note the name of your resource group (e.g., kml_rg_main-xxxxx).
+
+Create the storage account. The --allow-blob-public-access false parameter ensures that no containers can be made public later.
+
+bash
+az storage account create \
+    --resource-group <YOUR_RESOURCE_GROUP> \
+    --name devopsst3095 \
+    --location eastus \
+    --sku Standard_LRS \
+    --allow-blob-public-access false
+Replace <YOUR_RESOURCE_GROUP> with the actual name from Step 1.
+
+📁 Step 3: Create the Private Container
+Now, create a container named devops-blob-13395 inside the new storage account. The container will be private by default, as the account setting prevents public access.
+
+bash
+az storage container create \
+    --account-name devopsst3095 \
+    --name devops-blob-13395 \
+    --auth-mode login
+✅ Step 4: Verify Your Resources
+Finally, confirm that both the storage account and the private container were created successfully.
+
+Check the storage account:
+
+bash
+az storage account show \
+    --resource-group <YOUR_RESOURCE_GROUP> \
+    --name devopsst3095 \
+    --query "{Name:name, PublicAccess:allowBlobPublicAccess}" -o table
+Ensure PublicAccess is false.
+
+List the container in the account:
+
+bash
+az storage container list \
+    --account-name devopsst3095 \
+    --auth-mode login \
+    --query "[].name" -o table
+You should see devops-blob-13395 in the list.
+
+💡 Key Concept: Access Levels in Azure Storage
+The security of your container is controlled by two settings:
+
+Account-Level (AllowBlobPublicAccess): The command in Step 2 sets this to false, which disables public access for the entire account.
+
+Container-Level (Public Access Level): This is set to "Private (no anonymous access)" by default for any new container. Since the account-level setting is false, this container-level setting cannot be changed to allow public access.
+
+This two-tier system ensures your devops-blob-13395 container remains private. Access will require authorization, such as the account key, a connection string, or a Shared Access Signature (SAS) token.
+
+If you encounter an issue where the storage account name devopsst3095 is already taken (as names must be globally unique), please let me know, and we can troubleshoot with an alternative name.
+
+
 
