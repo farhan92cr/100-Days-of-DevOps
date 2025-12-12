@@ -1,2 +1,18 @@
 Day 17: Create a Public Azure Blob Storage Container:
+As part of the data migration process, the Nautilus DevOps team is actively creating several storage containers on Azure. They plan to utilize public Blob containers to store the relevant data. Given the ongoing migration of other infrastructure to Azure, it is logical to consolidate data storage within the Azure environment as well.
+
+Create a new storage account named datacenterst2395 and a public Blob container named datacenter-blob-27159 within the storage account. Make sure anonymous read access for containers and blobs is enabled.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-4f47cc30a0304dc0@azurefreekmlprod.onmicrosoft.com
+Password	rTK$uA%T
+Start Time	Fri Dec 12 03:58:06 UTC 2025
+End Time	Fri Dec 12 04:58:06 UTC 2025
+
+SOLUTION:
+
 
