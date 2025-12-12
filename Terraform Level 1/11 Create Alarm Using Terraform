@@ -16,3 +16,65 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+For this lab, you'll create a CloudWatch alarm to monitor an EC2 instance's CPU. The alarm will trigger if the average CPU utilization exceeds 80% over a single 5-minute evaluation period.
+
+Below is the required Terraform code for your main.tf file, which includes all the necessary configuration. You will need to replace YOUR_INSTANCE_ID_HERE with the actual ID of the EC2 instance you want to monitor.
+
+hcl
+resource "aws_cloudwatch_metric_alarm" "xfusion_alarm" {
+  alarm_name          = "xfusion-alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "300" # 5 minutes in seconds
+  statistic           = "Average"
+  threshold           = "80"
+  alarm_description   = "Alarm when CPU exceeds 80% for 5 minutes"
+  treat_missing_data  = "missing"
+
+  dimensions = {
+    InstanceId = "YOUR_INSTANCE_ID_HERE"
+  }
+
+  # Optional: Uncomment and configure lines below if you want notifications.
+  # alarm_actions = [aws_sns_topic.your_topic.arn]
+}
+Important: You must replace "YOUR_INSTANCE_ID_HERE" with the actual instance ID. For example, if your instance ID is i-0abcdef1234567890, the line should be InstanceId = "i-0abcdef1234567890". ------
+--NO NEED REPLACE THE iNSTANCE_ID, just run the main.tf file, it will works
+
+-----------
+
+
+🧰 How to Find Your EC2 Instance ID
+Since you've created instances in previous labs, you can find the correct ID by running this command in the /home/bob/terraform directory:
+
+bash
+terraform state list | grep aws_instance
+Alternatively, you can check the AWS console or use the AWS CLI:
+
+bash
+aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,Tags[?Key=='Name'].Value|[0]]" --output table
+🔍 Why This Configuration Works
+The code configures a standard metric alarm. Here is how each parameter maps to the lab's requirements:
+
+alarm_name: Sets the alarm's name to xfusion-alarm.
+
+metric_name & namespace: Uses the standard AWS/EC2 namespace and CPUUtilization metric for EC2 instances.
+
+period & evaluation_periods: A period of 300 seconds (5 minutes) and evaluation_periods of 1 means the alarm checks a single 5-minute data point.
+
+statistic & threshold: Uses the Average CPU usage and triggers if it exceeds the threshold of 80.
+
+dimensions: This tells CloudWatch which specific EC2 instance to monitor by its InstanceId.
+
+📝 Next Steps and Notes
+Initialize and Apply: After updating the main.tf file, run terraform init and terraform apply in your working directory to create the alarm.
+
+Testing the Alarm: The alarm will initially be in an INSUFFICIENT_DATA state until CloudWatch collects enough data, after which it will change to OK. To test it, you could artificially increase the CPU load on the target instance using a tool like stress.
+
+Adding Actions (Optional): The current alarm only monitors. To add notifications (e.g., email), you would need to create an Amazon SNS topic and add its ARN to the alarm_actions parameter.
+
+I hope this helps you complete the lab successfully! Do you need help finding the specific instance ID from your Terraform state, or would you like to know more about adding notification actions to the alarm?
+
+
