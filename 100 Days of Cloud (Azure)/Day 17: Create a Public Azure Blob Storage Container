@@ -57,4 +57,36 @@ Both show "Succeeded" status
 Note: If datacenterst2395 name is taken, add random numbers like datacenterst2395XX
 
 
+Here are the corrected commands to create the public storage account and container.
+
+Step-by-Step Commands
+Run these commands in order:
+
+Log in to Azure with the new credentials for this lab session:
+
+bash
+az login -u kk_lab_user_main-65bd502d5d9a42fb@azurefreekmlprod.onmicrosoft.com -p BW3F6pQa
+Create the storage account, ensuring anonymous access is allowed at the account level:
+
+bash
+az storage account create --resource-group kml_rg_main-65bd502d5d9a42fb --name nautilusst23477 --location eastus --sku Standard_LRS --allow-blob-public-access true
+Wait 30-60 seconds for the account to fully provision, then create the public container with the correct access level:
+
+bash
+sleep 45 && az storage container create --account-name nautilusst23477 --name nautilus-blob-19929 --public-access container --auth-mode key
+Verification Command
+To confirm the container was created with the correct public access level, run:
+
+bash
+az storage container show --account-name nautilusst23477 --name nautilus-blob-19929 --auth-mode key --query "properties.publicAccess" -o tsv
+Expected output: container
+
+If the output shows container, your configuration is correct for this lab. If it shows None or blob, the container was not created with the required public access level.
+
+The main change from the previous attempt is using --public-access container (in step 3), which aligns with the lab's requirement for "anonymous read access for containers and blobs".
+
+
+
+
+
 
