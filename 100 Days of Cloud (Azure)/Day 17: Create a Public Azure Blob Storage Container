@@ -15,4 +15,16 @@ End Time	Fri Dec 12 04:58:06 UTC 2025
 
 SOLUTION:
 
+Simple Explanation of Day 17 Lab
+Today you're creating a public cloud storage locker in Azure. Think of it like this:
+
+Storage Account (datacenterst2395) = The entire storage building
+
+Blob Container (datacenter-blob-27159) = One public locker inside that building
+
+Public = Anyone with the URL can see the files inside (like public photo albums)
+
+This is the opposite of Day 16! You're setting up cloud storage where files can be accessed by anyone on the internet, perfect for hosting website images, public documents, or downloadable files.
+
+
 
