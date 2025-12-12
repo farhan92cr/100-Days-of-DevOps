@@ -22,3 +22,61 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION:
 
+
+🛠️ Step-by-Step Solution for Day 17: Create IAM Group (iamgroup_mark)
+Follow these exact steps in order:
+
+Login to the AWS Console
+
+Open a web browser.
+
+Go to the provided Console URL: https://345865620496.signin.aws.amazon.com/console?region=us-east-1
+
+Enter the provided credentials:
+
+Username: kk_labs_user_982604
+
+Password: Vpkh!p71M5%@
+
+Click Sign In.
+
+Navigate to the IAM Service
+
+Once logged in, at the top search bar type "IAM" and click on the "IAM" service.
+
+Go to the User Groups Page
+
+In the left-hand navigation menu, find and click on "User groups" (under "Access management").
+
+Start Creating the New Group
+
+On the User groups page, click the "Create group" button.
+
+Step 1: Specify Group Details
+
+In the "User group name" box, type exactly: iamgroup_mark.
+
+IMPORTANT FOR THIS LAB: Do not add any users to this group yet. The list of users will be empty.
+
+Click the blue "Next" button at the bottom.
+
+Step 2: Attach Permissions Policies (Skip This Step)
+
+On the "Attach permissions policies" page, you will not attach any policies for this task.
+
+Simply click the blue "Next" button again.
+
+Step 3: Review and Create
+
+You will see a review page. Double-check that the "User group name" is iamgroup_mark and that no policies are attached.
+
+Scroll to the bottom and click the orange "Create group" button.
+
+Verification (Final Step)
+
+You will see a green success banner saying "The user group iamgroup_mark was created successfully."
+
+You will be taken back to the list of all user groups. Verify that iamgroup_mark appears in the list.
+
+Task Complete! ✅ You have successfully created the IAM group iamgroup_mark.
+
