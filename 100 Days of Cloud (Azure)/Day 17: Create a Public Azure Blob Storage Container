@@ -26,5 +26,35 @@ Public = Anyone with the URL can see the files inside (like public photo albums)
 
 This is the opposite of Day 16! You're setting up cloud storage where files can be accessed by anyone on the internet, perfect for hosting website images, public documents, or downloadable files.
 
+Single-Line Commands for Day 17 Lab
+1. Login to Azure:
+
+bash
+az login -u kk_lab_user_main-4f47cc30a0304dc0@azurefreekmlprod.onmicrosoft.com -p "rTK$uA%T"
+2. Create Storage Account (Public Access Enabled):
+
+bash
+az storage account create --resource-group kml_rg_main-4f47cc30a0304dc0 --name datacenterst2395 --location eastus --sku Standard_LRS --allow-blob-public-access true
+3. Create Public Container:
+
+bash
+az storage container create --account-name datacenterst2395 --name datacenter-blob-27159 --public-access blob --auth-mode login
+4. Verify Creation:
+
+bash
+az storage container show --account-name datacenterst2395 --name datacenter-blob-27159 --auth-mode login --query "{Name:name, PublicAccess:properties.publicAccess}"
+5. Quick Status Check:
+
+bash
+az storage account show --resource-group kml_rg_main-4f47cc30a0304dc0 --name datacenterst2395 --query "{Name:name, PublicAccess:allowBlobPublicAccess, Status:provisioningState}"
+Expected Results:
+Storage account created with allowBlobPublicAccess: true
+
+Container created with PublicAccess: "blob"
+
+Both show "Succeeded" status
+
+Note: If datacenterst2395 name is taken, add random numbers like datacenterst2395XX
+
 
 
