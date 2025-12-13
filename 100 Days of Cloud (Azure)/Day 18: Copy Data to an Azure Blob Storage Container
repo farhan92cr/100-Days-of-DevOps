@@ -15,3 +15,36 @@ Start Time	Sat Dec 13 04:26:06 UTC 2025
 End Time	Sat Dec 13 05:26:06 UTC 2025
 
 SOLUTION:
+For this task, you'll use a single az storage blob upload command from the Azure CLI to copy a local file to a pre-existing blob container. First, ensure you're in the correct lab environment and logged in.
+
+🚀 Step-by-Step Commands
+Run these commands in sequence to complete the task:
+
+Log in to Azure using the provided lab credentials:
+
+bash
+az login -u kk_lab_user_main-311e62f62f5d4dbd@azurefreekmlprod.onmicrosoft.com -p "fF6&t7Ac"
+Upload the file to the specified storage account and container. The --auth-mode login parameter is the recommended way to authorize data operations in the CLI. To copy a file, use the az storage blob upload command.
+
+bash
+az storage blob upload \
+    --account-name devopsst4104 \
+    --container-name devops-blob-16859 \
+    --name devops.txt \
+    --file /tmp/devops.txt \
+    --auth-mode login
+✅ How to Verify the Upload
+To confirm the file was copied successfully, you can list the contents of the container:
+
+bash
+az storage blob list \
+    --account-name devopsst4104 \
+    --container-name devops-blob-16859 \
+    --auth-mode login \
+    --output table
+You should see a blob named devops.txt in the output.
+
+Important: The Azure CLI will automatically try to query for a storage account key if you don't specify an authentication method. The command above uses --auth-mode login to authenticate with your Microsoft Entra credentials, which is the method recommended in the official Azure documentation.
+
+I hope this helps you complete Day 18 successfully! If you run into issues with authentication or the command doesn't work as expected, please let me know.
+
