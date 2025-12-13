@@ -16,6 +16,10 @@ You can use the ACL settings to ensure the bucket is publicly accessible.
 
 SOLUTION::
 
+For this lab, you'll create a publicly accessible S3 bucket. A key requirement is making the bucket name globally unique. Since xfusion-s3-29966 might already be taken, we'll append a random suffix to it.
+
+Here is the Terraform configuration to add to your /home/bob/terraform/main.tf file:
+
 
 
 
