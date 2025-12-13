@@ -21,5 +21,76 @@ For this lab, you'll create a publicly accessible S3 bucket. A key requirement i
 Here is the Terraform configuration to add to your /home/bob/terraform/main.tf file:
 
 
+hcl
+# Create S3 bucket with exact required name
+resource "aws_s3_bucket" "xfusion_bucket" {
+  bucket = "xfusion-s3-4726"  # Exact name as required
+  
+  tags = {
+    Name        = "xfusion-public-bucket"
+    Purpose     = "Lab"
+  }
+}
+
+# Configure public access via ACL
+resource "aws_s3_bucket_acl" "xfusion_bucket_acl" {
+  bucket = aws_s3_bucket.xfusion_bucket.id
+  acl    = "public-read"  # Makes bucket publicly readable
+}
+
+# CRITICAL: Ensure public access block doesn't override our ACL
+resource "aws_s3_bucket_public_access_block" "xfusion_access" {
+  bucket = aws_s3_bucket.xfusion_bucket.id
+  
+  # All must be FALSE to allow public ACL to work
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+Key Points:
+Exact Name: Uses xfusion-s3-4726 exactly as specified
+
+Public ACL: public-read makes objects readable by anyone
+
+Public Access Block: All settings set to false to prevent overriding the ACL
+
+Region: Will be created in us-east-1 as per your existing provider configuration
+
+Steps to Execute:
+Step 1: Update main.tf
+Add the code above to your existing main.tf file.
+
+Step 2: Apply the configuration
+
+bash
+cd /home/bob/terraform
+terraform apply
+Type yes when prompted
+
+Step 3: Verify the bucket
+
+bash
+# Check if bucket exists
+aws s3 ls | grep xfusion-s3-4726
+
+# Verify ACL is public
+aws s3api get-bucket-acl --bucket xfusion-s3-4726
+# Look for "AllUsers" with "READ" permission
+If the bucket name already exists:
+If terraform apply fails with "BucketAlreadyExists", you'll need to append a unique identifier (like your initials or numbers). However, note that the lab check might fail if it expects the exact name.
+
+Alternative unique name (use if needed):
+
+hcl
+resource "aws_s3_bucket" "xfusion_bucket" {
+  bucket = "xfusion-s3-4726-bob"  # Add unique suffix
+  # ... rest of configuration
+}
+Important Security Note:
+Public S3 buckets can expose data to anyone on the internet. In production, use them only for hosting public content like static websites.
+
+Apply the configuration and let me know if you encounter the "BucketAlreadyExists" error or any other issues!
+
 
 
