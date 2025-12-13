@@ -1,0 +1,15 @@
+Day 18: Copy Data to an Azure Blob Storage Container:
+
+The Nautilus DevOps team is presently immersed in data migrations, transferring data from on-premise storage systems to Azure Blob containers. They have recently received some data that they intend to copy to one of the Blob containers.
+
+A Blob container named devops-blob-16859 already exists in the East US region under the storage account devopsst4104. Copy the file /tmp/devops.txt to the Blob container devops-blob-16859.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on azure-client host to retrieve these credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-311e62f62f5d4dbd@azurefreekmlprod.onmicrosoft.com
+Password	fF6&t7Ac
+Start Time	Sat Dec 13 04:26:06 UTC 2025
+End Time	Sat Dec 13 05:26:06 UTC 2025
