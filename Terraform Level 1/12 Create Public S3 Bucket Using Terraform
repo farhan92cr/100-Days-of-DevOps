@@ -14,6 +14,8 @@ Right-click under the EXPLORER section in VS Code and select Open in Integrated 
 The name of the S3 bucket should be based on xfusion-s3-29966.
 You can use the ACL settings to ensure the bucket is publicly accessible.
 
+SOLUTION::
 
-SOLUTION:
+
+
 
