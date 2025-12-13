@@ -23,3 +23,82 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 SOLUTION:
 
 
+🛠️ Step-by-Step Solution for Day 18: Create Read-Only IAM Policy (iampolicy_ravi)
+Follow these exact steps to create a custom IAM policy that grants read-only access to the EC2 console.
+
+Login to the AWS Console
+
+Open a web browser.
+
+Go to the provided Console URL: https://386532143645.signin.aws.amazon.com/console?region=us-east-1
+
+Enter the provided credentials:
+
+Username: kk_labs_user_862309
+
+Password: wrC5IpCOgF3L
+
+Click Sign In.
+
+Navigate to the IAM Service
+
+Once logged in, use the top search bar to find "IAM" and click on it.
+
+Go to the Policies Page
+
+In the left-hand navigation menu, click on "Policies" (under "Access management").
+
+Start Creating a New Policy
+
+On the Policies page, click the "Create policy" button.
+
+Step 1: Define Permissions (Visual Editor)
+
+Select a Service: Click on "Choose a service" and select "EC2".
+
+Select Actions:
+
+Click on "Select actions".
+
+In the filter/search box, type "Describe". This will show all read-only actions.
+
+Expand the "Read" access level section. Check the boxes next to:
+
+DescribeInstances
+
+DescribeImages (this covers AMIs)
+
+DescribeSnapshots
+
+(Optionally, you can click the checkbox for the entire "Read" access level to select all read actions, but the three above are the minimum for the lab requirement).
+
+Specify Resources: Leave this as the default "All resources".
+
+Click the blue "Next" button.
+
+Step 2: Review and Finalize Policy
+
+On this page, you will name and review your policy.
+
+Policy Name: Enter iampolicy_ravi.
+
+Description (Optional): You can enter "Read-only access to EC2 instances, AMIs, and snapshots."
+
+Review the Policy summary on the right. It should show the three actions you selected for all resources.
+
+Scroll to the bottom and click the orange "Create policy" button.
+
+Verification (Final Step)
+
+You will see a green success banner: "Policy iampolicy_ravi created successfully."
+
+You will be redirected to the list of policies.
+
+Use the search bar at the top of the policies list and type iampolicy_ravi.
+
+Verify that your new custom policy appears in the results.
+
+Task Complete! ✅ You have successfully created the custom IAM policy iampolicy_ravi.
+
+Visual Guide of the Process:
+
