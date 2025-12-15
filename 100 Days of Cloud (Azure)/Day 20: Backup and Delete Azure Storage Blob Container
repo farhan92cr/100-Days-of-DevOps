@@ -1,2 +1,20 @@
 Day 20: Backup and Delete Azure Storage Blob Container:
 
+The Nautilus DevOps team is currently engaged in a cleanup process, focusing on removing unnecessary data and services from their Azure environment. As part of the migration process, several resources were created for one-time use only, necessitating a cleanup effort to optimize their Azure environment.
+
+A private blob container named nautilus-blob-2335 already exists in the East US region under storage account nautilusst1814.
+
+1) Copy the contents of nautilus-blob-2335 blob container to the /opt directory on the azure-client host (the landing host once you load this lab).
+
+2) Delete the blob container nautilus-blob-2335 from the storage account.
+
+
+
+Use the below given Azure Credentials: (You can run the showcreds command on the azure-client host to retrieve these credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-c9d87fa32e6f410e@azurefreekmlprod.onmicrosoft.com
+Password	8$uy$579
+Start Time	Mon Dec 15 04:38:56 UTC 2025
+End Time	Mon Dec 15 05:38:56 UTC 2025
+
