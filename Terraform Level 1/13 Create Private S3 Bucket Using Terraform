@@ -16,3 +16,6 @@ Right-click under the EXPLORER section in VS Code and select Open in Integrated 
 Ensure the resources are created in the us-east-1 region.
 The bucket must have block public access enabled to restrict any public access.
 
+
+SOLUTION:
+
