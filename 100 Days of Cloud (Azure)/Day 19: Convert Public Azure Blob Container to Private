@@ -24,3 +24,86 @@ The storage account name is nautilusst29133.
 
 SOLUTION:
 
+Step-by-Step Solution Using Azure Portal (UI)
+Step 1: Log in to Azure Portal
+Go to https://portal.azure.com
+
+Sign in with the credentials for this lab session:
+
+Username: kk_lab_user_main-fb714751b03f4475@azurefreekmlprod.onmicrosoft.com
+
+Password: FWGmvK-u
+
+Step 2: Navigate to the Specific Storage Account
+In the search bar at the top of the portal, type "Storage accounts" and select the service.
+
+From the list of storage accounts, find and click on the account named nautilusst29133.
+
+Step 3: Find and Open the Target Container
+Once inside the nautilusst29133 storage account:
+
+In the left-hand menu, under the "Data storage" section, click on "Containers".
+
+You will see a list of containers, including nautilus-container-8154 and nautilus-priv-22102.
+
+Click directly on the name of the container you need to change: nautilus-container-8154. This opens its detail page.
+
+Step 4: Change the Container's Access Level
+On the nautilus-container-8154 page:
+
+Look for the "Change access level" button near the top of the page and click it. A panel will slide in from the right.
+
+In the "Public access level" dropdown, select "Private (no anonymous access)". This is the option that ensures no public access.
+
+Click the "OK" button at the bottom of the panel to save your change.
+
+Crucial Note: The storage account's master setting for public access (AllowBlobPublicAccess) must be Enabled for you to see the option to make a container private or public. If the "Change access level" button is greyed out or you cannot select "Private", you must first enable it at the account level (see Step 5).
+
+Step 5: (If Needed) Enable Public Access at the Account Level
+If you could not change the container's access level in Step 4:
+
+Go back to the main overview page for the storage account nautilusst29133.
+
+In the left-hand menu, click on "Configuration".
+
+Find the setting labeled "Allow Blob public access".
+
+Set this switch to "Enabled".
+
+Click "Save" at the top of the page.
+
+Return to Step 3 and try changing the container's access level again.
+
+Step 6: Verify the Change
+To confirm nautilus-container-8154 is now private and nautilus-priv-22102 is unchanged:
+
+Go back to the main "Containers" list for nautilusst29133 (Data storage → Containers).
+
+Look at the "Access level" column in the list.
+
+nautilus-container-8154 should now show "Private".
+
+nautilus-priv-22102 should still show "Private".
+
+Why This Lab is Important & Key Concepts
+This task teaches you how to manage security for data in the cloud by adjusting Access Control—a fundamental skill.
+
+Use Case: Companies often start by making data publicly accessible for easy sharing, but later need to lock it down for compliance, security, or because the data is no longer meant for public consumption.
+
+Benefit: You learn how to audit and correct security configurations without disrupting other services (like the unchanged nautilus-priv-22102 container).
+
+Key Terms Defined
+Public Container: A storage container where anyone on the internet can read the blobs (files) inside it if they have the full URL. Useful for hosting website images or public documents.
+
+Private Container: A container where authentication is required to read or list the blobs. This is the default and secure setting for sensitive or internal data.
+
+Access Level: A property of a container that defines its public exposure. The three levels are:
+
+Private (no anonymous access): Secure, requires credentials.
+
+Blob (anonymous read access for blobs only): Public can read a file if they have the exact URL.
+
+Container (anonymous read access for containers and blobs): Public can list all files in the container and read them.
+
+By completing these steps in the portal, you have successfully restricted access to a previously public dataset, a common and critical operation in cloud security management.
+
