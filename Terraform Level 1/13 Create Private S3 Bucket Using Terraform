@@ -19,3 +19,14 @@ The bucket must have block public access enabled to restrict any public access.
 
 SOLUTION:
 
+For Day 13, you'll create a private S3 bucket using a single main.tf file with Terraform. This task focuses on AWS IAM permissions and configuring S3 to block all public access by default.
+
+Step-by-Step Solution
+Navigate to the Terraform Directory
+First, open a terminal in the correct folder.
+
+bash
+cd /home/bob/terraform
+Create and Edit the main.tf File
+Create the main.tf file and add the configuration below. This single file will configure the AWS provider and create the private bucket.
+
