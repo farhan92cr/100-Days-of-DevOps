@@ -20,3 +20,58 @@ Create the resources only in us-east-1 region.
 To display or hide the terminal of the AWS client machine, you can use the expand toggle button as shown below:
 
 SOLUTION:
+Using AWS CLI (Recommended for the Lab)
+First, log in to the AWS CLI using the provided credentials on the aws-client host. You can then complete the task with a single command.
+
+Step 1: Log in to AWS
+
+bash
+aws configure
+You will be prompted to enter credentials. Use the provided Access Key ID and Secret Access Key from your lab session.
+
+Step 2: Attach the Policy to the User
+Once authenticated, run the following command. It uses the policy name directly, which the AWS CLI will resolve to its full Amazon Resource Name (ARN) for you .
+
+bash
+aws iam attach-user-policy --user-name iamuser_rose --policy-name iampolicy_rose
+Using the AWS Management Console (UI)
+If you prefer to use the web console, follow these steps:
+
+Log in to the AWS Console:
+Go to the Console URL provided in your lab (https://067458473202.signin.aws.amazon.com/console). Use the username kk_labs_user_530334 and password bXAHs1PhXivi .
+
+Navigate to IAM Users:
+In the Services menu or the search bar, find and open IAM (Identity and Access Management). In the left navigation pane, select Users .
+
+Select the Target User:
+From the list of users, click on the username iamuser_rose.
+
+Navigate to Permissions:
+In the user details page, go to the Permissions tab .
+
+Attach the Policy:
+
+Click the Add permissions button.
+
+Choose Attach policies directly.
+
+In the list of policies, search for iampolicy_rose.
+
+Select the checkbox next to its name.
+
+Click the Add permissions button at the bottom to confirm .
+
+How to Verify the Task
+To confirm the policy is attached, you can use the CLI or check the console.
+
+Verify with CLI:
+
+bash
+aws iam list-attached-user-policies --user-name iamuser_rose
+You should see iampolicy_rose in the output.
+
+Verify in Console:
+Return to the Permissions tab for iamuser_rose. The policy should be listed under the Permissions policies section.
+
+I hope this helps you complete the task successfully. If you encounter any issues with the policy not being found, please let me know.
+
