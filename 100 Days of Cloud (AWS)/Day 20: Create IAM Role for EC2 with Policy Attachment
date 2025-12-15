@@ -27,3 +27,64 @@ Create the resources only in us-east-1 region.
 To display or hide the terminal of the AWS client machine, you can use the expand toggle button as shown below:
 
 SOLUTIOON:
+Using the AWS Management Console (UI)
+If you prefer to use the web console, follow these steps:
+
+Log in to the AWS Console: Use the provided Console URL, Username, and Password.
+
+Navigate to IAM & Create Role:
+
+In the Services menu, open IAM.
+
+In the left navigation pane, select Roles.
+
+Click the Create role button.
+
+Configure the Trusted Entity (Step 1):
+
+For Trusted entity type, select AWS service.
+
+For Use case, select EC2.
+
+Click Next.
+
+Add Permissions (Step 2):
+
+In the policy search bar, type iampolicy_ammar.
+
+Select the checkbox next to the policy name.
+
+Click Next.
+
+Name and Create the Role (Step 3):
+
+For Role name, enter iamrole_ammar.
+
+(Optional) Add a description like "IAM role for EC2 service".
+
+Review the configuration and click Create role.
+
+How to Verify the Task
+You can verify the role was created and the policy attached using the CLI or console.
+
+Verify with CLI:
+Check the role's details and attached policies.
+
+bash
+# Describe the role
+aws iam get-role --role-name iamrole_ammar
+
+# List policies attached to the role
+aws iam list-attached-role-policies --role-name iamrole_ammar
+Verify in Console:
+Go back to the Roles page in IAM, search for iamrole_ammar, and click on it. In the Permissions tab, you should see iampolicy_ammar listed under Permissions policies.
+
+Key Concepts for This Lab
+IAM Role: An identity you can create that has specific permissions, intended to be assumed by an AWS service or resource (like an EC2 instance). It is not tied to a single person.
+
+Trust Policy: The JSON document you created in Step 1. It defines which principal (in this case, the EC2 service) is allowed to "assume" this role.
+
+Use Case: Creating roles for services like EC2 is a fundamental and secure pattern. It allows applications running on an EC2 instance to securely access other AWS resources (like S3 buckets) without storing long-term credentials on the instance.
+
+I hope this helps you complete Day 20 successfully. If the policy iampolicy_ammar cannot be found, please let me know.
+
