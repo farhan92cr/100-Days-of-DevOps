@@ -30,3 +30,80 @@ cd /home/bob/terraform
 Create and Edit the main.tf File
 Create the main.tf file and add the configuration below. This single file will configure the AWS provider and create the private bucket.
 
+ Since a provider.tf file already exists with the correct configuration, you only need to create a minimal main.tf file with the S3 bucket resources.
+
+Step-by-Step Solution
+Navigate to the Terraform Directory
+
+bash
+cd /home/bob/terraform
+Create the main.tf File
+Since the provider is already configured in provider.tf, your main.tf file only needs to define the S3 resources.
+
+hcl
+# Create the private S3 bucket
+resource "aws_s3_bucket" "datacenter_s3_4863" {
+  bucket = "datacenter-s3-4863"
+
+  tags = {
+    Name = "datacenter-s3-4863"
+  }
+}
+
+# Explicitly block all forms of public access on the bucket
+resource "aws_s3_bucket_public_access_block" "datacenter_s3_4863_block" {
+  bucket = aws_s3_bucket.datacenter_s3_4863.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+How to Apply the Configuration
+Run these commands from the /home/bob/terraform directory:
+
+Initialize Terraform (if not already done):
+
+bash
+terraform init
+Validate the Configuration:
+
+bash
+terraform validate
+Preview Changes:
+
+bash
+terraform plan
+You should see output indicating that aws_s3_bucket.datacenter_s3_4863 and aws_s3_bucket_public_access_block.datacenter_s3_4863_block will be created.
+
+Apply the Configuration:
+
+bash
+terraform apply
+Type yes when prompted to confirm.
+
+Important Notes About This Lab Environment
+The provider.tf configuration reveals two important things about your lab environment:
+
+LocalStack: The endpoints block pointing to http://aws:4566 indicates you're using LocalStack - a local AWS cloud simulator. This is common in lab environments.
+
+Testing Focus: Because it's LocalStack, you're creating a simulated S3 bucket, not a real one in the AWS cloud. This is perfect for learning Terraform syntax and workflow without costs.
+
+Verification
+Since you're using LocalStack, the standard AWS CLI might not work directly. Instead, verify using Terraform:
+
+bash
+# Check the Terraform state to confirm creation
+terraform show
+Look for the aws_s3_bucket and aws_s3_bucket_public_access_block resources in the output.
+
+Why This Configuration Works
+The provider.tf file already handles AWS authentication and region settings
+
+Your main.tf focuses only on the resources you need to create
+
+The aws_s3_bucket_public_access_block resource ensures all four public access settings are explicitly blocked, making the bucket truly private
+
+The key is that Terraform will use the provider configuration from provider.tf and combine it with your resource definitions in main.tf.
+
+
