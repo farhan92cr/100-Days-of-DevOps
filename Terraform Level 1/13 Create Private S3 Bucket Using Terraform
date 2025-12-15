@@ -107,3 +107,5 @@ The aws_s3_bucket_public_access_block resource ensures all four public access se
 The key is that Terraform will use the provider configuration from provider.tf and combine it with your resource definitions in main.tf.
 
 
+-----------DONE---------
+
