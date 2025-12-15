@@ -164,3 +164,32 @@ Compare Azure Blob vs AWS S3
 
 Show how to automate this via cron / pipeline
 
+Below are exact ONE-LINE CLI commands using your given resource group.
+
+Resource Group:
+kml_rg_main-c9d87fa32e6f410e
+Storage Account:
+nautilusst1814
+Container:
+nautilus-blob-2335
+
+🔹 Step 1: Get Storage Account Key (one line)
+STORAGE_KEY=$(az storage account keys list -g kml_rg_main-c9d87fa32e6f410e -n nautilusst1814 --query "[0].value" -o tsv)
+
+🔹 Step 2: Copy blobs to /opt (one line)
+az storage blob download-batch -s nautilus-blob-2335 -d /opt --account-name nautilusst1814 --account-key $STORAGE_KEY
+
+🔹 Step 3: Delete the blob container (one line)
+az storage container delete -n nautilus-blob-2335 --account-name nautilusst1814 --account-key $STORAGE_KEY
+
+🔹 (Optional) Verify
+ls -l /opt
+
+az storage container list --account-name nautilusst1814 --account-key $STORAGE_KEY -o table
+
+✅ That’s it
+
+✔ Data copied to /opt
+✔ Container deleted
+✔ Lab task completed using CLI one-liners
+
