@@ -6,3 +6,176 @@ For this task, create an IAM user named iamuser_mark using terraform. The Terraf
 
 Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
 
+Lab 14: Create IAM User Using Terraform
+Simple Explanation
+This lab teaches you to create an IAM (Identity and Access Management) user, which is like creating a user account with specific permissions in your AWS account. IAM users are identities that can be assigned credentials and permissions to access AWS resources.
+
+Key Terms
+IAM User: An identity with credentials and permissions to interact with AWS
+
+IAM Policy: Document defining permissions for users/groups/roles
+
+AWS Identity Service: Central service for managing access to AWS resources
+
+Root Account vs IAM User: Root account is the main account owner, IAM users are created for daily operations
+
+Benefits and Use Cases
+Security Best Practice: Avoid using root account for daily tasks
+
+Access Control: Grant specific permissions to different users
+
+Audit Trail: Track actions by individual users
+
+Multi-user Access: Team members get their own credentials
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Add IAM User to main.tf File
+Add this IAM user resource to your existing main.tf:
+
+hcl
+# Create IAM User
+resource "aws_iam_user" "iamuser_mark" {
+  name = "iamuser_mark"
+  
+  tags = {
+    Name        = "iamuser_mark"
+    CreatedBy   = "Terraform"
+    Purpose     = "Lab-14"
+  }
+}
+Step 4: Initialize Terraform (if needed)
+
+bash
+terraform init
+Step 5: Plan the Infrastructure
+
+bash
+terraform plan
+Step 6: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 7: Verify the IAM User
+
+bash
+# Check if user was created
+terraform show | grep -A5 "aws_iam_user.iamuser_mark"
+
+# Or use AWS CLI
+aws iam get-user --user-name iamuser_mark
+What This Creates:
+IAM User named "iamuser_mark" in your AWS account
+
+No permissions yet: User exists but cannot do anything (needs policies)
+
+No credentials yet: User has no password or access keys
+
+Complete Example with Login Profile and Access Key:
+If you want to add login credentials and access key (optional):
+
+hcl
+# Create IAM User
+resource "aws_iam_user" "iamuser_mark" {
+  name = "iamuser_mark"
+  
+  tags = {
+    Name        = "iamuser_mark"
+    CreatedBy   = "Terraform"
+    Purpose     = "Lab-14"
+  }
+}
+
+# Create login password (optional)
+resource "aws_iam_user_login_profile" "mark_login" {
+  user    = aws_iam_user.iamuser_mark.name
+  pgp_key = "keybase:some_user"  # Remove or comment if no PGP key
+  
+  # Password will be encrypted, you need to decrypt it
+}
+
+# Create access key (optional)
+resource "aws_iam_access_key" "mark_access_key" {
+  user = aws_iam_user.iamuser_mark.name
+  
+  # Output will show encrypted secret
+}
+
+# Output encrypted secret (for reference)
+output "mark_encrypted_secret" {
+  value     = aws_iam_access_key.mark_access_key.encrypted_secret
+  sensitive = true
+}
+Expected Output:
+text
+aws_iam_user.iamuser_mark:
+  id = iamuser_mark
+  arn = arn:aws:iam::123456789012:user/iamuser_mark
+  name = iamuser_mark
+  path = /
+  tags = { CreatedBy = "Terraform", Name = "iamuser_mark", Purpose = "Lab-14" }
+  unique_id = AIDASAMPLEUSERID
+Important Notes:
+No Permissions: The user has zero permissions by default (cannot access any AWS services)
+
+Security: Never store IAM credentials in version control
+
+Next Steps: User would need policies attached to actually do anything
+
+Password/Access Key: The lab only requires creating the user, not credentials
+
+IAM User Components:
+User Identity: Name and ARN (Amazon Resource Name)
+
+Policies: Permissions attached to the user
+
+Groups: Users can belong to groups with inherited permissions
+
+Credentials: Passwords for console, access keys for CLI/API
+
+Typical Next Steps (Future Labs):
+After creating a user, you would typically:
+
+Attach policies for specific permissions
+
+Add user to groups
+
+Create access keys for programmatic access
+
+Set up password for console login
+
+Your Infrastructure Now Has:
+✅ Key pairs
+
+✅ Security groups
+
+✅ VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance
+
+✅ AMI
+
+✅ EBS Volume
+
+✅ EBS Snapshot
+
+✅ CloudWatch Alarm
+
+✅ S3 Bucket
+
+✅ IAM User
+
+Ready for Lab 15! 🚀
+
+
