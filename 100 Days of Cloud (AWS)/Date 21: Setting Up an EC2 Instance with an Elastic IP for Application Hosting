@@ -21,7 +21,116 @@ To display or hide the terminal of the AWS client machine, you can use the expan
 
 SOLUTION::
 
------
+🛠️ Step-by-Step Solution: Create EC2 Instance & Associate Elastic IP
+This lab combines tasks from previous days. Follow these steps carefully.
+
+Login to the AWS Console
+
+Open a web browser.
+
+Go to: https://065091046589.signin.aws.amazon.com/console?region=us-east-1
+
+Username: kk_labs_user_320056
+
+Password: Z2l0EONbTQPr
+
+Click Sign In. Verify the region in the top right is US East (N. Virginia) / us-east-1.
+
+Part A: Allocate the Elastic IP (xfusion-eip)
+
+In the top search bar, type "EC2" and select it.
+
+In the left sidebar, under "Network & Security", click "Elastic IPs".
+
+Click the orange "Allocate Elastic IP address" button.
+
+On the next screen, click "Allocate" (keep all defaults).
+
+After allocation, check the box next to the new IP in the list.
+
+Click Actions -> Edit tags.
+
+Click "Add tag". For Key, enter Name. For Value, enter xfusion-eip.
+
+Click "Save".
+
+Part B: Launch the EC2 Instance (xfusion-ec2)
+
+From the EC2 dashboard, click the orange "Launch instance" button.
+
+Step 1: Name and tags
+
+In "Name", enter xfusion-ec2.
+
+Step 2: Application and OS Images
+
+Click "Ubuntu". Select an Ubuntu Server 22.04 LTS AMI (free tier eligible).
+
+Step 3: Instance type
+
+Select t2.micro (free tier eligible).
+
+Step 4: Key pair
+
+Create new key pair. Name it xfusion-kp. Choose RSA and .pem. Click "Create key pair". IMPORTANT: The .pem file will download. Save it securely.
+
+Step 5: Network settings
+
+Click "Edit".
+
+VPC: Leave as default.
+
+Subnet: Choose any.
+
+Auto-assign Public IP: Enable.
+
+Firewall (Security Groups): Select "Create security group".
+
+Name: xfusion-sg
+
+Description: Security group for xfusion-ec2
+
+Add rule: Type SSH, Source Anywhere (0.0.0.0/0).
+
+Steps 6 & 7: Storage and Advanced
+
+Leave all defaults (8 GiB gp2/3 root volume is fine).
+
+Step 8: Summary
+
+Review details. Click "Launch instance".
+
+Final Launch Step:
+
+Click the blue "View all instances" button. Wait for your instance (xfusion-ec2) to show "2/2 checks passed" under Status checks.
+
+Part C: Associate the Elastic IP
+
+Go back to "Elastic IPs" in the left sidebar.
+
+Check the box next to your Elastic IP named xfusion-eip.
+
+Click Actions -> Associate Elastic IP address.
+
+Resource type: Choose Instance.
+
+Instance: Use the search box and select xfusion-ec2.
+
+Private IP address: It will auto-populate. Leave as is.
+
+Click "Associate".
+
+Verification
+
+Go to "Instances".
+
+Select your xfusion-ec2 instance.
+
+In the Details tab, verify the Public IPv4 address now matches the Elastic IP you allocated and named xfusion-eip.
+
+Task Complete! ✅ You have launched an EC2 instance and associated a static Elastic IP.
+
+
 
 
 
