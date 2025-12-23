@@ -10,3 +10,161 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+Lab 15: Create IAM Group Using Terraform
+Simple Explanation
+This lab teaches you to create an IAM Group, which is a collection of IAM users. Groups make it easier to manage permissions for multiple users - you attach policies to the group, and all users in the group inherit those permissions.
+
+Key Terms
+IAM Group: Container for IAM users that share common permissions
+
+Group Policy: Permissions attached to a group (inherited by all members)
+
+User Management: Easier to manage users through groups than individually
+
+Permission Inheritance: Users get permissions from all groups they belong to
+
+Benefits and Use Cases
+Simplified Management: Assign permissions to groups instead of individual users
+
+Consistency: Ensure all team members have same permissions
+
+Onboarding/Offboarding: Add/remove users from groups instead of managing individual policies
+
+Role-based Access: Create groups based on job functions (developers, admins, auditors)
+
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Add IAM Group to main.tf File
+Add this IAM group resource to your existing main.tf:
+
+hcl
+# Create IAM Group
+resource "aws_iam_group" "iamgroup_jim" {
+  name = "iamgroup_jim"
+  
+  # Optional: Add a path for organization
+  path = "/"
+}
+
+# Optional: Output the group ARN
+output "group_arn" {
+  value = aws_iam_group.iamgroup_jim.arn
+  description = "ARN of the created IAM group"
+}
+Step 4: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 5: Verify the IAM Group
+
+bash
+# Check if group was created
+terraform show | grep -A3 "aws_iam_group.iamgroup_jim"
+
+# Or use AWS CLI
+aws iam get-group --group-name iamgroup_jim
+What This Creates:
+IAM Group named "iamgroup_jim" in your AWS account
+
+Empty Group: No users are members yet
+
+No Policies: Group has no permissions attached yet
+
+Complete Example with User Membership (Optional):
+If you want to add the previously created user to this group:
+
+hcl
+# Create IAM Group
+resource "aws_iam_group" "iamgroup_jim" {
+  name = "iamgroup_jim"
+  path = "/"
+}
+
+# Add user to group (requires user to exist)
+resource "aws_iam_group_membership" "team" {
+  name = "add-mark-to-jim-group"
+  
+  users = [
+    aws_iam_user.iamuser_mark.name
+  ]
+  
+  group = aws_iam_group.iamgroup_jim.name
+  
+  # Ensure user exists before adding to group
+  depends_on = [aws_iam_user.iamuser_mark]
+}
+Expected Output:
+text
+aws_iam_group.iamgroup_jim:
+  id = iamgroup_jim
+  arn = arn:aws:iam::123456789012:group/iamgroup_jim
+  name = iamgroup_jim
+  path = /
+Important Notes:
+Empty by Default: Groups start with no users and no permissions
+
+Hierarchy: Groups can have paths for organization (/developers/, /admins/)
+
+Policy Attachment: Separate step needed to attach policies to the group
+
+User Management: Users can belong to multiple groups
+
+Group vs User Permissions:
+Feature	IAM User	IAM Group
+Direct Policies	Can attach directly	Cannot attach directly to group
+Permission Source	Direct policies + group policies	Provides policies to users
+Management	Individual management	Bulk user management
+Typical Workflow:
+Create Group (this lab)
+
+Attach Policies to group (e.g., S3ReadOnly, EC2FullAccess)
+
+Add Users to group
+
+Users Inherit group permissions automatically
+
+Real-World Group Examples:
+developers (EC2, S3, Lambda access)
+
+admins (Full access to all services)
+
+readonly (View-only access for auditors)
+
+billing (Cost Explorer, Billing access)
+
+Your Infrastructure Now Has:
+✅ Key pairs
+
+✅ Security groups
+
+✅ VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance
+
+✅ AMI
+
+✅ EBS Volume
+
+✅ EBS Snapshot
+
+✅ CloudWatch Alarm
+
+✅ S3 Bucket
+
+✅ IAM User
+
+✅ IAM Group
+
+Ready for Lab 16! 🚀
+
