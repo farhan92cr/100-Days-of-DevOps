@@ -32,3 +32,21 @@ SOLUTION:
 
 Here are the exact CLI commands to create the VM with Nginx pre-installed for Day 22. The key step is using the Custom Script Extension to run an installation script automatically after the VM is created 
 
+
+
+
+
+
+
+
+
+
+What's Happening and Why It Works
+The table below explains the key concepts behind the commands you ran:
+
+Component	What It Does	Why It's Required
+--nsg-rule "HTTP"	Creates a firewall rule in the Network Security Group (NSG) to allow inbound traffic on port 80 from the internet .	Makes the Nginx web server accessible from the internet.
+Custom Script Extension	Downloads and executes a script inside the VM after it boots .	Automates the configuration (installs and starts Nginx) without manual SSH login.
+--generate-ssh-keys	Automatically creates an SSH key pair for secure access to the VM .	Satisfies the lab requirement for SSH key access.
+Note: If you get a "Resource 'nautilus-vm' was disallowed by policy" error (like in previous labs), you may need to add disk size and type parameters (e.g., --os-disk-size-gb 128 --storage-sku StandardSSD_LRS) to the first az vm create command.
+
