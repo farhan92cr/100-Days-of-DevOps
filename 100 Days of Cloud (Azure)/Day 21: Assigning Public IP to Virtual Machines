@@ -61,3 +61,41 @@ bash
 az vm create --resource-group $RG --name nautilus-vm --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --ssh-key-values ~/.ssh/nautilus_vm_key.pub --public-ip-address nautilus-pip --public-ip-sku Standard --location "East US" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
 Run Step 1, then Step 2, then Step 3. The --generate-ssh-keys option is the most reliable for Cloud Shell.
 
+
+To generate an SSH public key and associate it with an Azure VM:
+
+1. Generate SSH key pair:
+
+
+bash
+   ssh-keygen -t rsa -b 2048 -C "your_email@example.com"
+   
+
+- Save it as ~/.ssh/azure_vm_key (default is id_rsa).
+
+2. Copy public key:
+
+
+bash
+   cat ~/.ssh/azure_vm_key.pub
+   
+
+
+3. Add SSH key to Azure VM:
+    - Azure Portal: VM > Settings > Reset password > SSH public key > Paste key.
+    - Or Azure CLI:
+
+
+bash
+     az vm user update --resource-group <RG> --name <VM-name> --username <user> --ssh-key-value "$(cat ~/.ssh/azure_vm_key.pub)"
+     
+
+
+4. SSH into VM:
+
+
+bash
+   ssh -i ~/.ssh/azure_vm_key <user>@<VM-IP>
+
+
+   
