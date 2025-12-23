@@ -21,26 +21,43 @@ Perform all operations in the East US region.
 
 SOLUTION:
 
-~ ✖ az vm create --resource-group kml_rg_main-eaabc8b545f949e9 --name devops-vm --ima
-ge Ubuntu2204 --size Standard_B1s --admin-username azureuser --ssh-key-values ~/.ssh/
-nautilus_vm_key.pub --public-ip-address devops-pip --public-ip-sku Standard --locatio
-n "East US" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
 
-ouput:
+Step 1: Set Resource Group (skip login)
 
-{
-  "fqdns": "",
-  "id": "/subscriptions/f0c3bcdd-5ce2-4fa0-8cf3-41559747512b/resourceGroups/kml_rg_main-eaabc8b545f949e9/providers/Microsoft.Compute/virtualMachines/devops-vm",
-  "location": "eastus",
-  "macAddress": "7C-1E-52-4A-A9-46",
-  "powerState": "VM running",
-  "privateIpAddress": "10.0.0.4",
-  "publicIpAddress": "172.190.67.130",
-  "resourceGroup": "kml_rg_main-eaabc8b545f949e9",
-  "zones": ""
-}
+bash
+RG=kml_rg_main-47e32ae6362c4b8b
+Step 2: Generate SSH Key
 
-SOLUTION:
+bash
+ssh-keygen -m PEM -t rsa -b 4096 -f ~/.ssh/nautilus_vm_key -N ""
+Step 3: Create VM (Most Reliable Version)
 
+bash
+az vm create --resource-group $RG --name nautilus-vm --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --generate-ssh-keys --public-ip-address nautilus-pip --public-ip-sku Standard --location "East US" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
+Step 4: Get IP and Test SSH
 
+bash
+IP=$(az vm show --resource-group $RG --name nautilus-vm --show-details --query "publicIps" -o tsv) && echo "VM IP: $IP" && ssh -i ~/.ssh/id_rsa -o ConnectTimeout=30 -o StrictHostKeyChecking=no azureuser@$IP "echo 'SSH success'"
+Key Points:
+Skip az login - Cloud Shell is already authenticated
+
+Use --generate-ssh-keys - Let Azure create the SSH keys (avoids key path issues)
+
+Connect with ~/.ssh/id_rsa - This is the default key Azure generates
+
+The RG variable ensures you use the correct resource group
+
+If VM Creation Fails with Policy Error:
+Try checking what resource group exists:
+
+bash
+az group list --query "[].name" -o table
+Then use the correct RG name in the command.
+
+Alternative if Azure-generated key fails:
+Use your manually generated key instead:
+
+bash
+az vm create --resource-group $RG --name nautilus-vm --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --ssh-key-values ~/.ssh/nautilus_vm_key.pub --public-ip-address nautilus-pip --public-ip-sku Standard --location "East US" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
+Run Step 1, then Step 2, then Step 3. The --generate-ssh-keys option is the most reliable for Cloud Shell.
 
