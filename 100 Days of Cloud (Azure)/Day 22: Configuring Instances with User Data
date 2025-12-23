@@ -34,11 +34,26 @@ Here are the exact CLI commands to create the VM with Nginx pre-installed for Da
 
 
 
+SOLUTION:
+
+1. First, create the VM with an SSH rule only.
+
+bash
+az vm create --resource-group kml_rg_main-25d7d6681af443d1 --name nautilus-vm --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --generate-ssh-keys --public-ip-sku Standard --location "East US" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
+2. Add a rule to allow HTTP (port 80) traffic.
+The VM creation command will automatically generate a Network Security Group (NSG) named nautilus-vmNSG. This command adds a rule to it.
+
+bash
+az network nsg rule create --resource-group kml_rg_main-25d7d6681af443d1 --nsg-name nautilus-vmNSG --name AllowHTTP --priority 1010 --direction Inbound --access Allow --protocol Tcp --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 80
+The --priority 1010 ensures this rule runs after the default SSH rule (priority 1000) but before the default "DenyAllInbound" rule (priority 65500).
+
+3. Add the Custom Script Extension to install Nginx.
+
+bash
+az vm extension set --resource-group kml_rg_main-25d7d6681af443d1 --vm-name nautilus-vm --name customScript --publisher Microsoft.Azure.Extensions --version 2.1 --protected-settings '{"commandToExecute": "sudo apt-get update && sudo apt-get install -y nginx && sudo systemctl start nginx"}'
 
 
-
-
-
+--
 
 
 What's Happening and Why It Works
@@ -49,4 +64,9 @@ Component	What It Does	Why It's Required
 Custom Script Extension	Downloads and executes a script inside the VM after it boots .	Automates the configuration (installs and starts Nginx) without manual SSH login.
 --generate-ssh-keys	Automatically creates an SSH key pair for secure access to the VM .	Satisfies the lab requirement for SSH key access.
 Note: If you get a "Resource 'nautilus-vm' was disallowed by policy" error (like in previous labs), you may need to add disk size and type parameters (e.g., --os-disk-size-gb 128 --storage-sku StandardSSD_LRS) to the first az vm create command.
+
+..
+
+,,
+
 
