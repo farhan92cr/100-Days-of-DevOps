@@ -1,1 +1,32 @@
 Day 22: Configuring Instances with User Data:
+The Nautilus DevOps Team is working on setting up a new virtual machine (VM) to host a web server for a critical application. The team lead has requested you to create an Azure VM that will serve as a web server using Nginx. This VM will be part of the initial infrastructure setup for the Nautilus project. Ensuring that the server is correctly configured and accessible from the internet is crucial for the upcoming deployment phase.
+
+As a member of the Nautilus DevOps Team, your task is to create a VM with the following specifications:
+
+Instance Name: The VM must be named nautilus-vm.
+
+Image: Use any available Ubuntu image to create this VM.
+
+Custom Script Extension/User Data: Configure the VM to run a custom script during its launch. This script should:
+
+Install the Nginx package.
+Start the Nginx service.
+Network Security Group (NSG): Ensure that the VM allows HTTP traffic on port 80 from the internet.
+
+
+
+Use below given Azure Credentials: (You can run the showcreds command on azure-client host to retrieve these credentials)
+
+Portal URL	https://portal.azure.com
+Username	kk_lab_user_main-25d7d6681af443d1@azurefreekmlprod.onmicrosoft.com
+Password	z8RY2gxN
+Start Time	Tue Dec 23 06:26:29 UTC 2025
+End Time	Tue Dec 23 07:26:29 UTC 2025
+
+Notes:
+
+Create the resources only in the East US region.
+You may use the default resource group or create a new one if needed.
+
+SOLUTION:
+
