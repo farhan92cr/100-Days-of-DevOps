@@ -9,3 +9,27 @@ Note: Right-click under the EXPLORER section in VS Code and select Open in Integ
 
 SOLUTION:
 
+Lab 16: Create IAM Policy Using Terraform
+Simple Explanation
+This lab teaches you to create an IAM Policy, which is a JSON document that defines permissions for AWS services. Policies specify what actions are allowed or denied on which resources. You're creating a read-only policy for EC2 console access.
+
+Key Terms
+IAM Policy: JSON document defining permissions (allow/deny rules)
+
+Policy Document: The actual JSON content of the policy
+
+Actions: AWS API operations (like ec2:DescribeInstances)
+
+Resources: AWS resources the policy applies to (* means all resources)
+
+Effect: Either "Allow" or "Deny"
+
+Benefits and Use Cases
+Fine-grained Control: Define exactly what users can/cannot do
+
+Security: Principle of least privilege (only necessary permissions)
+
+Reusability: Policies can be attached to multiple users/groups/roles
+
+Auditability: Clear documentation of permissions
+
