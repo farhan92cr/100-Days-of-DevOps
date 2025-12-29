@@ -33,3 +33,116 @@ Reusability: Policies can be attached to multiple users/groups/roles
 
 Auditability: Clear documentation of permissions
 
+Step-by-Step Solution
+Step 1: Open Terminal in VS Code
+
+Right-click in EXPLORER → "Open in Integrated Terminal"
+
+Step 2: Navigate to Terraform Directory
+
+bash
+cd /home/bob/terraform
+Step 3: Add IAM Policy to main.tf File
+Add this IAM policy resource to your existing main.tf:
+
+hcl
+# Create IAM Policy for EC2 read-only access
+resource "aws_iam_policy" "iampolicy_rose" {
+  name        = "iampolicy_rose"
+  description = "Policy for read-only access to EC2 console"
+  path        = "/"
+  
+  # Policy document in JSON format
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeImages",
+          "ec2:DescribeSnapshots",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeKeyPairs",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeAvailabilityZones",
+          "ec2:DescribeRegions",
+          "ec2:DescribeTags",
+          "ec2:DescribeInstanceTypes"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Optional: Output the policy ARN
+output "policy_arn" {
+  value = aws_iam_policy.iampolicy_rose.arn
+  description = "ARN of the created IAM policy"
+}
+Step 4: Apply the Configuration
+
+bash
+terraform apply
+Type yes when prompted
+
+Step 5: Verify the IAM Policy
+
+bash
+# Check if policy was created
+terraform show | grep -A10 "aws_iam_policy.iampolicy_rose"
+
+# Or use AWS CLI
+aws iam get-policy --policy-arn $(terraform output -raw policy_arn)
+What This Creates:
+IAM Policy named "iampolicy_rose" with read-only EC2 permissions
+
+Policy Document: JSON defining allowed EC2 describe actions
+
+No Attachments: Policy exists but not attached to any user/group/role
+
+Why These Specific Actions:
+The EC2 console needs to display:
+
+Instances tab: DescribeInstances, DescribeInstanceTypes
+
+AMIs tab: DescribeImages
+
+Snapshots tab: DescribeSnapshots
+
+Volumes tab: DescribeVolumes
+
+Network/Security tabs: DescribeVpcs, DescribeSubnets, DescribeSecurityGroups
+
+Your Infrastructure Now Has:
+✅ Key pairs
+
+✅ Security groups
+
+✅ VPCs
+
+✅ Elastic IP
+
+✅ EC2 instance
+
+✅ AMI
+
+✅ EBS Volume
+
+✅ EBS Snapshot
+
+✅ CloudWatch Alarm
+
+✅ S3 Bucket
+
+✅ IAM User
+
+✅ IAM Group
+
+✅ IAM Policy (read-only EC2 access)
+
+Ready for Lab 17! 🚀
+
