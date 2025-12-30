@@ -77,8 +77,7 @@ ssh -i ~/.ssh/devops_vm_key azureuser@$IP "cat ~/.ssh/authorized_keys"
 You should see the public key from ~/.ssh/devops_vm_key.pub in the output.
 
 
-
-.......
+------
 
 
 
