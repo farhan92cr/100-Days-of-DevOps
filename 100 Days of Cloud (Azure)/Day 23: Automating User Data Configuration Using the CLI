@@ -30,5 +30,67 @@ You may use the default resource group or create a new one if needed.
 
 SOLUTION:
 
+Here are the exact one-line commands to complete Day 23's task using the Azure CLI. The process mirrors Day 22, as the core requirement (creating an Nginx web server with a custom script) is identical. The key difference is using the command line exclusively.
 
---
+Note: Make sure you are on the azure-client host and logged in with the lab's credentials.
+
+Step-by-Step Commands
+Log in to Azure:
+
+bash
+az login -u kk_lab_user_main-25d7d6681af443d1@azurefreekmlprod.onmicrosoft.com -p z8RY2gxN
+Find the correct resource group (you will need it for the next commands):
+
+bash
+RG=$(az group list --query "[0].name" -o tsv) && echo "Resource Group: $RG"
+Create the VM with SSH access only. You must use Standard_B1s size and add the disk parameters to comply with lab policies.
+
+bash
+az vm create --resource-group $RG --name nautilus-vm --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --generate-ssh-keys --public-ip-sku Standard --location "East US" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
+Add the HTTP (port 80) security rule to the Network Security Group created for the VM.
+
+bash
+az network nsg rule create --resource-group $RG --nsg-name nautilus-vmNSG --name AllowHTTP --priority 1010 --direction Inbound --access Allow --protocol Tcp --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 80
+Install and start Nginx using the Azure Custom Script Extension. This fulfills the "User Data" requirement.
+
+bash
+az vm extension set --resource-group $RG --vm-name nautilus-vm --name customScript --publisher Microsoft.Azure.Extensions --version 2.1 --protected-settings '{"commandToExecute": "sudo apt-get update && sudo apt-get install -y nginx && sudo systemctl start nginx"}'
+Verify the setup by getting the public IP and testing it.
+
+bash
+IP=$(az vm show --resource-group $RG --name nautilus-vm --show-details --query publicIps -o tsv) && echo "VM is running at: http://$IP"
+How to Verify the Installation
+You can test your new web server in two ways:
+
+Using curl in the terminal:
+
+bash
+curl -s http://$IP | grep -o "<title>.*</title>"
+You should see the output <title>Welcome to nginx!</title>.
+
+Manually in a web browser: Open a new tab and navigate to http://<IP_ADDRESS>, replacing <IP_ADDRESS> with the IP from Step 6.
+
+Troubleshooting Common Issues
+If the Nginx page doesn't load:
+
+Confirm the Custom Script ran: Check its status.
+
+bash
+az vm extension show --resource-group $RG --vm-name nautilus-vm --name customScript
+Look for "provisioningState": "Succeeded".
+
+Verify the NSG rule exists:
+
+bash
+az network nsg rule list --resource-group $RG --nsg-name nautilus-vmNSG --output table
+Ensure a rule for port 80 is listed.
+
+Check if the VM is running:
+
+bash
+az vm get-instance-view --resource-group $RG --name nautilus-vm --query "instanceView.statuses[1].displayStatus" -o tsv
+It should return VM running. If not, start it with az vm start.
+
+This completes the setup. If you encounter any errors while running these commands, please share the exact message.
+
+
