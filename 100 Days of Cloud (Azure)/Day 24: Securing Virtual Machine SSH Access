@@ -1,1 +1,50 @@
 Day 24: Securing Virtual Machine SSH Access:
+
+
+
+
+SOlution:
+Here are the exact one-line commands to complete Day 24's task, using the resource group you identified (kml_rg_main-42b0b219e6c34f89). This lab focuses on manually creating and managing SSH keys for secure access.
+
+Step-by-Step Commands
+Login to Azure with the new credentials.
+
+bash
+az login -u kk_lab_user_main-42b0b219e6c34f89@azurefreekmlprod.onmicrosoft.com -p m4QMPHjs
+Check for existing SSH keys and generate a new one if needed. This command creates a key named devops_vm_key in the ~/.ssh directory.
+
+bash
+[ ! -f ~/.ssh/devops_vm_key.pub ] && ssh-keygen -m PEM -t rsa -b 4096 -f ~/.ssh/devops_vm_key -N "" && echo "New key created: devops_vm_key" || echo "Key ~/.ssh/devops_vm_key.pub already exists."
+Create the VM in the westus region. The key difference from previous labs is using the --ssh-key-values parameter to explicitly attach your existing public key.
+
+bash
+az vm create --resource-group kml_rg_main-42b0b219e6c34f89 --name devops-vm --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --ssh-key-values ~/.ssh/devops_vm_key.pub --public-ip-sku Standard --location "westus" --nsg-rule SSH --os-disk-size-gb 128 --storage-sku StandardSSD_LRS
+Get the public IP to test the connection.
+
+bash
+IP=$(az vm show --resource-group kml_rg_main-42b0b219e6c34f89 --name devops-vm --show-details --query "publicIps" -o tsv) && echo "VM IP: $IP"
+Test SSH connectivity using your private key. This verifies password-less access was configured.
+
+bash
+ssh -i ~/.ssh/devops_vm_key -o ConnectTimeout=20 -o StrictHostKeyChecking=no azureuser@$IP "echo 'SSH key access confirmed for user: $(whoami)'"
+Key Differences from Day 22/23
+Task	Day 22/23	Day 24 (Today)
+Region	East US	West US
+SSH Key	Used --generate-ssh-keys (Azure creates it)	You must create the key yourself and use --ssh-key-values
+Goal	Automate Nginx setup via script	Manually set up and verify SSH key-based authentication
+Troubleshooting
+"Permission denied (publickey)" error: This means the wrong key is being used. Double-check you are connecting with the correct private key (-i ~/.ssh/devops_vm_key).
+
+VM fails to create with policy error: The command already includes the required disk parameters. If it still fails, check the exact error message.
+
+SSH key not found: If Step 2 indicated the key didn't exist but creation failed, run the key generation command directly:
+
+bash
+ssh-keygen -m PEM -t rsa -b 4096 -f ~/.ssh/devops_vm_key -N ""
+How to Verify the Setup Manually
+To absolutely confirm that Azure added your public key to the VM, you can log in and check the authorized_keys file:
+
+bash
+ssh -i ~/.ssh/devops_vm_key azureuser@$IP "cat ~/.ssh/authorized_keys"
+You should see the public key from ~/.ssh/devops_vm_key.pub in the output.
+
